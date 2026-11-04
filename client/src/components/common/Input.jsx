@@ -17,17 +17,17 @@ const Input = ({
   icon: Icon
 }) => {
   const baseInputClasses =
-    'w-full bg-campus-surface border rounded-xl text-campus-text placeholder-campus-textSubtle focus:outline-none transition-all duration-200 text-sm';
+    'w-full bg-white/[0.03] hover:bg-white/[0.045] border rounded-xl text-white placeholder-campus-textSubtle focus:outline-none transition-all duration-200 text-xs sm:text-sm font-medium shadow-glass';
   const borderClasses = error
-    ? 'border-campus-danger focus:ring-1 focus:ring-campus-danger'
-    : 'border-campus-border focus:border-campus-primary focus:ring-1 focus:ring-campus-primary/30';
+    ? 'border-rose-500/60 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
+    : 'border-white/[0.08] focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white/[0.05]';
   const paddingClasses = Icon ? 'pl-10 pr-4 py-2.5' : 'px-4 py-2.5';
 
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-xs font-medium text-campus-textMuted uppercase tracking-wider">
-          {label} {required && <span className="text-campus-danger">*</span>}
+        <label htmlFor={name} className="block text-[11px] font-semibold text-campus-textMuted uppercase tracking-wider">
+          {label} {required && <span className="text-rose-400">*</span>}
         </label>
       )}
 
@@ -59,7 +59,7 @@ const Input = ({
             className={`${baseInputClasses} ${borderClasses} ${paddingClasses} appearance-none cursor-pointer`}
           >
             {options.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-campus-surface text-campus-text">
+              <option key={opt.value} value={opt.value} className="bg-[#0D1513] text-white">
                 {opt.label}
               </option>
             ))}
@@ -79,7 +79,7 @@ const Input = ({
       </div>
 
       {error ? (
-        <p className="text-xs text-campus-danger mt-1">{error}</p>
+        <p className="text-xs text-rose-400 mt-1 font-medium">{error}</p>
       ) : helperText ? (
         <p className="text-xs text-campus-textSubtle mt-1">{helperText}</p>
       ) : null}
@@ -88,4 +88,3 @@ const Input = ({
 };
 
 export default Input;
-

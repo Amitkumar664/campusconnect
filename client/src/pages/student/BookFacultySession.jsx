@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import {
   Search,
   GraduationCap,
@@ -9,7 +11,9 @@ import {
   MapPin,
   CheckCircle,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  Sparkles,
+  Check
 } from 'lucide-react';
 import { facultyAPI, bookingAPI } from '../../services/api';
 import Card from '../../components/common/Card';
@@ -130,10 +134,16 @@ const BookFacultySession = () => {
       });
 
       if (res.data.success) {
+        // Trigger celebratory confetti burst!
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#10B981', '#34D399', '#F59E0B']
+        });
         setSuccessModalOpen(true);
       }
     } catch (error) {
-      // Handles 409 conflict or other validation errors
       setErrorMessage(
         error.response?.data?.message || 'Failed to submit doubt session request.'
       );
@@ -151,18 +161,21 @@ const BookFacultySession = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-300">
       <div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 font-semibold mb-2">
+          <Sparkles className="w-3.5 h-3.5" /> 1-on-1 Mentorship
+        </div>
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
           Book Faculty Doubt-Clearing Session
         </h1>
-        <p className="text-sm text-campus-textMuted mt-1">
-          Select a professor, check live available slots, and schedule 1-on-1 academic mentoring.
+        <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
+          Select a professor, check live available slots, and schedule 1-on-1 academic mentoring with zero collisions.
         </p>
       </div>
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm font-medium flex items-center gap-3">
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-glass">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -174,7 +187,7 @@ const BookFacultySession = () => {
           <Card title="1. Select Faculty Member" subtitle="Filter by name, department, or subject">
             <div className="space-y-3 mb-4">
               <Input
-                placeholder="Search by faculty name or subject..."
+                placeholder="Search faculty name, subject..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 icon={Search}
@@ -187,41 +200,43 @@ const BookFacultySession = () => {
               />
             </div>
 
-            <div className="max-h-[520px] overflow-y-auto space-y-3 pr-1">
+            <div className="max-h-[520px] overflow-y-auto space-y-2.5 pr-1">
               {filteredFaculty.length === 0 ? (
-                <p className="text-sm text-campus-textMuted text-center py-6">
+                <p className="text-xs text-campus-textMuted text-center py-8">
                   No faculty found matching the search query.
                 </p>
               ) : (
                 filteredFaculty.map((fac) => {
                   const isSelected = selectedFaculty?._id === fac._id;
                   return (
-                    <div
+                    <motion.div
                       key={fac._id}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                       onClick={() => setSelectedFaculty(fac)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-campus-primary/10 border-campus-primary shadow-glow'
-                          : 'bg-campus-surface border-campus-border hover:border-campus-borderGlow'
+                          ? 'bg-emerald-500/10 border-emerald-500/50 shadow-glow'
+                          : 'bg-white/[0.02] border-white/[0.06] hover:border-emerald-500/30 hover:bg-white/[0.035]'
                       }`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="w-11 h-11 rounded-xl bg-campus-card border border-campus-border flex items-center justify-center text-campus-primary font-bold text-base flex-shrink-0 shadow-sm">
+                      <div className="flex items-start gap-3.5">
+                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-campus-bg flex items-center justify-center font-extrabold text-base flex-shrink-0 shadow-glow-sm">
                           {fac.fullName.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-display font-semibold text-sm text-campus-text truncate">
+                          <h4 className="font-display font-semibold text-sm text-white truncate tracking-tight">
                             {fac.fullName}
                           </h4>
                           <p className="text-xs text-campus-textMuted mt-0.5">
                             {fac.profile?.designation || 'Faculty Member'}
                           </p>
-                          <p className="text-xs text-campus-primary mt-0.5 font-medium truncate">
+                          <p className="text-xs text-emerald-400 mt-0.5 font-medium truncate">
                             {fac.department}
                           </p>
 
-                          <div className="flex items-center gap-1.5 text-[11px] text-campus-textSubtle mt-2">
-                            <MapPin className="w-3 h-3 text-campus-amber" />
+                          <div className="flex items-center gap-1.5 text-[11px] text-campus-textSubtle mt-2 font-mono">
+                            <MapPin className="w-3 h-3 text-amber-400" />
                             <span className="truncate">{fac.profile?.officeRoom || 'Academic Block'}</span>
                           </div>
 
@@ -230,7 +245,7 @@ const BookFacultySession = () => {
                               {fac.profile.subjects.slice(0, 3).map((sub, i) => (
                                 <span
                                   key={i}
-                                  className="text-[10px] px-2 py-0.5 rounded-md bg-white/5 text-campus-textMuted"
+                                  className="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-campus-textMuted"
                                 >
                                   {sub}
                                 </span>
@@ -239,7 +254,7 @@ const BookFacultySession = () => {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })
               )}
@@ -257,7 +272,7 @@ const BookFacultySession = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Date Picker */}
                 <div>
-                  <label className="block text-xs font-medium text-campus-textMuted uppercase tracking-wider mb-2">
+                  <label className="block text-[11px] font-semibold text-campus-textMuted uppercase tracking-wider mb-2">
                     Select Preferred Date
                   </label>
                   <input
@@ -265,19 +280,19 @@ const BookFacultySession = () => {
                     min={new Date().toISOString().split('T')[0]}
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full bg-campus-surface border border-campus-border rounded-xl px-4 py-2.5 text-sm text-campus-text focus:outline-none focus:border-campus-primary"
+                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 shadow-glass"
                   />
                 </div>
 
                 {/* Available Slots Grid */}
                 <div>
-                  <label className="block text-xs font-medium text-campus-textMuted uppercase tracking-wider mb-2">
+                  <label className="block text-[11px] font-semibold text-campus-textMuted uppercase tracking-wider mb-2">
                     Available Time Slots on {selectedDate}
                   </label>
 
                   {slotsLoading ? (
                     <div className="py-8 text-center text-xs text-campus-textMuted flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
                       Checking faculty schedule & conflicts...
                     </div>
                   ) : !slotsData?.isAvailable ? (
@@ -289,26 +304,28 @@ const BookFacultySession = () => {
                       {slotsData.slots.map((slot, idx) => {
                         const isSelected = selectedSlot?.startTime === slot.startTime;
                         return (
-                          <button
+                          <motion.button
                             type="button"
                             key={idx}
                             disabled={!slot.isAvailable}
                             onClick={() => setSelectedSlot(slot)}
-                            className={`p-3 rounded-xl border text-xs font-medium transition-all text-center ${
+                            whileHover={slot.isAvailable ? { scale: 1.03 } : {}}
+                            whileTap={slot.isAvailable ? { scale: 0.97 } : {}}
+                            className={`p-3 rounded-xl border text-xs font-medium transition-all text-center cursor-pointer ${
                               !slot.isAvailable
-                                ? 'bg-campus-surface/30 border-campus-border/40 text-campus-textSubtle line-through opacity-50 cursor-not-allowed'
+                                ? 'bg-white/[0.01] border-white/[0.04] text-campus-textSubtle line-through opacity-40 cursor-not-allowed'
                                 : isSelected
-                                ? 'bg-campus-primary text-campus-bg font-bold border-campus-primary shadow-glow'
-                                : 'bg-campus-surface text-campus-text border-campus-border hover:border-campus-primary/50'
+                                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-campus-bg font-bold border-emerald-400 shadow-glow'
+                                : 'bg-white/[0.03] text-white border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.05]'
                             }`}
                           >
-                            <span className="block text-sm font-semibold">
+                            <span className="block text-xs sm:text-sm font-semibold tracking-tight">
                               {slot.startTime} - {slot.endTime}
                             </span>
-                            <span className="text-[10px] opacity-80 mt-0.5 block">
-                              {slot.isAvailable ? 'Available' : 'Booked'}
+                            <span className="text-[10px] opacity-80 mt-0.5 block font-mono">
+                              {slot.isAvailable ? '✓ Available' : 'Occupied'}
                             </span>
-                          </button>
+                          </motion.button>
                         );
                       })}
                     </div>
@@ -316,11 +333,11 @@ const BookFacultySession = () => {
                 </div>
 
                 {/* Doubt Subject & Description */}
-                <div className="space-y-4 pt-4 border-t border-campus-border">
+                <div className="space-y-4 pt-4 border-t border-white/[0.07]">
                   <Input
                     label="Doubt Subject / Topic"
                     name="subject"
-                    placeholder="e.g. Dynamic Programming Memoization Doubts"
+                    placeholder="e.g. Distributed Consensus & Raft Algorithm Clarification"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     required
@@ -331,7 +348,7 @@ const BookFacultySession = () => {
                     name="description"
                     type="textarea"
                     rows={3}
-                    placeholder="Provide specific questions or problem numbers so the faculty member can prepare context..."
+                    placeholder="Explain the specific doubts or problem sets you want guidance on..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
@@ -351,9 +368,9 @@ const BookFacultySession = () => {
               </form>
             </Card>
           ) : (
-            <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card">
-              <GraduationCap className="w-12 h-12 text-campus-primary/50 mb-3" />
-              <h3 className="font-display font-semibold text-campus-text text-base">
+            <div className="flex flex-col items-center justify-center p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
+              <GraduationCap className="w-12 h-12 text-emerald-400/40 mb-3 animate-pulse" />
+              <h3 className="font-display font-semibold text-white text-base">
                 Please select a faculty member from the list
               </h3>
               <p className="text-xs text-campus-textMuted mt-1 max-w-sm">
@@ -378,10 +395,10 @@ const BookFacultySession = () => {
             <CheckCircle className="w-8 h-8" />
           </div>
           <div>
-            <h4 className="font-display font-bold text-lg text-campus-text">
+            <h4 className="font-display font-bold text-lg text-white">
               Request Sent to {selectedFaculty?.fullName}
             </h4>
-            <p className="text-xs text-campus-textMuted mt-1 max-w-md mx-auto">
+            <p className="text-xs text-campus-textMuted mt-1.5 max-w-md mx-auto leading-relaxed">
               Your request for <strong>{selectedDate}</strong> from <strong>{selectedSlot?.startTime} to {selectedSlot?.endTime}</strong> is now pending faculty approval. You will receive an in-app notification when reviewed.
             </p>
           </div>
@@ -391,6 +408,7 @@ const BookFacultySession = () => {
               setSuccessModalOpen(false);
               navigate('/student/my-bookings');
             }}
+            className="w-full"
           >
             Go to My Bookings
           </Button>
@@ -401,4 +419,3 @@ const BookFacultySession = () => {
 };
 
 export default BookFacultySession;
-

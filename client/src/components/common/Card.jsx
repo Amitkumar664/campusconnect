@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const Card = ({
   children,
@@ -10,26 +11,45 @@ const Card = ({
   interactive = false,
   onClick
 }) => {
+  const Component = interactive ? motion.div : 'div';
+  const motionProps = interactive
+    ? {
+        whileHover: { y: -3, transition: { duration: 0.2 } },
+        whileTap: { scale: 0.99 }
+      }
+    : {};
+
   return (
-    <div
+    <Component
       onClick={onClick}
-      className={`bg-campus-card rounded-2xl border border-campus-border overflow-hidden transition-all duration-200 ${
-        interactive ? 'hover:border-campus-borderGlow hover:translate-y-[-2px] cursor-pointer' : ''
+      {...motionProps}
+      className={`glass-card-elevated rounded-2xl relative overflow-hidden ${
+        interactive ? 'cursor-pointer' : ''
       } ${className}`}
     >
+      {/* Subtle top reflection line */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
+
       {(title || subtitle || action) && (
-        <div className="px-6 py-4.5 border-b border-campus-border flex items-center justify-between gap-4">
+        <div className="px-6 py-4.5 border-b border-white/[0.07] flex items-center justify-between gap-4 bg-white/[0.015]">
           <div>
-            {title && <h3 className="font-display font-semibold text-campus-text text-base md:text-lg">{title}</h3>}
-            {subtitle && <p className="text-xs md:text-sm text-campus-textMuted mt-0.5">{subtitle}</p>}
+            {title && (
+              <h3 className="font-display font-semibold text-campus-text text-base md:text-lg tracking-tight">
+                {title}
+              </h3>
+            )}
+            {subtitle && (
+              <p className="text-xs md:text-sm text-campus-textMuted mt-0.5 font-normal">
+                {subtitle}
+              </p>
+            )}
           </div>
           {action && <div className="flex-shrink-0">{action}</div>}
         </div>
       )}
       <div className={`p-6 ${bodyClassName}`}>{children}</div>
-    </div>
+    </Component>
   );
 };
 
 export default Card;
-

@@ -10,8 +10,10 @@ import {
   XCircle,
   Filter,
   Calendar,
-  Search
+  Search,
+  Sparkles
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { bookingAPI, eventAPI } from '../../services/api';
 import Card from '../../components/common/Card';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -74,7 +76,6 @@ const MyBookings = () => {
     }
   };
 
-  // Filter bookings
   const filteredBookings = bookings.filter((b) => {
     if (activeTab === 'faculty' && b.bookingType !== 'faculty_session') return false;
     if (activeTab === 'resources' && b.bookingType !== 'resource_booking') return false;
@@ -83,85 +84,66 @@ const MyBookings = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       <div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
-          My Bookings & Event Passes
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-400 font-semibold mb-2 shadow-glow-sm">
+          <Sparkles className="w-3.5 h-3.5" /> Live Schedule & Passes
+        </div>
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          My Schedule & Event Passes
         </h1>
-        <p className="text-sm text-campus-textMuted mt-1">
+        <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
           Track real-time status of your faculty doubts, lab reservations, and digital admission tickets.
         </p>
       </div>
 
       {feedbackMsg.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+          className={`p-4 rounded-2xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-glass ${
             feedbackMsg.type === 'success'
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
               : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
           }`}
         >
-          {feedbackMsg.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+          {feedbackMsg.type === 'success' ? <CheckCircle className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
           <span>{feedbackMsg.text}</span>
         </div>
       )}
 
-      {/* Tabs and Status Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-campus-border pb-4">
+      {/* Modern Tabs and Status Filter */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.07] pb-4">
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          <button
-            onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              activeTab === 'all'
-                ? 'bg-campus-primary text-campus-bg shadow-glow'
-                : 'bg-campus-surface text-campus-textMuted hover:text-campus-text'
-            }`}
-          >
-            All Bookings ({bookings.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('faculty')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              activeTab === 'faculty'
-                ? 'bg-campus-primary text-campus-bg shadow-glow'
-                : 'bg-campus-surface text-campus-textMuted hover:text-campus-text'
-            }`}
-          >
-            Faculty Doubts
-          </button>
-          <button
-            onClick={() => setActiveTab('resources')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              activeTab === 'resources'
-                ? 'bg-campus-primary text-campus-bg shadow-glow'
-                : 'bg-campus-surface text-campus-textMuted hover:text-campus-text'
-            }`}
-          >
-            Lab & Room Bookings
-          </button>
-          <button
-            onClick={() => setActiveTab('events')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              activeTab === 'events'
-                ? 'bg-campus-amber text-campus-bg shadow-glow-amber'
-                : 'bg-campus-surface text-campus-textMuted hover:text-campus-text'
-            }`}
-          >
-            Event Tickets ({eventRegistrations.length})
-          </button>
+          {[
+            { id: 'all', label: `All Bookings (${bookings.length})` },
+            { id: 'faculty', label: 'Faculty Doubts' },
+            { id: 'resources', label: 'Lab & Room Bookings' },
+            { id: 'events', label: `Event Tickets (${eventRegistrations.length})` }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-campus-bg font-bold shadow-glow'
+                  : 'bg-white/[0.03] text-campus-textMuted hover:text-white hover:bg-white/[0.06] border border-white/[0.06]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* Status Dropdown */}
         {activeTab !== 'events' && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-campus-textSubtle flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> Status:
+            <span className="text-xs text-campus-textSubtle flex items-center gap-1 font-mono">
+              <Filter className="w-3.5 h-3.5" /> Filter:
             </span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-campus-surface border border-campus-border rounded-xl px-3 py-1.5 text-xs text-campus-text focus:outline-none focus:border-campus-primary cursor-pointer"
+              className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-3.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 cursor-pointer shadow-glass"
             >
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
@@ -175,16 +157,16 @@ const MyBookings = () => {
 
       {/* Content Rendering */}
       {loading ? (
-        <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-xs text-campus-textMuted flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
           Loading your history...
         </div>
       ) : activeTab === 'events' ? (
         /* Event Passes Grid */
         eventRegistrations.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card">
-            <Ticket className="w-12 h-12 text-campus-amber/50 mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-campus-text text-base">
+          <div className="p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
+            <Ticket className="w-12 h-12 text-amber-400/40 mx-auto mb-3" />
+            <h3 className="font-display font-semibold text-white text-base">
               No registered event passes
             </h3>
             <p className="text-xs text-campus-textMuted mt-1">
@@ -194,47 +176,46 @@ const MyBookings = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {eventRegistrations.map((reg) => (
-              <div
+              <motion.div
                 key={reg._id}
-                className="bg-campus-card rounded-2xl border border-campus-border p-5 flex flex-col justify-between relative overflow-hidden"
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="glass-card-elevated rounded-3xl border border-white/[0.08] p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-campus-amber uppercase tracking-wider">
+                  <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
                     {reg.event?.category || 'Event'}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold">
-                    ✓ Confirmed
-                  </span>
+                  <StatusBadge status="confirmed" size="sm" />
                 </div>
 
-                <div className="my-4">
-                  <h3 className="font-display font-bold text-base text-campus-text">
+                <div className="my-5">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-white tracking-tight">
                     {reg.event?.title}
                   </h3>
-                  <div className="mt-2 space-y-1 text-xs text-campus-textMuted">
+                  <div className="mt-2.5 space-y-1 text-xs text-campus-textMuted font-mono">
                     <p>📅 {new Date(reg.event?.eventDate).toLocaleDateString()}</p>
                     <p>⏰ {reg.event?.startTime} - {reg.event?.endTime}</p>
-                    <p>📍 {reg.event?.venue}</p>
+                    <p className="font-sans">📍 {reg.event?.venue}</p>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-campus-border flex items-center justify-between bg-campus-surface/50 -mx-5 -mb-5 p-4">
+                <div className="pt-3.5 border-t border-white/[0.07] flex items-center justify-between bg-white/[0.02] -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 p-4 sm:p-5">
                   <div className="font-mono">
-                    <p className="text-[10px] text-campus-textSubtle uppercase">Ticket Code</p>
-                    <p className="text-sm font-bold text-campus-primary">{reg.ticketCode}</p>
+                    <p className="text-[10px] text-campus-textSubtle uppercase tracking-wider">Pass Code</p>
+                    <p className="text-sm font-bold text-emerald-400">{reg.ticketCode}</p>
                   </div>
-                  <Ticket className="w-5 h-5 text-campus-amber" />
+                  <Ticket className="w-5 h-5 text-amber-400" />
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )
       ) : (
         /* Bookings List */
         filteredBookings.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card">
-            <CalendarCheck className="w-12 h-12 text-campus-primary/50 mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-campus-text text-base">
+          <div className="p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
+            <CalendarCheck className="w-12 h-12 text-emerald-400/40 mx-auto mb-3" />
+            <h3 className="font-display font-semibold text-white text-base">
               No matching bookings found
             </h3>
             <p className="text-xs text-campus-textMuted mt-1">
@@ -242,14 +223,15 @@ const MyBookings = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             {filteredBookings.map((b) => (
-              <div
+              <motion.div
                 key={b._id}
-                className="bg-campus-card rounded-2xl border border-campus-border p-5 sm:p-6 transition-all hover:border-campus-borderGlow flex flex-col md:flex-row md:items-center justify-between gap-4"
+                whileHover={{ y: -2 }}
+                className="glass-card-elevated rounded-2xl border border-white/[0.08] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-campus-surface border border-campus-border flex items-center justify-center text-campus-primary flex-shrink-0 shadow-sm mt-0.5">
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-emerald-400 flex-shrink-0 shadow-inner-bevel mt-0.5">
                     {b.bookingType === 'faculty_session' ? (
                       <GraduationCap className="w-6 h-6" />
                     ) : (
@@ -257,13 +239,13 @@ const MyBookings = () => {
                     )}
                   </div>
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-md bg-white/5 text-campus-textSubtle">
                         {b.bookingType === 'faculty_session' ? 'Faculty Doubt' : 'Campus Resource'}
                       </span>
-                      <StatusBadge status={b.status} />
+                      <StatusBadge status={b.status} size="sm" />
                     </div>
-                    <h3 className="font-display font-bold text-base text-campus-text">
+                    <h3 className="font-display font-bold text-base text-white tracking-tight">
                       {b.subject}
                     </h3>
                     <p className="text-xs text-campus-textMuted">
@@ -276,7 +258,7 @@ const MyBookings = () => {
                     </p>
 
                     {b.rejectionReason && (
-                      <div className="mt-2 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400">
+                      <div className="mt-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-400">
                         <strong>Reason:</strong> {b.rejectionReason}
                       </div>
                     )}
@@ -284,10 +266,10 @@ const MyBookings = () => {
                 </div>
 
                 {/* Right metadata & Action */}
-                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-campus-border/60 flex-shrink-0">
+                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-white/[0.06] flex-shrink-0">
                   <div className="text-left md:text-right font-mono text-xs text-campus-textMuted">
                     <p>📅 {new Date(b.date).toLocaleDateString()}</p>
-                    <p className="text-campus-text font-semibold">
+                    <p className="text-white font-semibold pt-0.5">
                       ⏰ {b.startTime} - {b.endTime}
                     </p>
                   </div>
@@ -299,13 +281,13 @@ const MyBookings = () => {
                       onClick={() =>
                         setCancelModal({ open: true, bookingId: b._id, reason: '' })
                       }
-                      className="text-campus-danger hover:bg-rose-500/10 text-xs"
+                      className="text-rose-400 hover:bg-rose-500/10 text-xs"
                     >
                       Cancel Booking
                     </Button>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )
@@ -344,7 +326,7 @@ const MyBookings = () => {
             placeholder="e.g. Schedule conflict with assignment submission..."
             value={cancelModal.reason}
             onChange={(e) => setCancelModal({ ...cancelModal, reason: e.target.value })}
-            className="w-full bg-campus-surface border border-campus-border rounded-xl p-3 text-sm text-campus-text focus:outline-none focus:border-campus-primary"
+            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500/60 shadow-glass"
           />
         </div>
       </Modal>
@@ -353,4 +335,3 @@ const MyBookings = () => {
 };
 
 export default MyBookings;
-

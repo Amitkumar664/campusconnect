@@ -10,8 +10,12 @@ import {
   Ticket,
   AlertCircle,
   XCircle,
-  Sparkles
+  Sparkles,
+  Flame,
+  Check
 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { eventAPI } from '../../services/api';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -71,6 +75,14 @@ const EventBrowse = () => {
     try {
       const res = await eventAPI.register(event._id);
       if (res.data.success) {
+        // Confetti celebration
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#F59E0B', '#10B981', '#38BDF8']
+        });
+
         setTicketModal({
           open: true,
           event,
@@ -123,19 +135,22 @@ const EventBrowse = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-300">
       <div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
-          Campus Events & Workshops
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-xs text-amber-400 font-semibold mb-2 shadow-glow-amber">
+          <Sparkles className="w-3.5 h-3.5" /> Official University Admissions
+        </div>
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          Campus Events & Hackathons
         </h1>
-        <p className="text-sm text-campus-textMuted mt-1">
+        <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
           Explore technical hackathons, guest lectures, and student symposiums with instant digital ticketing.
         </p>
       </div>
 
       {actionMessage.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+          className={`p-4 rounded-2xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-glass ${
             actionMessage.type === 'success'
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
               : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
@@ -172,14 +187,14 @@ const EventBrowse = () => {
 
       {/* Events Grid */}
       {loading ? (
-        <div className="py-16 text-center text-campus-textMuted text-sm flex items-center justify-center gap-2">
-          <div className="w-5 h-5 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-campus-textMuted text-xs flex items-center justify-center gap-2">
+          <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
           Loading campus events...
         </div>
       ) : filteredEvents.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card">
-          <Calendar className="w-12 h-12 text-campus-primary/50 mx-auto mb-3" />
-          <h3 className="font-display font-semibold text-campus-text text-base">
+        <div className="p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
+          <Calendar className="w-12 h-12 text-emerald-400/40 mx-auto mb-3" />
+          <h3 className="font-display font-semibold text-white text-base">
             No events found
           </h3>
           <p className="text-xs text-campus-textMuted mt-1">
@@ -194,12 +209,13 @@ const EventBrowse = () => {
             const isRegistered = evt.isRegistered;
 
             return (
-              <div
+              <motion.div
                 key={evt._id}
-                className="bg-campus-card rounded-2xl border border-campus-border overflow-hidden hover:border-campus-borderGlow transition-all duration-300 flex flex-col group"
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="glass-card-elevated rounded-3xl border border-white/[0.08] overflow-hidden flex flex-col group"
               >
                 {/* Banner image or category top banner */}
-                <div className="relative h-44 bg-campus-surface overflow-hidden">
+                <div className="relative h-48 bg-[#0C1512] overflow-hidden">
                   {evt.bannerUrl ? (
                     <img
                       src={evt.bannerUrl}
@@ -207,72 +223,81 @@ const EventBrowse = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-campus-surface to-campus-card">
-                      <Calendar className="w-12 h-12 text-campus-primary/30" />
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#121E1A] to-[#0A100E]">
+                      <Calendar className="w-12 h-12 text-emerald-400/30" />
                     </div>
                   )}
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-campus-primary uppercase tracking-wider">
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D1513] via-transparent to-black/40" />
+
+                  <div className="absolute top-3.5 left-3.5">
+                    <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-semibold text-emerald-300 uppercase tracking-wider font-mono">
                       {evt.category}
                     </span>
                   </div>
 
                   {isRegistered && (
-                    <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-campus-amber text-campus-bg text-[11px] font-bold shadow-glow-amber">
-                      <Ticket className="w-3.5 h-3.5" /> Confirmed Pass
+                    <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-campus-bg text-[11px] font-bold shadow-glow-amber">
+                      <Ticket className="w-3.5 h-3.5" /> Digital Pass Active
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-display font-bold text-base text-campus-text group-hover:text-campus-primary transition-colors line-clamp-1">
-                    {evt.title}
-                  </h3>
-                  <p className="text-xs text-campus-textMuted mt-1.5 line-clamp-2 leading-relaxed flex-1">
-                    {evt.description}
-                  </p>
+                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-white group-hover:text-emerald-300 transition-colors line-clamp-1 tracking-tight">
+                      {evt.title}
+                    </h3>
+                    <p className="text-xs text-campus-textMuted mt-1.5 line-clamp-2 leading-relaxed">
+                      {evt.description}
+                    </p>
 
-                  {/* Metadata */}
-                  <div className="mt-4 pt-3 border-t border-campus-border/60 space-y-1.5 text-xs text-campus-textMuted">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-campus-primary flex-shrink-0" />
-                      <span>{new Date(evt.eventDate).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    {/* Metadata */}
+                    <div className="mt-4 pt-3.5 border-t border-white/[0.06] space-y-2 text-xs text-campus-textMuted">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                        <span>{new Date(evt.eventDate).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                        <span>{evt.startTime} - {evt.endTime}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-teal-400 flex-shrink-0" />
+                        <span className="truncate">{evt.venue}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-campus-amber flex-shrink-0" />
-                      <span>{evt.startTime} - {evt.endTime}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-campus-mint flex-shrink-0" />
-                      <span className="truncate">{evt.venue}</span>
-                    </div>
-                  </div>
 
-                  {/* Capacity progress */}
-                  <div className="mt-4 space-y-1">
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-campus-textSubtle">Seats Reserved</span>
-                      <span className="font-mono font-medium text-campus-text">
-                        {evt.registeredCount} / {evt.capacity} ({fillRatio}%)
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 rounded-full bg-campus-surface overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all ${
-                          fillRatio >= 90 ? 'bg-rose-500' : fillRatio >= 60 ? 'bg-campus-amber' : 'bg-campus-primary'
-                        }`}
-                        style={{ width: `${fillRatio}%` }}
-                      />
+                    {/* Capacity progress */}
+                    <div className="mt-4 space-y-1.5">
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-campus-textSubtle">Seating Capacity</span>
+                        <span className="font-mono font-semibold text-white">
+                          {evt.registeredCount} / {evt.capacity} ({fillRatio}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            fillRatio >= 90
+                              ? 'bg-rose-500'
+                              : fillRatio >= 60
+                              ? 'bg-amber-400'
+                              : 'bg-emerald-400'
+                          }`}
+                          style={{ width: `${fillRatio}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {/* Registered Ticket Banner or Register CTA */}
-                  <div className="mt-5 pt-3 border-t border-campus-border">
+                  <div className="mt-5 pt-3.5 border-t border-white/[0.06]">
                     {isRegistered ? (
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-campus-primary">
-                          <Ticket className="w-4 h-4" />
+                        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/30">
+                          <Ticket className="w-3.5 h-3.5" />
                           <span>{evt.ticketCode || 'PASS ACTIVE'}</span>
                         </div>
                         <Button
@@ -280,7 +305,7 @@ const EventBrowse = () => {
                           size="sm"
                           loading={activeActionId === evt._id}
                           onClick={() => handleCancelRegistration(evt._id)}
-                          className="text-campus-danger hover:bg-rose-500/10 text-xs"
+                          className="text-rose-400 hover:bg-rose-500/10 text-xs"
                         >
                           Cancel Pass
                         </Button>
@@ -292,14 +317,14 @@ const EventBrowse = () => {
                         disabled={isFull}
                         loading={activeActionId === evt._id}
                         onClick={() => handleRegister(evt)}
-                        className="w-full"
+                        className="w-full font-semibold"
                       >
-                        {isFull ? 'Registration Full' : 'Register Now (Free Pass)'}
+                        {isFull ? 'Registration Full' : 'Claim Free Pass'}
                       </Button>
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -309,17 +334,17 @@ const EventBrowse = () => {
       <Modal
         isOpen={ticketModal.open}
         onClose={() => setTicketModal({ open: false, event: null, code: '' })}
-        title="Event Registration Confirmed!"
+        title="Event Admission Pass Issued!"
       >
         <div className="text-center py-4 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center text-campus-amber mx-auto shadow-glow-amber">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto shadow-glow-amber">
             <Ticket className="w-8 h-8" />
           </div>
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-campus-textSubtle">
-              Official University Admission Ticket
+            <span className="text-[10px] font-mono uppercase tracking-widest text-campus-textSubtle">
+              Official University Admission Pass
             </span>
-            <h3 className="font-display font-bold text-lg text-campus-text mt-1">
+            <h3 className="font-display font-bold text-lg text-white mt-1">
               {ticketModal.event?.title}
             </h3>
             <p className="text-xs text-campus-textMuted mt-1">
@@ -327,15 +352,15 @@ const EventBrowse = () => {
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-campus-surface border-2 border-dashed border-campus-primary/40 font-mono text-center">
-            <p className="text-[10px] text-campus-textSubtle uppercase">Digital Pass Code</p>
-            <p className="text-2xl font-black text-campus-primary tracking-widest mt-0.5">
+          <div className="p-4 rounded-2xl bg-[#090F0D] border-2 border-dashed border-emerald-500/40 font-mono text-center shadow-inner-bevel">
+            <p className="text-[10px] text-campus-textSubtle uppercase tracking-wider">Digital Pass Code</p>
+            <p className="text-2xl font-black text-emerald-400 tracking-widest mt-0.5">
               {ticketModal.code}
             </p>
           </div>
 
           <p className="text-xs text-campus-textMuted max-w-sm mx-auto">
-            Please present this ticket code or save a screenshot for gate attendance verification on event day.
+            Please present this ticket pass code on event day for rapid check-in at the entrance.
           </p>
 
           <Button
@@ -352,4 +377,3 @@ const EventBrowse = () => {
 };
 
 export default EventBrowse;
-

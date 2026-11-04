@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const Button = ({
   children,
@@ -12,34 +13,37 @@ const Button = ({
   icon: Icon
 }) => {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-campus-bg disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]';
+    'relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-campus-bg disabled:opacity-50 disabled:cursor-not-allowed select-none shine-sweep overflow-hidden cursor-pointer';
 
   const variants = {
     primary:
-      'bg-campus-primary hover:bg-campus-primaryHover text-campus-bg font-semibold shadow-glow focus:ring-campus-primary',
+      'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-campus-bg font-semibold shadow-glow hover:shadow-glow-lg border-t border-white/20 focus:ring-emerald-400',
     amber:
-      'bg-campus-amber hover:bg-campus-amberHover text-campus-bg font-semibold shadow-glow-amber focus:ring-campus-amber',
+      'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-campus-bg font-semibold shadow-glow-amber hover:shadow-[0_0_35px_-5px_rgba(245,158,11,0.5)] border-t border-white/25 focus:ring-amber-400',
     secondary:
-      'bg-campus-card hover:bg-campus-cardHover text-campus-text border border-campus-border hover:border-campus-borderGlow focus:ring-campus-mint',
+      'bg-campus-surface hover:bg-campus-surfaceLight text-campus-text border border-white/10 hover:border-emerald-500/30 shadow-glass focus:ring-emerald-400',
     outline:
-      'bg-transparent border border-campus-primary text-campus-primary hover:bg-campus-primary/10 focus:ring-campus-primary',
+      'bg-transparent border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-400 focus:ring-emerald-400',
     danger:
-      'bg-campus-danger/90 hover:bg-campus-danger text-white shadow-sm focus:ring-campus-danger',
+      'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white font-medium shadow-sm focus:ring-rose-400',
     ghost:
-      'bg-transparent text-campus-textMuted hover:text-campus-text hover:bg-white/5 focus:ring-campus-border'
+      'bg-transparent text-campus-textMuted hover:text-campus-text hover:bg-white/[0.06] border border-transparent focus:ring-white/10'
   };
 
   const sizes = {
-    sm: 'text-xs px-3 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2.5 gap-2',
-    lg: 'text-base px-6 py-3 gap-2.5'
+    sm: 'text-xs px-3.5 py-1.5 gap-1.5 rounded-lg',
+    md: 'text-xs sm:text-sm px-4.5 py-2.5 gap-2 rounded-xl',
+    lg: 'text-sm sm:text-base px-6 py-3 gap-2.5 rounded-2xl font-semibold'
   };
 
   return (
-    <button
+    <motion.button
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
+      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
+      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className={`${baseClasses} ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${className}`}
     >
       {loading ? (
@@ -66,10 +70,9 @@ const Button = ({
       ) : Icon ? (
         <Icon className={size === 'sm' ? 'w-3.5 h-3.5' : size === 'lg' ? 'w-5 h-5' : 'w-4 h-4'} />
       ) : null}
-      {children}
-    </button>
+      <span className="relative z-10">{children}</span>
+    </motion.button>
   );
 };
 
 export default Button;
-

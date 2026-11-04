@@ -37,11 +37,13 @@ const COLORS = ['#10B981', '#F59E0B', '#EF4444', '#6B7280', '#38BDF8'];
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-campus-surface border border-campus-border p-3 rounded-xl shadow-2xl text-xs space-y-1">
-        <p className="font-semibold text-campus-text">{label}</p>
+      <div className="bg-[#0C1512]/95 backdrop-blur-xl border border-white/10 p-3.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.6)] text-xs space-y-1.5">
+        <p className="font-semibold text-white tracking-tight">{label}</p>
         {payload.map((entry, index) => (
-          <p key={`item-${index}`} style={{ color: entry.color }}>
-            {entry.name}: <span className="font-bold">{entry.value}</span>
+          <p key={`item-${index}`} style={{ color: entry.color }} className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span>{entry.name}:</span>
+            <span className="font-mono font-bold text-white ml-auto">{entry.value}</span>
           </p>
         ))}
       </div>
@@ -113,18 +115,18 @@ const AnalyticsDashboard = () => {
     : [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-300">
       {/* Header and Export Toolbar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-campus-amber/10 border border-campus-amber/30 text-xs text-campus-amber font-semibold mb-2">
-            <Sparkles className="w-3.5 h-3.5" /> MongoDB Live Aggregation Engine
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs text-amber-400 font-semibold mb-2 shadow-glow-amber">
+            <Sparkles className="w-3.5 h-3.5" /> MongoDB Live Aggregation Pipeline
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Business Analytics & Intelligence Dashboard
           </h1>
-          <p className="text-sm text-campus-textMuted mt-1">
-            Real-time campus utilization, booking velocity, and capacity trends calculated from operational records.
+          <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
+            Real-time campus utilization, booking velocity, and capacity trends calculated directly from operational records.
           </p>
         </div>
 
@@ -152,7 +154,7 @@ const AnalyticsDashboard = () => {
       </div>
 
       {/* Primary KPI Ribbon (All 7 Master KPIs) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3.5 sm:gap-4">
         <StatCard
           title="Total Bookings"
           value={kpiData?.totalBookings || 0}
@@ -160,7 +162,7 @@ const AnalyticsDashboard = () => {
           variant="emerald"
         />
         <StatCard
-          title="Event Registrations"
+          title="Event Tickets"
           value={kpiData?.totalEventRegistrations || 0}
           icon={Ticket}
           variant="amber"
@@ -172,7 +174,7 @@ const AnalyticsDashboard = () => {
           variant="cyan"
         />
         <StatCard
-          title="Lab & Room Bookings"
+          title="Lab Bookings"
           value={kpiData?.totalResourceBookings || 0}
           icon={Building2}
           variant="emerald"
@@ -191,7 +193,7 @@ const AnalyticsDashboard = () => {
           variant="emerald"
         />
         <StatCard
-          title="Resource Utilization"
+          title="Resource Load"
           value={`${kpiData?.resourceUtilizationRate || 0}%`}
           subtitle="Hours occupied"
           icon={Clock}
@@ -221,8 +223,8 @@ const AnalyticsDashboard = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="date" stroke="#6B7280" fontSize={11} />
-                  <YAxis stroke="#6B7280" fontSize={11} />
+                  <XAxis dataKey="date" stroke="#64748B" fontSize={11} />
+                  <YAxis stroke="#64748B" fontSize={11} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                   <Area
@@ -305,8 +307,8 @@ const AnalyticsDashboard = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={resourceStats.topResources} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                    <XAxis type="number" stroke="#6B7280" fontSize={11} />
-                    <YAxis dataKey="code" type="category" stroke="#6B7280" fontSize={11} width={80} />
+                    <XAxis type="number" stroke="#64748B" fontSize={11} />
+                    <YAxis dataKey="code" type="category" stroke="#64748B" fontSize={11} width={80} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
                     <Bar
@@ -339,14 +341,14 @@ const AnalyticsDashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                     <XAxis
                       dataKey="title"
-                      stroke="#6B7280"
+                      stroke="#64748B"
                       fontSize={10}
                       tickFormatter={(val) => (val.length > 14 ? `${val.substring(0, 14)}...` : val)}
                     />
-                    <YAxis stroke="#6B7280" fontSize={11} />
+                    <YAxis stroke="#64748B" fontSize={11} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="capacity" name="Total Capacity" fill="#374151" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="capacity" name="Total Capacity" fill="#334155" radius={[6, 6, 0, 0]} />
                     <Bar dataKey="registered" name="Confirmed Attendees" fill="#F59E0B" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -363,7 +365,7 @@ const AnalyticsDashboard = () => {
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-campus-surface/70 text-campus-textMuted uppercase font-mono text-[10px]">
+            <thead className="bg-white/[0.02] text-campus-textMuted uppercase font-mono text-[10px]">
               <tr>
                 <th className="py-3 px-4">Faculty Member</th>
                 <th className="py-3 px-4">Department</th>
@@ -373,7 +375,7 @@ const AnalyticsDashboard = () => {
                 <th className="py-3 px-4 text-right">Fulfillment Rate</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-campus-border/60">
+            <tbody className="divide-y divide-white/[0.05]">
               {facultyDemand.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-6 text-center text-campus-textMuted">
@@ -382,14 +384,14 @@ const AnalyticsDashboard = () => {
                 </tr>
               ) : (
                 facultyDemand.map((f) => (
-                  <tr key={f._id} className="hover:bg-white/5 transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-campus-text">
+                  <tr key={f._id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="py-3.5 px-4 font-semibold text-white">
                       {f.name}
                     </td>
                     <td className="py-3.5 px-4 text-campus-textMuted">
                       {f.department}
                     </td>
-                    <td className="py-3.5 px-4 text-center font-mono font-medium text-campus-text">
+                    <td className="py-3.5 px-4 text-center font-mono font-medium text-white">
                       {f.totalRequests}
                     </td>
                     <td className="py-3.5 px-4 text-center font-mono text-emerald-400 font-medium">
@@ -399,7 +401,7 @@ const AnalyticsDashboard = () => {
                       {f.rejectedSessions}
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <span className="font-mono font-bold text-campus-primary">
+                      <span className="font-mono font-bold text-emerald-400">
                         {f.resolutionRate}%
                       </span>
                     </td>
@@ -415,4 +417,3 @@ const AnalyticsDashboard = () => {
 };
 
 export default AnalyticsDashboard;
-
