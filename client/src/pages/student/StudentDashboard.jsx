@@ -86,35 +86,32 @@ const StudentDashboard = () => {
       animate="show"
       className="space-y-8"
     >
-      {/* Human-Crafted Bento Hero Banner */}
+      {/* Zerodha Blue-White Bento Hero Banner */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl p-6 sm:p-9 bg-gradient-to-br from-[#121E1A] via-[#0E1715] to-[#0A100E] border border-white/[0.09] overflow-hidden shadow-glass-card"
+        className="relative rounded-2xl p-6 sm:p-8 bg-gradient-to-r from-blue-50/80 via-white to-blue-50/30 border border-blue-200/80 overflow-hidden shadow-sm"
       >
-        {/* Subtle radial light blobs */}
-        <div className="absolute top-0 right-0 w-[400px] h-[300px] bg-gradient-to-bl from-emerald-500/[0.14] via-teal-500/[0.05] to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-10 left-1/3 w-[300px] h-[200px] bg-amber-500/[0.06] rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[400px] h-[300px] bg-gradient-to-bl from-blue-400/[0.08] to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {/* Pill chip */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-400 font-semibold shadow-glow-sm">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold shadow-sm">
               <Sparkles className="w-3.5 h-3.5 animate-pulse" />
               <span>Student Academic Hub</span>
-              <span className="w-1 h-1 rounded-full bg-emerald-400/50" />
-              <span className="text-[11px] font-mono text-emerald-300">Term 2026</span>
+              <span className="w-1 h-1 rounded-full bg-blue-400" />
+              <span className="text-[11px] font-mono text-slate-500">Term 2026</span>
             </div>
 
-            <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
+            <h1 className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-tight">
               {getGreeting()},{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
+              <span className="text-[#387ED1]">
                 {user?.fullName?.split(' ')[0] || 'Student'}!
               </span>
             </h1>
 
-            <p className="text-xs sm:text-sm text-campus-textMuted max-w-xl leading-relaxed">
-              Book faculty doubt sessions, reserve campus laboratories & smart classrooms, and claim free tickets for college hackathons.
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
+              Book faculty doubt sessions, reserve campus laboratories & classrooms, and claim your tickets for college hackathons.
             </p>
           </div>
 
@@ -144,7 +141,7 @@ const StudentDashboard = () => {
           value={bookings.length}
           subtitle="All-time requests"
           icon={CalendarCheck}
-          variant="emerald"
+          variant="blue"
           trend="+12%"
           trendPositive={true}
         />
@@ -183,7 +180,7 @@ const StudentDashboard = () => {
             action={
               <Link
                 to="/student/my-bookings"
-                className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-semibold group transition-colors"
+                className="text-xs text-[#387ED1] hover:text-blue-700 flex items-center gap-1 font-semibold group transition-colors"
               >
                 <span>View all</span>
                 <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -191,15 +188,15 @@ const StudentDashboard = () => {
             }
           >
             {loading ? (
-              <div className="py-12 text-center text-xs text-campus-textMuted flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+              <div className="py-12 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
                 <span>Loading your booking schedule...</span>
               </div>
             ) : bookings.length === 0 ? (
-              <div className="text-center py-12 px-4 rounded-xl border border-dashed border-white/10 bg-white/[0.01]">
-                <CalendarCheck className="w-10 h-10 text-campus-textSubtle mx-auto mb-2.5 opacity-60" />
-                <p className="text-sm font-medium text-white">No active bookings</p>
-                <p className="text-xs text-campus-textMuted mt-1 max-w-sm mx-auto">
+              <div className="text-center py-12 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
+                <CalendarCheck className="w-10 h-10 text-slate-300 mx-auto mb-2.5" />
+                <p className="text-sm font-medium text-slate-700">No active bookings</p>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                   You haven't requested any doubt sessions or labs yet. Click above to schedule one.
                 </p>
               </div>
@@ -208,10 +205,10 @@ const StudentDashboard = () => {
                 {bookings.slice(0, 5).map((booking) => (
                   <div
                     key={booking._id}
-                    className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 hover:bg-white/[0.035] transition-all duration-200 group"
+                    className="p-4 rounded-xl bg-slate-50/50 border border-slate-200 hover:border-blue-300 hover:bg-blue-50/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-all duration-200 group"
                   >
                     <div className="flex items-start gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-emerald-400 flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform shadow-inner-bevel">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[#387ED1] flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform shadow-sm">
                         {booking.bookingType === 'faculty_session' ? (
                           <GraduationCap className="w-5 h-5" />
                         ) : (
@@ -219,15 +216,15 @@ const StudentDashboard = () => {
                         )}
                       </div>
                       <div className="space-y-1">
-                        <h4 className="font-semibold text-sm text-white group-hover:text-emerald-300 transition-colors">
+                        <h4 className="font-semibold text-sm text-slate-900 group-hover:text-[#387ED1] transition-colors">
                           {booking.subject}
                         </h4>
-                        <p className="text-xs text-campus-textMuted">
+                        <p className="text-xs text-slate-500">
                           {booking.bookingType === 'faculty_session'
                             ? `Faculty: ${booking.faculty?.fullName || 'Faculty Member'}`
                             : `Resource: ${booking.resource?.name || 'Classroom/Lab'}`}
                         </p>
-                        <div className="flex items-center gap-3 text-[11px] text-campus-textSubtle font-mono pt-0.5">
+                        <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono pt-0.5">
                           <span>📅 {new Date(booking.date).toLocaleDateString()}</span>
                           <span>⏰ {booking.startTime} - {booking.endTime}</span>
                         </div>
@@ -252,7 +249,7 @@ const StudentDashboard = () => {
             action={
               <Link
                 to="/student/events"
-                className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-semibold group transition-colors"
+                className="text-xs text-[#387ED1] hover:text-blue-700 flex items-center gap-1 font-semibold group transition-colors"
               >
                 <span>Browse all</span>
                 <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -260,7 +257,7 @@ const StudentDashboard = () => {
             }
           >
             {events.length === 0 ? (
-              <p className="text-sm text-campus-textMuted py-6 text-center">
+              <p className="text-sm text-slate-500 py-6 text-center">
                 No events currently scheduled.
               </p>
             ) : (
@@ -268,34 +265,34 @@ const StudentDashboard = () => {
                 {events.slice(0, 3).map((event) => (
                   <div
                     key={event._id}
-                    className="p-4 rounded-xl bg-white/[0.025] border border-white/[0.06] hover:border-amber-500/35 transition-all duration-200 group"
+                    className="p-4 rounded-xl bg-slate-50/50 border border-slate-200 hover:border-orange-300 hover:bg-orange-50/10 transition-all duration-200 group"
                   >
                     <div className="flex items-center justify-between text-[11px] font-semibold mb-1.5">
-                      <span className="text-amber-400 uppercase tracking-wider font-mono">
+                      <span className="text-[#FF5722] uppercase tracking-wider font-mono">
                         {event.category}
                       </span>
-                      <span className="text-[11px] font-mono text-campus-textSubtle">
+                      <span className="text-[11px] font-mono text-slate-400">
                         {event.registeredCount} / {event.capacity} seats
                       </span>
                     </div>
 
-                    <h4 className="font-display font-semibold text-sm text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                    <h4 className="font-display font-semibold text-sm text-slate-900 group-hover:text-[#387ED1] transition-colors line-clamp-1">
                       {event.title}
                     </h4>
 
-                    <p className="text-xs text-campus-textMuted mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                       {event.description}
                     </p>
 
-                    <div className="mt-3.5 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-campus-textSubtle flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-campus-textSubtle flex-shrink-0" />
+                    <div className="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
                         <span className="truncate max-w-[130px]">{event.venue}</span>
                       </span>
 
                       <Link
                         to="/student/events"
-                        className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 text-xs"
+                        className="text-[#387ED1] hover:text-blue-700 font-semibold flex items-center gap-1 text-xs"
                       >
                         Register <ArrowRight className="w-3 h-3" />
                       </Link>

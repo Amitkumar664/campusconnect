@@ -98,32 +98,32 @@ const Profile = () => {
         {/* User Card info */}
         <div className="lg:col-span-1 space-y-6">
           <Card className="text-center">
-            <div className="w-20 h-20 rounded-2xl bg-campus-primary/10 border-2 border-campus-primary/30 flex items-center justify-center text-campus-primary text-2xl font-bold shadow-glow mx-auto mb-4">
+            <div className="w-20 h-20 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#387ED1] text-2xl font-bold shadow-sm mx-auto mb-4">
               {user?.fullName?.charAt(0) || 'U'}
             </div>
-            <h2 className="font-display font-semibold text-lg text-campus-text">
+            <h2 className="font-display font-semibold text-lg text-slate-900">
               {user?.fullName}
             </h2>
-            <p className="text-xs text-campus-textMuted mt-0.5">{user?.email}</p>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-campus-primary/10 border border-campus-primary/20 text-xs text-campus-primary font-semibold mt-3 capitalize">
+            <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold mt-3 capitalize">
               {user?.role}
             </div>
 
-            <div className="mt-6 pt-6 border-t border-campus-border text-left space-y-3 text-xs">
+            <div className="mt-6 pt-6 border-t border-slate-100 text-left space-y-3 text-xs">
               <div className="flex justify-between py-1">
-                <span className="text-campus-textMuted">Department</span>
-                <span className="font-medium text-campus-text">{user?.department}</span>
+                <span className="text-slate-500">Department</span>
+                <span className="font-medium text-slate-900">{user?.department}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-campus-textMuted">ID Number</span>
-                <span className="font-mono font-medium text-campus-text">
+                <span className="text-slate-500">ID Number</span>
+                <span className="font-mono font-medium text-slate-900">
                   {user?.studentOrEmployeeId}
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-campus-textMuted">Status</span>
-                <span className="text-campus-primary font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-campus-primary" /> Active
+                <span className="text-slate-500">Status</span>
+                <span className="text-emerald-600 font-medium flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active
                 </span>
               </div>
             </div>

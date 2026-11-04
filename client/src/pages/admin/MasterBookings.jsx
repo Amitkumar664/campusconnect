@@ -120,7 +120,7 @@ const MasterBookings = () => {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-campus-surface border border-campus-border rounded-xl px-3 py-1.5 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+            className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#387ED1] shadow-sm"
           >
             <option value="all">All Booking Types</option>
             <option value="faculty_session">Faculty Doubts</option>
@@ -130,7 +130,7 @@ const MasterBookings = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-campus-surface border border-campus-border rounded-xl px-3 py-1.5 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+            className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#387ED1] shadow-sm"
           >
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
@@ -146,8 +146,8 @@ const MasterBookings = () => {
         <div
           className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           {feedback.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
@@ -158,18 +158,18 @@ const MasterBookings = () => {
       {/* Bookings Table Card */}
       <Card>
         {loading ? (
-          <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+          <div className="py-16 text-center text-sm text-slate-500 flex items-center justify-center gap-2">
+            <div className="w-4 h-4 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
             Loading master registry...
           </div>
         ) : bookings.length === 0 ? (
-          <div className="py-12 text-center text-sm text-campus-textMuted">
+          <div className="py-12 text-center text-sm text-slate-500">
             No bookings found under the selected filters.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-campus-surface/70 text-campus-textMuted uppercase font-mono text-[10px]">
+              <thead className="bg-slate-50 text-slate-600 uppercase font-mono text-[10px] border-b border-slate-200">
                 <tr>
                   <th className="py-3 px-4">Type</th>
                   <th className="py-3 px-4">Subject</th>
@@ -180,30 +180,30 @@ const MasterBookings = () => {
                   <th className="py-3 px-4 text-right">Admin Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-campus-border/60">
+              <tbody className="divide-y divide-slate-100">
                 {bookings.map((b) => (
-                  <tr key={b._id} className="hover:bg-white/5 transition-colors">
+                  <tr key={b._id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="py-3.5 px-4 font-mono text-[10px]">
-                      <span className="px-2 py-0.5 rounded-md bg-white/5 uppercase">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 uppercase">
                         {b.bookingType === 'faculty_session' ? 'Faculty Doubt' : 'Lab / Room'}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 font-semibold text-campus-text max-w-xs">
+                    <td className="py-3.5 px-4 font-semibold text-slate-900 max-w-xs">
                       <div>{b.subject}</div>
-                      <div className="text-[11px] text-campus-textSubtle line-clamp-1 mt-0.5">
+                      <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
                         "{b.description}"
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-campus-textMuted">
-                      <div className="font-medium text-campus-text">{b.requester?.fullName}</div>
-                      <div className="text-[10px] font-mono">{b.requester?.studentOrEmployeeId}</div>
+                    <td className="py-3.5 px-4 text-slate-600">
+                      <div className="font-medium text-slate-900">{b.requester?.fullName}</div>
+                      <div className="text-[10px] font-mono text-slate-400">{b.requester?.studentOrEmployeeId}</div>
                     </td>
-                    <td className="py-3.5 px-4 text-campus-primary font-medium">
+                    <td className="py-3.5 px-4 text-[#387ED1] font-medium">
                       {b.bookingType === 'faculty_session'
                         ? b.faculty?.fullName
                         : `${b.resource?.name} (${b.resource?.code})`}
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-campus-textSubtle whitespace-nowrap">
+                    <td className="py-3.5 px-4 font-mono text-slate-500 whitespace-nowrap">
                       <div>📅 {new Date(b.date).toLocaleDateString()}</div>
                       <div>⏰ {b.startTime} - {b.endTime}</div>
                     </td>

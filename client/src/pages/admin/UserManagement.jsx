@@ -181,7 +181,7 @@ const UserManagement = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-campus-surface/70 text-campus-textMuted uppercase font-mono text-[10px]">
+              <thead className="bg-slate-50 text-slate-600 uppercase font-mono text-[10px] border-b border-slate-200">
                 <tr>
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-4">Role</th>
@@ -191,30 +191,30 @@ const UserManagement = () => {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-campus-border/60">
+              <tbody className="divide-y divide-slate-100">
                 {users.map((u) => (
-                  <tr key={u._id} className="hover:bg-white/5 transition-colors">
+                  <tr key={u._id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-campus-text">{u.fullName}</div>
-                      <div className="text-[11px] text-campus-textSubtle">{u.email}</div>
+                      <div className="font-semibold text-slate-900">{u.fullName}</div>
+                      <div className="text-[11px] text-slate-500">{u.email}</div>
                     </td>
                     <td className="py-3.5 px-4 capitalize font-mono text-[11px]">
                       <span
-                        className={`px-2 py-0.5 rounded-md ${
+                        className={`px-2 py-0.5 rounded-md border ${
                           u.role === 'admin'
-                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                            ? 'bg-orange-50 text-[#FF5722] border-orange-200'
                             : u.role === 'faculty'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : 'bg-white/5 text-campus-textMuted'
+                            ? 'bg-blue-50 text-[#387ED1] border-blue-200'
+                            : 'bg-slate-100 text-slate-700 border-slate-200'
                         }`}
                       >
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-campus-primary">
+                    <td className="py-3.5 px-4 font-mono text-[#387ED1]">
                       {u.studentOrEmployeeId}
                     </td>
-                    <td className="py-3.5 px-4 text-campus-textMuted">
+                    <td className="py-3.5 px-4 text-slate-600">
                       {u.department}
                     </td>
                     <td className="py-3.5 px-4">
@@ -225,8 +225,8 @@ const UserManagement = () => {
                         onClick={() => handleToggleStatus(u)}
                         className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${
                           u.isActive
-                            ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
-                            : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
                         }`}
                       >
                         {u.isActive ? 'Deactivate' : 'Activate'}

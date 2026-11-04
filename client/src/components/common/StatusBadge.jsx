@@ -6,64 +6,64 @@ const StatusBadge = ({ status, size = 'md' }) => {
   const configs = {
     approved: {
       label: 'Approved',
-      bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-[0_0_10px_-2px_rgba(16,185,129,0.3)]',
-      dot: 'bg-emerald-400',
+      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      dot: 'bg-emerald-500',
       ping: true
     },
     confirmed: {
       label: 'Confirmed',
-      bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-[0_0_10px_-2px_rgba(16,185,129,0.3)]',
-      dot: 'bg-emerald-400',
+      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      dot: 'bg-emerald-500',
       ping: true
     },
     completed: {
       label: 'Completed',
-      bg: 'bg-sky-500/10 text-sky-400 border-sky-500/30 shadow-[0_0_10px_-2px_rgba(56,189,248,0.25)]',
-      dot: 'bg-sky-400',
+      bg: 'bg-blue-50 text-[#387ED1] border-blue-200',
+      dot: 'bg-[#387ED1]',
       ping: false
     },
     pending: {
       label: 'Pending Review',
-      bg: 'bg-amber-500/10 text-amber-400 border-amber-500/30 shadow-[0_0_10px_-2px_rgba(245,158,11,0.25)]',
-      dot: 'bg-amber-400',
+      bg: 'bg-amber-50 text-amber-700 border-amber-200',
+      dot: 'bg-amber-500',
       ping: true
     },
     rejected: {
       label: 'Declined',
-      bg: 'bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-[0_0_10px_-2px_rgba(244,63,94,0.25)]',
-      dot: 'bg-rose-400',
+      bg: 'bg-rose-50 text-rose-700 border-rose-200',
+      dot: 'bg-[#DF514C]',
       ping: false
     },
     cancelled: {
       label: 'Cancelled',
-      bg: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
-      dot: 'bg-zinc-400',
+      bg: 'bg-slate-100 text-slate-600 border-slate-200',
+      dot: 'bg-slate-400',
       ping: false
     },
     active: {
       label: 'Active',
-      bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-      dot: 'bg-emerald-400',
+      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      dot: 'bg-emerald-500',
       ping: true
     },
     inactive: {
       label: 'Inactive',
-      bg: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
-      dot: 'bg-zinc-400',
+      bg: 'bg-slate-100 text-slate-600 border-slate-200',
+      dot: 'bg-slate-400',
       ping: false
     },
     upcoming: {
       label: 'Upcoming',
-      bg: 'bg-teal-500/10 text-teal-400 border-teal-500/30',
-      dot: 'bg-teal-400',
+      bg: 'bg-sky-50 text-sky-700 border-sky-200',
+      dot: 'bg-sky-500',
       ping: false
     }
   };
 
   const current = configs[normStatus] || {
     label: status || 'Unknown',
-    bg: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-    dot: 'bg-gray-400',
+    bg: 'bg-slate-100 text-slate-600 border-slate-200',
+    dot: 'bg-slate-400',
     ping: false
   };
 
@@ -75,7 +75,7 @@ const StatusBadge = ({ status, size = 'md' }) => {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border backdrop-blur-md transition-all ${current.bg} ${sizes[size] || sizes.md}`}
+      className={`inline-flex items-center rounded-full border transition-all ${current.bg} ${sizes[size] || sizes.md}`}
     >
       <span className="relative flex h-2 w-2">
         {current.ping && (

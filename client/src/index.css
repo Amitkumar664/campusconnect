@@ -3,52 +3,48 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   margin: 0;
-  background-color: #070A09;
-  color: #F9FAFB;
+  background-color: #F8FAFC;
+  color: #1E293B;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle dot mesh background for modern depth */
+/* Zerodha Clean Subtle Mesh & Micro-Grid */
 .mesh-bg {
-  background-color: #070A09;
+  background-color: #F8FAFC;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.06) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.04) 0px, transparent 60%),
-    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+    radial-gradient(at 0% 0%, rgba(56, 126, 209, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(249, 115, 22, 0.02) 0px, transparent 60%),
+    radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 0);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
 }
 
-/* Human-grade Glassmorphic Surfaces */
+/* Zerodha Crisp White Elevated Cards & Surfaces */
 .glass-surface {
-  background: linear-gradient(135deg, rgba(18, 28, 25, 0.7) 0%, rgba(11, 18, 16, 0.8) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
 }
 
 .glass-card-elevated {
-  background: linear-gradient(180deg, rgba(21, 33, 29, 0.75) 0%, rgba(14, 22, 19, 0.85) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card-elevated:hover {
-  border-color: rgba(16, 185, 129, 0.35);
-  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.7), 0 0 25px -4px rgba(16, 185, 129, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-  transform: translateY(-3px);
+  border-color: rgba(56, 126, 209, 0.45);
+  box-shadow: 0 10px 25px -5px rgba(56, 126, 209, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
 }
 
 /* Button sweep light reflection effect */
@@ -67,7 +63,7 @@ body {
   background: linear-gradient(
     60deg,
     transparent,
-    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.3),
     transparent
   );
   transform: rotate(25deg);
@@ -79,21 +75,21 @@ body {
   left: 120%;
 }
 
-/* Custom modern scrollbar */
+/* Zerodha Clean Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #070A09;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.14);
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.45);
+  background: #387ED1;
 }

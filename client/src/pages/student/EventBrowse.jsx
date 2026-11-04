@@ -80,7 +80,7 @@ const EventBrowse = () => {
           particleCount: 100,
           spread: 80,
           origin: { y: 0.6 },
-          colors: ['#F59E0B', '#10B981', '#38BDF8']
+          colors: ['#387ED1', '#4CAF50', '#FF5722']
         });
 
         setTicketModal({
@@ -104,6 +104,7 @@ const EventBrowse = () => {
     if (!window.confirm('Are you sure you want to cancel your event registration ticket?')) {
       return;
     }
+
     setActiveActionId(eventId);
     setActionMessage({ type: '', text: '' });
     try {
@@ -111,7 +112,7 @@ const EventBrowse = () => {
       if (res.data.success) {
         setActionMessage({
           type: 'success',
-          text: 'Registration cancelled. Seat has been made available to others.'
+          text: 'Event ticket cancelled successfully.'
         });
         await loadEvents();
       }
@@ -126,34 +127,34 @@ const EventBrowse = () => {
   };
 
   const categories = [
-    { label: 'All Categories', value: 'all' },
+    { label: 'All Event Categories', value: 'all' },
     { label: 'Hackathons', value: 'hackathon' },
-    { label: 'Masterclasses & Workshops', value: 'workshop' },
-    { label: 'Seminars & Symposia', value: 'seminar' },
-    { label: 'Technical Contests', value: 'technical' },
-    { label: 'Cultural & Arts', value: 'cultural' }
+    { label: 'Technical Workshops', value: 'workshop' },
+    { label: 'Academic Seminars', value: 'seminar' },
+    { label: 'Annual College Fest', value: 'fest' },
+    { label: 'Campus Placement Drives', value: 'placement' }
   ];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-xs text-amber-400 font-semibold mb-2 shadow-glow-amber">
-          <Sparkles className="w-3.5 h-3.5" /> Official University Admissions
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold mb-2 shadow-sm">
+          <Sparkles className="w-3.5 h-3.5" /> Campus Life & Activities
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          Campus Events & Hackathons
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          College Events & Hackathon Passes
         </h1>
-        <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
-          Explore technical hackathons, guest lectures, and student symposiums with instant digital ticketing.
+        <p className="text-xs sm:text-sm text-slate-600 mt-1">
+          Explore upcoming technology symposia, claim free university digital passes, and attend college workshops.
         </p>
       </div>
 
       {actionMessage.text && (
         <div
-          className={`p-4 rounded-2xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-glass ${
+          className={`p-4 rounded-xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm ${
             actionMessage.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           {actionMessage.type === 'success' ? (
@@ -187,17 +188,17 @@ const EventBrowse = () => {
 
       {/* Events Grid */}
       {loading ? (
-        <div className="py-16 text-center text-campus-textMuted text-xs flex items-center justify-center gap-2">
-          <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-slate-500 text-xs flex items-center justify-center gap-2">
+          <div className="w-5 h-5 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
           Loading campus events...
         </div>
       ) : filteredEvents.length === 0 ? (
-        <div className="p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
-          <Calendar className="w-12 h-12 text-emerald-400/40 mx-auto mb-3" />
-          <h3 className="font-display font-semibold text-white text-base">
+        <div className="p-14 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+          <Calendar className="w-12 h-12 text-[#387ED1]/40 mx-auto mb-3" />
+          <h3 className="font-display font-semibold text-slate-900 text-base">
             No events found
           </h3>
-          <p className="text-xs text-campus-textMuted mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Try adjusting your search query or selecting another category filter.
           </p>
         </div>
@@ -212,10 +213,10 @@ const EventBrowse = () => {
               <motion.div
                 key={evt._id}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="glass-card-elevated rounded-3xl border border-white/[0.08] overflow-hidden flex flex-col group"
+                className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-md hover:border-blue-300 transition-all"
               >
                 {/* Banner image or category top banner */}
-                <div className="relative h-48 bg-[#0C1512] overflow-hidden">
+                <div className="relative h-48 bg-slate-100 overflow-hidden">
                   {evt.bannerUrl ? (
                     <img
                       src={evt.bannerUrl}
@@ -223,21 +224,21 @@ const EventBrowse = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#121E1A] to-[#0A100E]">
-                      <Calendar className="w-12 h-12 text-emerald-400/30" />
+                    <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                      <Calendar className="w-12 h-12 text-[#387ED1]/30" />
                     </div>
                   )}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D1513] via-transparent to-black/40" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
                   <div className="absolute top-3.5 left-3.5">
-                    <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-semibold text-emerald-300 uppercase tracking-wider font-mono">
+                    <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-[10px] font-semibold text-[#387ED1] uppercase tracking-wider font-mono shadow-sm">
                       {evt.category}
                     </span>
                   </div>
 
                   {isRegistered && (
-                    <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-campus-bg text-[11px] font-bold shadow-glow-amber">
+                    <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF5722] text-white text-[11px] font-bold shadow-sm">
                       <Ticket className="w-3.5 h-3.5" /> Digital Pass Active
                     </div>
                   )}
@@ -246,25 +247,25 @@ const EventBrowse = () => {
                 {/* Content */}
                 <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="font-display font-bold text-base sm:text-lg text-white group-hover:text-emerald-300 transition-colors line-clamp-1 tracking-tight">
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 group-hover:text-[#387ED1] transition-colors line-clamp-1 tracking-tight">
                       {evt.title}
                     </h3>
-                    <p className="text-xs text-campus-textMuted mt-1.5 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">
                       {evt.description}
                     </p>
 
                     {/* Metadata */}
-                    <div className="mt-4 pt-3.5 border-t border-white/[0.06] space-y-2 text-xs text-campus-textMuted">
+                    <div className="mt-4 pt-3.5 border-t border-slate-100 space-y-2 text-xs text-slate-500">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                        <Calendar className="w-3.5 h-3.5 text-[#387ED1] flex-shrink-0" />
                         <span>{new Date(evt.eventDate).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                        <Clock className="w-3.5 h-3.5 text-[#FF5722] flex-shrink-0" />
                         <span>{evt.startTime} - {evt.endTime}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-teal-400 flex-shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                         <span className="truncate">{evt.venue}</span>
                       </div>
                     </div>
@@ -272,19 +273,19 @@ const EventBrowse = () => {
                     {/* Capacity progress */}
                     <div className="mt-4 space-y-1.5">
                       <div className="flex justify-between text-[11px]">
-                        <span className="text-campus-textSubtle">Seating Capacity</span>
-                        <span className="font-mono font-semibold text-white">
+                        <span className="text-slate-500">Seating Capacity</span>
+                        <span className="font-mono font-semibold text-slate-800">
                           {evt.registeredCount} / {evt.capacity} ({fillRatio}%)
                         </span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                      <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             fillRatio >= 90
                               ? 'bg-rose-500'
                               : fillRatio >= 60
                               ? 'bg-amber-400'
-                              : 'bg-emerald-400'
+                              : 'bg-[#387ED1]'
                           }`}
                           style={{ width: `${fillRatio}%` }}
                         />
@@ -293,10 +294,10 @@ const EventBrowse = () => {
                   </div>
 
                   {/* Registered Ticket Banner or Register CTA */}
-                  <div className="mt-5 pt-3.5 border-t border-white/[0.06]">
+                  <div className="mt-5 pt-3.5 border-t border-slate-100">
                     {isRegistered ? (
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/30">
+                        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#387ED1] bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200">
                           <Ticket className="w-3.5 h-3.5" />
                           <span>{evt.ticketCode || 'PASS ACTIVE'}</span>
                         </div>
@@ -305,14 +306,14 @@ const EventBrowse = () => {
                           size="sm"
                           loading={activeActionId === evt._id}
                           onClick={() => handleCancelRegistration(evt._id)}
-                          className="text-rose-400 hover:bg-rose-500/10 text-xs"
+                          className="text-rose-600 hover:bg-rose-50 text-xs"
                         >
                           Cancel Pass
                         </Button>
                       </div>
                     ) : (
                       <Button
-                        variant={isFull ? 'secondary' : 'amber'}
+                        variant={isFull ? 'secondary' : 'primary'}
                         size="md"
                         disabled={isFull}
                         loading={activeActionId === evt._id}
@@ -337,29 +338,29 @@ const EventBrowse = () => {
         title="Event Admission Pass Issued!"
       >
         <div className="text-center py-4 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto shadow-glow-amber">
+          <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF5722] mx-auto shadow-sm">
             <Ticket className="w-8 h-8" />
           </div>
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-campus-textSubtle">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
               Official University Admission Pass
             </span>
-            <h3 className="font-display font-bold text-lg text-white mt-1">
+            <h3 className="font-display font-bold text-lg text-slate-900 mt-1">
               {ticketModal.event?.title}
             </h3>
-            <p className="text-xs text-campus-textMuted mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               📍 {ticketModal.event?.venue} • {ticketModal.event?.startTime} - {ticketModal.event?.endTime}
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#090F0D] border-2 border-dashed border-emerald-500/40 font-mono text-center shadow-inner-bevel">
-            <p className="text-[10px] text-campus-textSubtle uppercase tracking-wider">Digital Pass Code</p>
-            <p className="text-2xl font-black text-emerald-400 tracking-widest mt-0.5">
+          <div className="p-4 rounded-2xl bg-blue-50/50 border-2 border-dashed border-blue-300 font-mono text-center shadow-sm">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider">Digital Pass Code</p>
+            <p className="text-2xl font-black text-[#387ED1] tracking-widest mt-0.5">
               {ticketModal.code}
             </p>
           </div>
 
-          <p className="text-xs text-campus-textMuted max-w-sm mx-auto">
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Please present this ticket pass code on event day for rapid check-in at the entrance.
           </p>
 

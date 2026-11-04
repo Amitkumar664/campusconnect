@@ -119,8 +119,8 @@ const SessionRequests = () => {
               onClick={() => setStatusFilter(tab)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
                 statusFilter === tab
-                  ? 'bg-campus-primary text-campus-bg shadow-glow'
-                  : 'text-campus-textMuted hover:text-campus-text'
+                  ? 'bg-[#387ED1] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
               {tab}
@@ -133,8 +133,8 @@ const SessionRequests = () => {
         <div
           className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           {feedback.type === 'success' ? <CheckCircle className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
@@ -143,17 +143,17 @@ const SessionRequests = () => {
       )}
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-sm text-slate-500 flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
           Loading student session requests...
         </div>
       ) : sessions.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card">
-          <ClipboardList className="w-12 h-12 text-campus-primary/50 mx-auto mb-3" />
-          <h3 className="font-display font-semibold text-campus-text text-base">
+        <div className="p-12 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+          <ClipboardList className="w-12 h-12 text-[#387ED1]/40 mx-auto mb-3" />
+          <h3 className="font-display font-semibold text-slate-900 text-base">
             No {statusFilter !== 'all' ? statusFilter : ''} requests found
           </h3>
-          <p className="text-xs text-campus-textMuted mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             There are currently no session requests matching this view filter.
           </p>
         </div>
@@ -162,42 +162,42 @@ const SessionRequests = () => {
           {sessions.map((req) => (
             <div
               key={req._id}
-              className="bg-campus-card rounded-2xl border border-campus-border p-5 sm:p-6 transition-all hover:border-campus-borderGlow flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+              className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:border-blue-300 hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-6"
             >
               {/* Student and Request Details */}
               <div className="space-y-2 flex-1">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="font-display font-bold text-base text-campus-text">
+                  <span className="font-display font-bold text-base text-slate-900">
                     {req.requester?.fullName}
                   </span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/5 font-mono text-campus-primary">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 font-mono text-[#387ED1] font-semibold">
                     {req.requester?.studentOrEmployeeId}
                   </span>
-                  <span className="text-xs text-campus-textSubtle">• {req.requester?.department}</span>
+                  <span className="text-xs text-slate-400">• {req.requester?.department}</span>
                   <StatusBadge status={req.status} />
                 </div>
 
-                <div className="bg-campus-surface p-3.5 rounded-xl border border-campus-border/60">
-                  <h4 className="font-semibold text-sm text-campus-primary">
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <h4 className="font-semibold text-sm text-[#387ED1]">
                     Topic: {req.subject}
                   </h4>
-                  <p className="text-xs text-campus-textMuted mt-1 leading-relaxed">
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                     "{req.description}"
                   </p>
                 </div>
 
                 {req.rejectionReason && (
-                  <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400">
+                  <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
                     <strong>Declined Reason:</strong> {req.rejectionReason}
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center gap-4 text-xs text-campus-textSubtle font-mono pt-1">
+                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 font-mono pt-1">
                   <span>📅 {new Date(req.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   <span>⏰ {req.startTime} - {req.endTime} ({req.durationMinutes} mins)</span>
                   {req.requester?.email && (
                     <span className="flex items-center gap-1 font-sans">
-                      <Mail className="w-3 h-3 text-campus-textSubtle" /> {req.requester?.email}
+                      <Mail className="w-3 h-3 text-slate-400" /> {req.requester?.email}
                     </span>
                   )}
                 </div>

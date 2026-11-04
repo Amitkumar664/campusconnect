@@ -40,7 +40,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
           { name: 'Room & Lab Booking', path: '/student/book-resource', icon: Building2 },
           { name: 'College Events', path: '/student/events', icon: Calendar },
           { name: 'My Schedule', path: '/student/my-bookings', icon: CalendarCheck },
-          { name: 'Profile & Settings', path: '/student/profile', icon: Settings }
+          { name: 'Profile & Settings', path: '/profile', icon: Settings }
         ];
       case 'faculty':
         return [
@@ -48,7 +48,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
           { name: 'Session Requests', path: '/faculty/requests', icon: ClipboardList },
           { name: 'Office Hours & Schedule', path: '/faculty/availability', icon: Clock },
           { name: 'Session History', path: '/faculty/history', icon: BookOpen },
-          { name: 'Profile & Settings', path: '/faculty/profile', icon: Settings }
+          { name: 'Profile & Settings', path: '/profile', icon: Settings }
         ];
       case 'admin':
         return [
@@ -58,7 +58,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
           { name: 'Campus Resources', path: '/admin/resources', icon: Building2 },
           { name: 'Event Management', path: '/admin/events', icon: Calendar },
           { name: 'User Directory', path: '/admin/users', icon: Users },
-          { name: 'Settings', path: '/admin/profile', icon: Settings }
+          { name: 'Settings', path: '/profile', icon: Settings }
         ];
       default:
         return [];
@@ -76,7 +76,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/80 backdrop-blur-md lg:hidden"
+            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
             onClick={() => setIsMobileOpen(false)}
           />
         )}
@@ -84,25 +84,23 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 flex flex-col bg-[#080D0C]/90 backdrop-blur-2xl border-r border-white/[0.07] transition-all duration-300 shadow-[4px_0_30px_rgba(0,0,0,0.6)] ${
+        className={`fixed top-0 bottom-0 left-0 z-40 flex flex-col bg-white border-r border-slate-200 transition-all duration-300 shadow-[2px_0_8px_rgba(0,0,0,0.03)] ${
           isCollapsed ? 'w-20' : 'w-64'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         {/* Brand Header */}
-        <div className="h-20 px-5 flex items-center justify-between border-b border-white/[0.07]">
+        <div className="h-20 px-5 flex items-center justify-between border-b border-slate-100 bg-white">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-400 p-[1px] shadow-glow flex-shrink-0">
-              <div className="w-full h-full bg-[#080D0C] rounded-2xl flex items-center justify-center text-emerald-400">
-                <GraduationCap className="w-5 h-5" />
-              </div>
+            <div className="w-10 h-10 rounded-xl bg-[#387ED1] flex items-center justify-center text-white shadow-sm flex-shrink-0">
+              <GraduationCap className="w-5 h-5" />
             </div>
             {!isCollapsed && (
               <div className="flex flex-col">
-                <span className="font-display font-extrabold text-base tracking-tight text-white flex items-center gap-1">
-                  Campus<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Connect</span>
+                <span className="font-display font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1">
+                  Campus<span className="text-[#387ED1]">Connect</span>
                 </span>
-                <span className="text-[10px] text-campus-textSubtle uppercase tracking-widest font-mono flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Enterprise OS
                 </span>
               </div>
@@ -112,7 +110,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
           {/* Collapse Toggle for Desktop */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-1.5 rounded-xl text-campus-textSubtle hover:text-white hover:bg-white/[0.06] transition-colors"
+            className="hidden lg:flex p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -121,17 +119,17 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
 
         {/* Role Pill Banner */}
         {!isCollapsed && (
-          <div className="mx-4 mt-4 px-3.5 py-2.5 rounded-2xl bg-white/[0.025] border border-white/[0.06] flex items-center justify-between shadow-inner-bevel">
+          <div className="mx-4 mt-4 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-2">
               <div className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
               </div>
-              <span className="text-xs font-semibold text-white capitalize tracking-wide">
+              <span className="text-xs font-semibold text-slate-700 capitalize tracking-wide">
                 {user?.role} Portal
               </span>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-medium">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#387ED1] font-mono font-medium">
               Active
             </span>
           </div>
@@ -150,8 +148,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                 onClick={() => setIsMobileOpen(false)}
                 className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors group ${
                   isActive
-                    ? 'text-white font-semibold'
-                    : 'text-campus-textMuted hover:text-white hover:bg-white/[0.04]'
+                    ? 'text-[#387ED1] font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 {/* Framer Motion Layout Pill for smooth sliding active indicator */}
@@ -159,13 +157,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                   <motion.div
                     layoutId="sidebarActivePill"
                     transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/20 via-emerald-500/10 to-teal-500/5 border border-emerald-500/30 shadow-[0_0_20px_-3px_rgba(16,185,129,0.3)]"
+                    className="absolute inset-0 rounded-xl bg-[#EBF3FC] border border-blue-200 shadow-sm"
                   />
                 )}
 
                 <div
                   className={`relative z-10 transition-transform group-hover:scale-110 duration-200 ${
-                    isActive ? 'text-emerald-400' : 'text-campus-textSubtle group-hover:text-campus-text'
+                    isActive ? 'text-[#387ED1]' : 'text-slate-400 group-hover:text-slate-600'
                   }`}
                 >
                   <Icon className="w-4.5 h-4.5 flex-shrink-0" />
@@ -176,13 +174,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                 )}
 
                 {link.highlight && !isCollapsed && (
-                  <span className="relative z-10 ml-auto px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-semibold">
+                  <span className="relative z-10 ml-auto px-2 py-0.5 rounded-full bg-orange-50 text-[#FF5722] border border-orange-200 text-[10px] font-semibold">
                     Live
                   </span>
                 )}
 
                 {isCollapsed && (
-                  <span className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#0F1614] border border-white/10 text-xs text-white whitespace-nowrap shadow-2xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
+                  <span className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 text-xs text-white whitespace-nowrap shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
                     {link.name}
                   </span>
                 )}
@@ -192,21 +190,21 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         </nav>
 
         {/* User Card & Logout */}
-        <div className="p-3 border-t border-white/[0.07] bg-[#070A09]/60">
-          <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] shadow-glass hover:border-emerald-500/30 transition-all">
+        <div className="p-3 border-t border-slate-100 bg-slate-50/50">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm hover:border-blue-300 transition-all">
             <div className="relative">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-campus-bg font-bold flex items-center justify-center flex-shrink-0 text-sm shadow-glow-sm">
+              <div className="w-9 h-9 rounded-xl bg-[#387ED1] text-white font-bold flex items-center justify-center flex-shrink-0 text-sm shadow-sm">
                 {user?.fullName?.charAt(0) || 'U'}
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#080D0C]" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
             </div>
 
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-white truncate tracking-tight">
+                <p className="text-xs font-semibold text-slate-800 truncate tracking-tight">
                   {user?.fullName}
                 </p>
-                <p className="text-[10px] text-campus-textSubtle truncate font-mono">
+                <p className="text-[10px] text-slate-400 truncate font-mono">
                   {user?.department}
                 </p>
               </div>
@@ -215,7 +213,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             <button
               onClick={handleLogout}
               title="Sign Out"
-              className="p-1.5 rounded-xl text-campus-textSubtle hover:text-rose-400 hover:bg-rose-500/10 transition-colors ml-auto flex-shrink-0 cursor-pointer"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors ml-auto flex-shrink-0 cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>

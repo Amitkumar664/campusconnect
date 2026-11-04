@@ -207,30 +207,30 @@ const ResourceManagement = () => {
           {filteredResources.map((res) => (
             <div
               key={res._id}
-              className={`bg-campus-card rounded-2xl border p-5 flex flex-col justify-between transition-all ${
-                res.isActive ? 'border-campus-border hover:border-campus-borderGlow' : 'border-zinc-800 opacity-60'
+              className={`bg-white rounded-2xl border p-5 flex flex-col justify-between shadow-sm transition-all ${
+                res.isActive ? 'border-slate-200 hover:border-blue-400 hover:shadow-md' : 'border-slate-200 opacity-60'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg bg-white/5 text-campus-primary font-bold">
+                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[#387ED1] font-bold">
                     {res.code}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-campus-amber font-semibold bg-campus-amber/10 px-2 py-0.5 rounded-lg border border-campus-amber/20">
+                  <div className="flex items-center gap-1.5 text-xs text-[#FF5722] font-semibold bg-orange-50 px-2 py-0.5 rounded-lg border border-orange-200">
                     <Users className="w-3.5 h-3.5" />
                     <span>{res.capacity} seats</span>
                   </div>
                 </div>
 
-                <h3 className="font-display font-bold text-base text-campus-text mt-3">
+                <h3 className="font-display font-bold text-base text-slate-900 mt-3">
                   {res.name}
                 </h3>
-                <p className="text-xs text-campus-textMuted capitalize mt-0.5">
+                <p className="text-xs text-slate-500 capitalize mt-0.5">
                   Type: {res.type}
                 </p>
 
-                <div className="flex items-center gap-2 text-xs text-campus-textMuted mt-2">
-                  <MapPin className="w-3.5 h-3.5 text-campus-textSubtle flex-shrink-0" />
+                <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                   <span>{res.building}, {res.floor}</span>
                 </div>
 
@@ -239,7 +239,7 @@ const ResourceManagement = () => {
                     {res.amenities.map((a, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-campus-surface border border-campus-border/60 text-campus-textMuted"
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-slate-600"
                       >
                         ✓ {a}
                       </span>
@@ -249,13 +249,13 @@ const ResourceManagement = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 mt-4 border-t border-campus-border/60 flex items-center justify-between">
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
                 <button
                   onClick={() => handleToggleStatus(res)}
                   className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${
                     res.isActive
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                      : 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : 'bg-slate-100 text-slate-600 border border-slate-200'
                   }`}
                 >
                   {res.isActive ? 'Active' : 'Deactivated'}

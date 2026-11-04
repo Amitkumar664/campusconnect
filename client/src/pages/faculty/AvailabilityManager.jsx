@@ -162,8 +162,8 @@ const AvailabilityManager = () => {
               onClick={() => setAcceptingBookings(!acceptingBookings)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                 acceptingBookings
-                  ? 'bg-campus-primary text-campus-bg shadow-glow'
-                  : 'bg-campus-surface text-campus-textMuted border border-campus-border'
+                  ? 'bg-[#387ED1] text-white shadow-sm'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200'
               }`}
             >
               {acceptingBookings ? '✓ Accepting Appointments' : '⏸ Paused (Not Accepting)'}
@@ -185,16 +185,16 @@ const AvailabilityManager = () => {
             {weeklyAvailability.map((slot, index) => (
               <div
                 key={index}
-                className="p-4 rounded-xl bg-campus-surface border border-campus-border flex flex-col md:flex-row items-center gap-4"
+                className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row items-center gap-4"
               >
                 <div className="w-full md:w-44">
-                  <label className="block text-[11px] font-medium text-campus-textSubtle uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-500 uppercase mb-1">
                     Day of Week
                   </label>
                   <select
                     value={slot.dayOfWeek}
                     onChange={(e) => handleSlotChange(index, 'dayOfWeek', e.target.value)}
-                    className="w-full bg-campus-card border border-campus-border rounded-lg px-3 py-2 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#387ED1]"
                   >
                     {daysOfWeek.map((d) => (
                       <option key={d} value={d}>
@@ -205,37 +205,37 @@ const AvailabilityManager = () => {
                 </div>
 
                 <div className="w-full md:w-32">
-                  <label className="block text-[11px] font-medium text-campus-textSubtle uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-500 uppercase mb-1">
                     Start (24h)
                   </label>
                   <input
                     type="text"
                     value={slot.startTime}
                     onChange={(e) => handleSlotChange(index, 'startTime', e.target.value)}
-                    className="w-full bg-campus-card border border-campus-border rounded-lg px-3 py-2 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#387ED1]"
                   />
                 </div>
 
                 <div className="w-full md:w-32">
-                  <label className="block text-[11px] font-medium text-campus-textSubtle uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-500 uppercase mb-1">
                     End (24h)
                   </label>
                   <input
                     type="text"
                     value={slot.endTime}
                     onChange={(e) => handleSlotChange(index, 'endTime', e.target.value)}
-                    className="w-full bg-campus-card border border-campus-border rounded-lg px-3 py-2 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#387ED1]"
                   />
                 </div>
 
                 <div className="w-full md:w-36">
-                  <label className="block text-[11px] font-medium text-campus-textSubtle uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-500 uppercase mb-1">
                     Slot Duration
                   </label>
                   <select
                     value={slot.slotDurationMinutes || 30}
                     onChange={(e) => handleSlotChange(index, 'slotDurationMinutes', e.target.value)}
-                    className="w-full bg-campus-card border border-campus-border rounded-lg px-3 py-2 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#387ED1]"
                   >
                     <option value={15}>15 Minutes</option>
                     <option value={30}>30 Minutes</option>
@@ -248,7 +248,7 @@ const AvailabilityManager = () => {
                   <button
                     type="button"
                     onClick={() => handleRemoveSlot(index)}
-                    className="p-2 text-campus-textSubtle hover:text-campus-danger hover:bg-rose-500/10 rounded-lg transition-colors"
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                     title="Remove day"
                   >
                     <Trash2 className="w-4 h-4" />

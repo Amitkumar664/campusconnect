@@ -86,23 +86,23 @@ const MyBookings = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-400 font-semibold mb-2 shadow-glow-sm">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold mb-2 shadow-sm">
           <Sparkles className="w-3.5 h-3.5" /> Live Schedule & Passes
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
           My Schedule & Event Passes
         </h1>
-        <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
+        <p className="text-xs sm:text-sm text-slate-600 mt-1">
           Track real-time status of your faculty doubts, lab reservations, and digital admission tickets.
         </p>
       </div>
 
       {feedbackMsg.text && (
         <div
-          className={`p-4 rounded-2xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-glass ${
+          className={`p-4 rounded-xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm ${
             feedbackMsg.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           {feedbackMsg.type === 'success' ? <CheckCircle className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
@@ -111,7 +111,7 @@ const MyBookings = () => {
       )}
 
       {/* Modern Tabs and Status Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.07] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {[
@@ -125,8 +125,8 @@ const MyBookings = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`relative px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-campus-bg font-bold shadow-glow'
-                  : 'bg-white/[0.03] text-campus-textMuted hover:text-white hover:bg-white/[0.06] border border-white/[0.06]'
+                  ? 'bg-[#387ED1] text-white font-bold shadow-sm'
+                  : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
               }`}
             >
               {tab.label}
@@ -137,13 +137,13 @@ const MyBookings = () => {
         {/* Status Dropdown */}
         {activeTab !== 'events' && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-campus-textSubtle flex items-center gap-1 font-mono">
+            <span className="text-xs text-slate-400 flex items-center gap-1 font-mono">
               <Filter className="w-3.5 h-3.5" /> Filter:
             </span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-3.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 cursor-pointer shadow-glass"
+              className="bg-white border border-slate-200 rounded-xl px-3.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#387ED1] cursor-pointer shadow-sm"
             >
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
@@ -157,19 +157,19 @@ const MyBookings = () => {
 
       {/* Content Rendering */}
       {loading ? (
-        <div className="py-16 text-center text-xs text-campus-textMuted flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
           Loading your history...
         </div>
       ) : activeTab === 'events' ? (
         /* Event Passes Grid */
         eventRegistrations.length === 0 ? (
-          <div className="p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
-            <Ticket className="w-12 h-12 text-amber-400/40 mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-white text-base">
+          <div className="p-14 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+            <Ticket className="w-12 h-12 text-[#FF5722]/40 mx-auto mb-3" />
+            <h3 className="font-display font-semibold text-slate-900 text-base">
               No registered event passes
             </h3>
-            <p className="text-xs text-campus-textMuted mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Browse upcoming college hackathons and masterclasses to claim your ticket.
             </p>
           </div>
@@ -179,32 +179,32 @@ const MyBookings = () => {
               <motion.div
                 key={reg._id}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="glass-card-elevated rounded-3xl border border-white/[0.08] p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden"
+                className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                  <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 px-2.5 py-0.5 rounded-full border border-orange-200">
                     {reg.event?.category || 'Event'}
                   </span>
                   <StatusBadge status="confirmed" size="sm" />
                 </div>
 
                 <div className="my-5">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-white tracking-tight">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 tracking-tight">
                     {reg.event?.title}
                   </h3>
-                  <div className="mt-2.5 space-y-1 text-xs text-campus-textMuted font-mono">
+                  <div className="mt-2.5 space-y-1 text-xs text-slate-500 font-mono">
                     <p>📅 {new Date(reg.event?.eventDate).toLocaleDateString()}</p>
                     <p>⏰ {reg.event?.startTime} - {reg.event?.endTime}</p>
                     <p className="font-sans">📍 {reg.event?.venue}</p>
                   </div>
                 </div>
 
-                <div className="pt-3.5 border-t border-white/[0.07] flex items-center justify-between bg-white/[0.02] -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 p-4 sm:p-5">
+                <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 p-4 sm:p-5">
                   <div className="font-mono">
-                    <p className="text-[10px] text-campus-textSubtle uppercase tracking-wider">Pass Code</p>
-                    <p className="text-sm font-bold text-emerald-400">{reg.ticketCode}</p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Pass Code</p>
+                    <p className="text-sm font-bold text-[#387ED1]">{reg.ticketCode}</p>
                   </div>
-                  <Ticket className="w-5 h-5 text-amber-400" />
+                  <Ticket className="w-5 h-5 text-[#FF5722]" />
                 </div>
               </motion.div>
             ))}
@@ -213,12 +213,12 @@ const MyBookings = () => {
       ) : (
         /* Bookings List */
         filteredBookings.length === 0 ? (
-          <div className="p-14 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.015]">
-            <CalendarCheck className="w-12 h-12 text-emerald-400/40 mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-white text-base">
+          <div className="p-14 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+            <CalendarCheck className="w-12 h-12 text-[#387ED1]/40 mx-auto mb-3" />
+            <h3 className="font-display font-semibold text-slate-900 text-base">
               No matching bookings found
             </h3>
-            <p className="text-xs text-campus-textMuted mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               No reservation records under the selected tab and status filter.
             </p>
           </div>
@@ -228,10 +228,10 @@ const MyBookings = () => {
               <motion.div
                 key={b._id}
                 whileHover={{ y: -2 }}
-                className="glass-card-elevated rounded-2xl border border-white/[0.08] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5"
+                className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5 hover:border-blue-300 transition-all"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-emerald-400 flex-shrink-0 shadow-inner-bevel mt-0.5">
+                  <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#387ED1] flex-shrink-0 shadow-sm mt-0.5">
                     {b.bookingType === 'faculty_session' ? (
                       <GraduationCap className="w-6 h-6" />
                     ) : (
@@ -240,25 +240,25 @@ const MyBookings = () => {
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2.5">
-                      <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-md bg-white/5 text-campus-textSubtle">
+                      <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">
                         {b.bookingType === 'faculty_session' ? 'Faculty Doubt' : 'Campus Resource'}
                       </span>
                       <StatusBadge status={b.status} size="sm" />
                     </div>
-                    <h3 className="font-display font-bold text-base text-white tracking-tight">
+                    <h3 className="font-display font-bold text-base text-slate-900 tracking-tight">
                       {b.subject}
                     </h3>
-                    <p className="text-xs text-campus-textMuted">
+                    <p className="text-xs text-slate-600">
                       {b.bookingType === 'faculty_session'
                         ? `Professor: ${b.faculty?.fullName || 'Faculty Member'} (${b.faculty?.department || ''})`
                         : `Facility: ${b.resource?.name || 'Classroom/Lab'} (${b.resource?.building || ''})`}
                     </p>
-                    <p className="text-xs text-campus-textSubtle line-clamp-2 max-w-xl">
+                    <p className="text-xs text-slate-500 line-clamp-2 max-w-xl">
                       "{b.description}"
                     </p>
 
                     {b.rejectionReason && (
-                      <div className="mt-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-400">
+                      <div className="mt-2 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
                         <strong>Reason:</strong> {b.rejectionReason}
                       </div>
                     )}
@@ -266,10 +266,10 @@ const MyBookings = () => {
                 </div>
 
                 {/* Right metadata & Action */}
-                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-white/[0.06] flex-shrink-0">
-                  <div className="text-left md:text-right font-mono text-xs text-campus-textMuted">
+                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100 flex-shrink-0">
+                  <div className="text-left md:text-right font-mono text-xs text-slate-500">
                     <p>📅 {new Date(b.date).toLocaleDateString()}</p>
-                    <p className="text-white font-semibold pt-0.5">
+                    <p className="text-slate-900 font-semibold pt-0.5">
                       ⏰ {b.startTime} - {b.endTime}
                     </p>
                   </div>
@@ -281,7 +281,7 @@ const MyBookings = () => {
                       onClick={() =>
                         setCancelModal({ open: true, bookingId: b._id, reason: '' })
                       }
-                      className="text-rose-400 hover:bg-rose-500/10 text-xs"
+                      className="text-rose-600 hover:bg-rose-50 text-xs"
                     >
                       Cancel Booking
                     </Button>
@@ -318,7 +318,7 @@ const MyBookings = () => {
         }
       >
         <div className="space-y-4">
-          <p className="text-xs text-campus-textMuted">
+          <p className="text-xs text-slate-600">
             Please optionally share why you are cancelling this appointment:
           </p>
           <textarea
@@ -326,7 +326,7 @@ const MyBookings = () => {
             placeholder="e.g. Schedule conflict with assignment submission..."
             value={cancelModal.reason}
             onChange={(e) => setCancelModal({ ...cancelModal, reason: e.target.value })}
-            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500/60 shadow-glass"
+            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#387ED1] shadow-sm"
           />
         </div>
       </Modal>

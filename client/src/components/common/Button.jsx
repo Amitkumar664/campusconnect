@@ -13,21 +13,21 @@ const Button = ({
   icon: Icon
 }) => {
   const baseClasses =
-    'relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-campus-bg disabled:opacity-50 disabled:cursor-not-allowed select-none shine-sweep overflow-hidden cursor-pointer';
+    'relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed select-none shine-sweep overflow-hidden cursor-pointer';
 
   const variants = {
     primary:
-      'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-campus-bg font-semibold shadow-glow hover:shadow-glow-lg border-t border-white/20 focus:ring-emerald-400',
+      'bg-[#387ED1] hover:bg-[#2B6EB8] text-white font-semibold shadow-[0_2px_6px_rgba(56,126,209,0.25)] hover:shadow-[0_4px_12px_rgba(56,126,209,0.35)] focus:ring-[#387ED1]',
     amber:
-      'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-campus-bg font-semibold shadow-glow-amber hover:shadow-[0_0_35px_-5px_rgba(245,158,11,0.5)] border-t border-white/25 focus:ring-amber-400',
+      'bg-[#FF5722] hover:bg-[#EA4A16] text-white font-semibold shadow-[0_2px_6px_rgba(255,87,34,0.25)] hover:shadow-[0_4px_12px_rgba(255,87,34,0.35)] focus:ring-[#FF5722]',
     secondary:
-      'bg-campus-surface hover:bg-campus-surfaceLight text-campus-text border border-white/10 hover:border-emerald-500/30 shadow-glass focus:ring-emerald-400',
+      'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 shadow-sm hover:border-slate-300 focus:ring-[#387ED1]',
     outline:
-      'bg-transparent border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-400 focus:ring-emerald-400',
+      'bg-transparent border border-[#387ED1] text-[#387ED1] hover:bg-blue-50/60 focus:ring-[#387ED1]',
     danger:
-      'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white font-medium shadow-sm focus:ring-rose-400',
+      'bg-[#DF514C] hover:bg-[#CF403B] text-white font-medium shadow-sm focus:ring-[#DF514C]',
     ghost:
-      'bg-transparent text-campus-textMuted hover:text-campus-text hover:bg-white/[0.06] border border-transparent focus:ring-white/10'
+      'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent focus:ring-slate-300'
   };
 
   const sizes = {

@@ -230,32 +230,32 @@ const EventManagement = () => {
             return (
               <div
                 key={evt._id}
-                className="bg-campus-card rounded-2xl border border-campus-border p-5 flex flex-col justify-between hover:border-campus-borderGlow transition-all"
+                className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between shadow-sm hover:border-blue-400 hover:shadow-md transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-lg bg-campus-amber/10 text-campus-amber border border-campus-amber/20">
+                    <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-lg bg-orange-50 text-[#FF5722] border border-orange-200">
                       {evt.category}
                     </span>
-                    <span className="text-xs font-mono font-medium text-campus-textMuted">
+                    <span className="text-xs font-mono font-medium text-slate-500">
                       {evt.registeredCount} / {evt.capacity} seats ({fillRatio}%)
                     </span>
                   </div>
 
-                  <h3 className="font-display font-bold text-base text-campus-text mt-3">
+                  <h3 className="font-display font-bold text-base text-slate-900 mt-3">
                     {evt.title}
                   </h3>
-                  <p className="text-xs text-campus-textMuted mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                     {evt.description}
                   </p>
 
-                  <div className="mt-4 pt-3 border-t border-campus-border/60 space-y-1.5 text-xs text-campus-textMuted">
+                  <div className="mt-4 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-500">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-campus-primary" />
+                      <Calendar className="w-3.5 h-3.5 text-[#387ED1]" />
                       <span>{new Date(evt.eventDate).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-campus-amber" />
+                      <Clock className="w-3.5 h-3.5 text-[#FF5722]" />
                       <span>{evt.startTime} - {evt.endTime}</span>
                     </div>
                     <div className="flex items-center gap-2">

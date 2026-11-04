@@ -78,10 +78,9 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070A09] text-campus-text flex items-center justify-center p-4 relative overflow-hidden my-8">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 relative overflow-hidden my-8">
       {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[450px] h-[450px] bg-amber-500/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -92,25 +91,25 @@ const Register = () => {
         {/* Header Branding */}
         <div className="text-center mb-6">
           <Link to="/" className="inline-flex items-center gap-3 mb-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-emerald-600/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-glow-sm group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#387ED1] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
               <GraduationCap className="w-6 h-6" />
             </div>
           </Link>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white">
-            Join Campus<span className="text-emerald-400">Connect</span>
+          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">
+            Join Campus<span className="text-[#387ED1]">Connect</span>
           </h1>
-          <p className="text-xs sm:text-sm text-campus-textMuted mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Create your institutional university account for room booking & faculty mentorship
           </p>
         </div>
 
         {/* Card Form */}
-        <div className="glass-card-elevated rounded-3xl p-6 sm:p-8 backdrop-blur-2xl">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
           {error && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-400 font-medium"
+              className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium"
             >
               {error}
             </motion.div>
@@ -119,21 +118,21 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Animated Role Switcher Tabs */}
             <div>
-              <label className="block text-xs font-medium text-campus-textMuted uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
                 Select Account Role
               </label>
-              <div className="grid grid-cols-2 gap-2 bg-black/40 p-1.5 rounded-2xl border border-white/10 relative">
+              <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 relative">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, role: 'student' })}
-                  className={`relative py-2.5 text-xs font-semibold rounded-xl transition-colors z-10 ${
-                    formData.role === 'student' ? 'text-white' : 'text-campus-textMuted hover:text-white'
+                  className={`relative py-2.5 text-xs font-semibold rounded-lg transition-colors z-10 ${
+                    formData.role === 'student' ? 'text-[#387ED1]' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {formData.role === 'student' && (
                     <motion.div
                       layoutId="registerRolePill"
-                      className="absolute inset-0 bg-emerald-500/20 border border-emerald-500/40 rounded-xl shadow-glow-sm -z-10"
+                      className="absolute inset-0 bg-white border border-blue-200 rounded-lg shadow-sm -z-10"
                       transition={{ type: 'spring', damping: 25, stiffness: 350 }}
                     />
                   )}
@@ -143,14 +142,14 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, role: 'faculty' })}
-                  className={`relative py-2.5 text-xs font-semibold rounded-xl transition-colors z-10 ${
-                    formData.role === 'faculty' ? 'text-white' : 'text-campus-textMuted hover:text-white'
+                  className={`relative py-2.5 text-xs font-semibold rounded-lg transition-colors z-10 ${
+                    formData.role === 'faculty' ? 'text-[#387ED1]' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {formData.role === 'faculty' && (
                     <motion.div
                       layoutId="registerRolePill"
-                      className="absolute inset-0 bg-emerald-500/20 border border-emerald-500/40 rounded-xl shadow-glow-sm -z-10"
+                      className="absolute inset-0 bg-white border border-blue-200 rounded-lg shadow-sm -z-10"
                       transition={{ type: 'spring', damping: 25, stiffness: 350 }}
                     />
                   )}
@@ -221,7 +220,7 @@ const Register = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/10"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100"
                 >
                   <Input
                     label="Designation"
@@ -246,16 +245,16 @@ const Register = () => {
               variant="primary"
               size="lg"
               loading={loading}
-              className="w-full mt-4 py-3 shadow-glow-sm"
+              className="w-full mt-4 py-3"
             >
               Create Official Account <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </form>
         </div>
 
-        <p className="text-center text-xs text-campus-textMuted mt-5">
+        <p className="text-center text-xs text-slate-500 mt-5">
           Already registered?{' '}
-          <Link to="/login" className="text-emerald-400 hover:underline font-semibold">
+          <Link to="/login" className="text-[#387ED1] hover:underline font-semibold">
             Sign in to portal
           </Link>
         </p>

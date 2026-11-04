@@ -43,11 +43,11 @@ const SessionHistory = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-campus-textSubtle" />
+          <Filter className="w-4 h-4 text-slate-400" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-campus-surface border border-campus-border rounded-xl px-3 py-1.5 text-xs text-campus-text focus:outline-none focus:border-campus-primary"
+            className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#387ED1] shadow-sm"
           >
             <option value="all">All Records</option>
             <option value="approved">Approved & Scheduled</option>
@@ -59,17 +59,17 @@ const SessionHistory = () => {
       </div>
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-sm text-slate-500 flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
           Loading session history...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card">
-          <BookOpen className="w-12 h-12 text-campus-primary/50 mx-auto mb-3" />
-          <h3 className="font-display font-semibold text-campus-text text-base">
+        <div className="p-12 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+          <BookOpen className="w-12 h-12 text-[#387ED1]/40 mx-auto mb-3" />
+          <h3 className="font-display font-semibold text-slate-900 text-base">
             No session history records
           </h3>
-          <p className="text-xs text-campus-textMuted mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Sessions you review and attend will be archived here.
           </p>
         </div>
@@ -78,22 +78,22 @@ const SessionHistory = () => {
           {filtered.map((s) => (
             <div
               key={s._id}
-              className="bg-campus-card rounded-2xl border border-campus-border p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-campus-borderGlow transition-all"
+              className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-blue-300 hover:shadow-md transition-all shadow-sm"
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-display font-semibold text-sm text-campus-text">
+                  <span className="font-display font-semibold text-sm text-slate-900">
                     {s.requester?.fullName}
                   </span>
-                  <span className="text-xs font-mono text-campus-primary">
+                  <span className="text-xs font-mono text-[#387ED1]">
                     ({s.requester?.studentOrEmployeeId})
                   </span>
                   <StatusBadge status={s.status} size="sm" />
                 </div>
-                <h4 className="font-semibold text-xs sm:text-sm text-campus-text">
+                <h4 className="font-semibold text-xs sm:text-sm text-slate-900">
                   {s.subject}
                 </h4>
-                <p className="text-xs text-campus-textMuted max-w-2xl line-clamp-2">
+                <p className="text-xs text-slate-500 max-w-2xl line-clamp-2">
                   "{s.description}"
                 </p>
               </div>

@@ -14,7 +14,7 @@ const Card = ({
   const Component = interactive ? motion.div : 'div';
   const motionProps = interactive
     ? {
-        whileHover: { y: -3, transition: { duration: 0.2 } },
+        whileHover: { y: -2, transition: { duration: 0.2 } },
         whileTap: { scale: 0.99 }
       }
     : {};
@@ -23,23 +23,22 @@ const Card = ({
     <Component
       onClick={onClick}
       {...motionProps}
-      className={`glass-card-elevated rounded-2xl relative overflow-hidden ${
-        interactive ? 'cursor-pointer' : ''
+      className={`bg-white rounded-2xl border border-slate-200 shadow-[0_1px_3px_0_rgba(0,0,0,0.05),0_1px_2px_-1px_rgba(0,0,0,0.03)] relative overflow-hidden transition-all duration-200 ${
+        interactive
+          ? 'cursor-pointer hover:border-blue-400/60 hover:shadow-[0_10px_25px_-5px_rgba(56,126,209,0.08),0_8px_10px_-6px_rgba(0,0,0,0.03)]'
+          : ''
       } ${className}`}
     >
-      {/* Subtle top reflection line */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
-
       {(title || subtitle || action) && (
-        <div className="px-6 py-4.5 border-b border-white/[0.07] flex items-center justify-between gap-4 bg-white/[0.015]">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/40">
           <div>
             {title && (
-              <h3 className="font-display font-semibold text-campus-text text-base md:text-lg tracking-tight">
+              <h3 className="font-display font-semibold text-slate-900 text-base md:text-lg tracking-tight">
                 {title}
               </h3>
             )}
             {subtitle && (
-              <p className="text-xs md:text-sm text-campus-textMuted mt-0.5 font-normal">
+              <p className="text-xs md:text-sm text-slate-500 mt-0.5 font-normal">
                 {subtitle}
               </p>
             )}

@@ -228,7 +228,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
           />
 
           {/* Modal Content */}
@@ -237,20 +237,20 @@ const CommandPalette = ({ isOpen, onClose }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-xl bg-campus-card/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-10"
+            className="relative w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-10"
           >
             {/* Input bar */}
-            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10">
-              <Search className="w-5 h-5 text-campus-primary shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
+              <Search className="w-5 h-5 text-[#387ED1] shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Type a command, page name, or quick action..."
-                className="w-full bg-transparent text-sm text-campus-text placeholder-campus-textSubtle focus:outline-none"
+                className="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
               />
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-campus-textSubtle">
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-500">
                 <Command className="w-2.5 h-2.5" /> ESC
               </kbd>
             </div>
@@ -258,7 +258,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
             {/* Results list */}
             <div className="max-h-80 overflow-y-auto p-2 space-y-1">
               {filteredCommands.length === 0 ? (
-                <div className="py-8 text-center text-xs text-campus-textMuted">
+                <div className="py-8 text-center text-xs text-slate-400">
                   No matching command or destination found for "{query}".
                 </div>
               ) : (
@@ -275,16 +275,16 @@ const CommandPalette = ({ isOpen, onClose }) => {
                       onMouseEnter={() => setSelectedIndex(idx)}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs transition-all ${
                         isSelected
-                          ? 'bg-campus-primary/15 text-campus-primary border border-campus-primary/30'
-                          : 'text-campus-text hover:bg-white/5 border border-transparent'
+                          ? 'bg-[#EBF3FC] text-[#387ED1] border border-blue-200'
+                          : 'text-slate-700 hover:bg-slate-50 border border-transparent'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div
                           className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                             isSelected
-                              ? 'bg-campus-primary text-black font-bold'
-                              : 'bg-white/5 text-campus-textMuted'
+                              ? 'bg-[#387ED1] text-white font-bold'
+                              : 'bg-slate-100 text-slate-500'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
@@ -292,10 +292,10 @@ const CommandPalette = ({ isOpen, onClose }) => {
                         <span className="font-medium truncate">{cmd.title}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
-                        <span className="text-[10px] font-mono text-campus-textSubtle uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">
                           {cmd.category}
                         </span>
-                        {isSelected && <ArrowRight className="w-3.5 h-3.5 text-campus-primary" />}
+                        {isSelected && <ArrowRight className="w-3.5 h-3.5 text-[#387ED1]" />}
                       </div>
                     </button>
                   );
@@ -304,9 +304,9 @@ const CommandPalette = ({ isOpen, onClose }) => {
             </div>
 
             {/* Footer tip */}
-            <div className="px-4 py-2 bg-black/40 border-t border-white/5 flex items-center justify-between text-[11px] text-campus-textSubtle">
-              <span>Navigate with <kbd className="font-mono bg-white/5 px-1 rounded">↑</kbd> <kbd className="font-mono bg-white/5 px-1 rounded">↓</kbd></span>
-              <span>Press <kbd className="font-mono bg-white/5 px-1 rounded">↵</kbd> to execute</span>
+            <div className="px-4 py-2 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Navigate with <kbd className="font-mono bg-white border border-slate-200 px-1 rounded">↑</kbd> <kbd className="font-mono bg-white border border-slate-200 px-1 rounded">↓</kbd></span>
+              <span>Press <kbd className="font-mono bg-white border border-slate-200 px-1 rounded">↵</kbd> to execute</span>
             </div>
           </motion.div>
         </div>
@@ -316,3 +316,4 @@ const CommandPalette = ({ isOpen, onClose }) => {
 };
 
 export default CommandPalette;
+
