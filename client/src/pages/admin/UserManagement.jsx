@@ -8,7 +8,8 @@ import {
   CheckCircle,
   AlertCircle,
   Edit,
-  Power
+  Power,
+  Sparkles
 } from 'lucide-react';
 import { userAPI } from '../../services/api';
 import Card from '../../components/common/Card';
@@ -96,13 +97,16 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
+            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> University Directory & RBAC Governance
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Institutional User Directory
           </h1>
-          <p className="text-sm text-campus-textMuted mt-1">
+          <p className="text-sm text-[#9E98AE] mt-1">
             Manage students, faculty members, and administrative accounts across academic departments.
           </p>
         </div>
@@ -131,9 +135,9 @@ const UserManagement = () => {
 
       {feedback.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 shadow-inner ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
               : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
           }`}
         >
@@ -157,7 +161,7 @@ const UserManagement = () => {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="w-full bg-campus-surface border border-campus-border rounded-xl px-4 py-2.5 text-xs text-campus-text focus:outline-none focus:border-campus-primary cursor-pointer"
+            className="w-full bg-[#0D0C15] border border-[#262135] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#8B5CF6] cursor-pointer shadow-inner"
           >
             <option value="all">All Roles</option>
             <option value="student">Students</option>
@@ -170,18 +174,18 @@ const UserManagement = () => {
       {/* Users Table */}
       <Card>
         {loading ? (
-          <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+          <div className="py-16 text-center text-sm text-[#9E98AE] flex items-center justify-center gap-2">
+            <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
             Loading user records...
           </div>
         ) : users.length === 0 ? (
-          <div className="py-12 text-center text-sm text-campus-textMuted">
+          <div className="py-12 text-center text-sm text-[#716B82]">
             No users found matching query.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-600 uppercase font-mono text-[10px] border-b border-slate-200">
+              <thead className="bg-[#13111C] text-[#9E98AE] uppercase font-mono text-[10px] border-b border-[#262135]">
                 <tr>
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-4">Role</th>
@@ -191,30 +195,30 @@ const UserManagement = () => {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#262135]">
                 {users.map((u) => (
-                  <tr key={u._id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={u._id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-slate-900">{u.fullName}</div>
-                      <div className="text-[11px] text-slate-500">{u.email}</div>
+                      <div className="font-semibold text-white">{u.fullName}</div>
+                      <div className="text-[11px] text-[#716B82]">{u.email}</div>
                     </td>
                     <td className="py-3.5 px-4 capitalize font-mono text-[11px]">
                       <span
                         className={`px-2 py-0.5 rounded-md border ${
                           u.role === 'admin'
-                            ? 'bg-orange-50 text-[#FF5722] border-orange-200'
+                            ? 'bg-[#7C3AED]/20 text-[#C4B5FD] border-[#7C3AED]/40'
                             : u.role === 'faculty'
-                            ? 'bg-blue-50 text-[#387ED1] border-blue-200'
-                            : 'bg-slate-100 text-slate-700 border-slate-200'
+                            ? 'bg-[#06B6D4]/20 text-[#38BDF8] border-[#06B6D4]/40'
+                            : 'bg-[#10B981]/15 text-[#34D399] border-[#10B981]/30'
                         }`}
                       >
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-[#387ED1]">
+                    <td className="py-3.5 px-4 font-mono text-[#A78BFA]">
                       {u.studentOrEmployeeId}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600">
+                    <td className="py-3.5 px-4 text-[#C7C3D6]">
                       {u.department}
                     </td>
                     <td className="py-3.5 px-4">
@@ -223,10 +227,10 @@ const UserManagement = () => {
                     <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => handleToggleStatus(u)}
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${
+                        className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                           u.isActive
-                            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
-                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                            ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30'
+                            : 'bg-[#10B981]/15 text-[#34D399] hover:bg-[#10B981]/25 border border-[#10B981]/30'
                         }`}
                       >
                         {u.isActive ? 'Deactivate' : 'Activate'}
@@ -308,7 +312,7 @@ const UserManagement = () => {
           />
 
           {formData.role === 'faculty' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-campus-border/60">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#262135]">
               <Input
                 label="Designation"
                 name="designation"
@@ -339,4 +343,3 @@ const UserManagement = () => {
 };
 
 export default UserManagement;
-

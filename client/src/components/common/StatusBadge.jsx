@@ -6,64 +6,64 @@ const StatusBadge = ({ status, size = 'md' }) => {
   const configs = {
     approved: {
       label: 'Approved',
-      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      dot: 'bg-emerald-500',
+      bg: 'bg-[#10B981]/15 text-[#34D399] border-[#10B981]/30',
+      dot: 'bg-[#10B981]',
       ping: true
     },
     confirmed: {
       label: 'Confirmed',
-      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      dot: 'bg-emerald-500',
+      bg: 'bg-[#10B981]/15 text-[#34D399] border-[#10B981]/30',
+      dot: 'bg-[#10B981]',
       ping: true
     },
     completed: {
       label: 'Completed',
-      bg: 'bg-blue-50 text-[#387ED1] border-blue-200',
-      dot: 'bg-[#387ED1]',
+      bg: 'bg-[#7C3AED]/20 text-[#A78BFA] border-[#7C3AED]/40',
+      dot: 'bg-[#8B5CF6]',
       ping: false
     },
     pending: {
       label: 'Pending Review',
-      bg: 'bg-amber-50 text-amber-700 border-amber-200',
-      dot: 'bg-amber-500',
+      bg: 'bg-[#F59E0B]/15 text-[#FBBF24] border-[#F59E0B]/30',
+      dot: 'bg-[#F59E0B]',
       ping: true
     },
     rejected: {
       label: 'Declined',
-      bg: 'bg-rose-50 text-rose-700 border-rose-200',
-      dot: 'bg-[#DF514C]',
+      bg: 'bg-[#EF4444]/15 text-[#F87171] border-[#EF4444]/30',
+      dot: 'bg-[#EF4444]',
       ping: false
     },
     cancelled: {
       label: 'Cancelled',
-      bg: 'bg-slate-100 text-slate-600 border-slate-200',
-      dot: 'bg-slate-400',
+      bg: 'bg-[#262135]/60 text-[#9E98AE] border-[#37304E]',
+      dot: 'bg-[#716B82]',
       ping: false
     },
     active: {
       label: 'Active',
-      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      dot: 'bg-emerald-500',
+      bg: 'bg-[#10B981]/15 text-[#34D399] border-[#10B981]/30',
+      dot: 'bg-[#10B981]',
       ping: true
     },
     inactive: {
       label: 'Inactive',
-      bg: 'bg-slate-100 text-slate-600 border-slate-200',
-      dot: 'bg-slate-400',
+      bg: 'bg-[#262135]/60 text-[#9E98AE] border-[#37304E]',
+      dot: 'bg-[#716B82]',
       ping: false
     },
     upcoming: {
       label: 'Upcoming',
-      bg: 'bg-sky-50 text-sky-700 border-sky-200',
-      dot: 'bg-sky-500',
+      bg: 'bg-[#06B6D4]/15 text-[#38BDF8] border-[#06B6D4]/30',
+      dot: 'bg-[#06B6D4]',
       ping: false
     }
   };
 
   const current = configs[normStatus] || {
     label: status || 'Unknown',
-    bg: 'bg-slate-100 text-slate-600 border-slate-200',
-    dot: 'bg-slate-400',
+    bg: 'bg-[#262135]/60 text-[#9E98AE] border-[#37304E]',
+    dot: 'bg-[#716B82]',
     ping: false
   };
 

@@ -104,16 +104,16 @@ const CommandPalette = ({ isOpen, onClose }) => {
         },
         {
           id: 'faculty-availability',
-          title: 'Configure Office Hours & Block Dates',
+          title: 'Configure Office Hours & Weekly Slots',
           category: 'Actions',
-          icon: CalendarCheck,
+          icon: Calendar,
           action: () => navigate('/faculty/availability')
         },
         {
           id: 'faculty-history',
           title: 'Past Mentorship Session History',
           category: 'Navigation',
-          icon: Calendar,
+          icon: CalendarCheck,
           action: () => navigate('/faculty/history')
         },
         ...common
@@ -124,45 +124,45 @@ const CommandPalette = ({ isOpen, onClose }) => {
       return [
         {
           id: 'admin-dash',
-          title: 'Administrator Operations Command',
+          title: 'Central Administration Command',
           category: 'Navigation',
           icon: Sparkles,
           action: () => navigate('/admin/dashboard')
         },
         {
-          id: 'admin-analytics',
-          title: 'Business Analytics & MongoDB Metrics Engine',
-          category: 'Actions',
+          id: 'analytics',
+          title: 'Business Analytics & MongoDB Aggregation KPIs',
+          category: 'Insights',
           icon: BarChart3,
           action: () => navigate('/admin/analytics')
         },
         {
-          id: 'admin-bookings',
-          title: 'Master Campus Booking Approvals & Overrides',
-          category: 'Actions',
-          icon: CalendarCheck,
-          action: () => navigate('/admin/bookings')
+          id: 'user-mgmt',
+          title: 'Directory & User Role Governance',
+          category: 'Management',
+          icon: Users,
+          action: () => navigate('/admin/users')
         },
         {
-          id: 'admin-resources',
-          title: 'Manage Campus Labs, Classrooms & Auditoriums',
+          id: 'resource-mgmt',
+          title: 'Campus Labs, Rooms & Auditoriums Registry',
           category: 'Management',
           icon: Building2,
           action: () => navigate('/admin/resources')
         },
         {
-          id: 'admin-events',
-          title: 'Publish College Hackathons & Symposia',
+          id: 'event-mgmt',
+          title: 'College Events & Hackathon Publisher',
           category: 'Management',
           icon: Calendar,
           action: () => navigate('/admin/events')
         },
         {
-          id: 'admin-users',
-          title: 'University User Directory & Role Assignment',
+          id: 'master-bookings',
+          title: 'Master Schedule & Conflict Resolution Desk',
           category: 'Management',
-          icon: Users,
-          action: () => navigate('/admin/users')
+          icon: CalendarCheck,
+          action: () => navigate('/admin/bookings')
         },
         ...common
       ];
@@ -172,30 +172,38 @@ const CommandPalette = ({ isOpen, onClose }) => {
   };
 
   const allCommands = getCommands();
-  const filteredCommands = allCommands.filter((cmd) =>
-    cmd.title.toLowerCase().includes(query.toLowerCase()) ||
-    cmd.category.toLowerCase().includes(query.toLowerCase())
-  );
 
-  useEffect(() => {
-    if (isOpen) {
-      setQuery('');
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
-  }, [isOpen]);
+  const filteredCommands = allCommands.filter((cmd) => {
+    if (!query.trim()) return true;
+    const q = query.toLowerCase();
+    return (
+      cmd.title.toLowerCase().includes(q) ||
+      cmd.category.toLowerCase().includes(q)
+    );
+  });
 
   useEffect(() => {
     setSelectedIndex(0);
   }, [query]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!isOpen) return;
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      setQuery('');
+    }
+  }, [isOpen]);
 
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % (filteredCommands.length || 1));
+        setSelectedIndex((prev) =>
+          prev === filteredCommands.length - 1 ? 0 : prev + 1
+        );
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex((prev) =>
@@ -228,7 +236,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md"
           />
 
           {/* Modal Content */}
@@ -237,20 +245,20 @@ const CommandPalette = ({ isOpen, onClose }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-10"
+            className="relative w-full max-w-xl bg-[#0D0C15] border border-[#262135] rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] ring-1 ring-white/10 overflow-hidden z-10"
           >
             {/* Input bar */}
-            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
-              <Search className="w-5 h-5 text-[#387ED1] shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#262135] bg-[#13111C]">
+              <Search className="w-5 h-5 text-[#8B5CF6] shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Type a command, page name, or quick action..."
-                className="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                className="w-full bg-transparent text-sm text-white placeholder-[#716B82] focus:outline-none font-medium"
               />
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-500">
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 rounded bg-[#1B1828] border border-[#262135] text-[10px] font-mono text-[#9E98AE]">
                 <Command className="w-2.5 h-2.5" /> ESC
               </kbd>
             </div>
@@ -258,7 +266,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
             {/* Results list */}
             <div className="max-h-80 overflow-y-auto p-2 space-y-1">
               {filteredCommands.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400">
+                <div className="py-8 text-center text-xs text-[#716B82]">
                   No matching command or destination found for "{query}".
                 </div>
               ) : (
@@ -273,18 +281,18 @@ const CommandPalette = ({ isOpen, onClose }) => {
                         onClose();
                       }}
                       onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs transition-all ${
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-[#EBF3FC] text-[#387ED1] border border-blue-200'
-                          : 'text-slate-700 hover:bg-slate-50 border border-transparent'
+                          ? 'bg-[#7C3AED]/20 text-white border border-[#7C3AED]/50'
+                          : 'text-[#C7C3D6] hover:bg-white/5 border border-transparent'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div
                           className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                             isSelected
-                              ? 'bg-[#387ED1] text-white font-bold'
-                              : 'bg-slate-100 text-slate-500'
+                              ? 'bg-[#7C3AED] text-white font-bold'
+                              : 'bg-[#1B1828] text-[#9E98AE]'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
@@ -292,10 +300,10 @@ const CommandPalette = ({ isOpen, onClose }) => {
                         <span className="font-medium truncate">{cmd.title}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
-                        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-mono text-[#716B82] uppercase tracking-wider bg-[#1B1828] px-2 py-0.5 rounded">
                           {cmd.category}
                         </span>
-                        {isSelected && <ArrowRight className="w-3.5 h-3.5 text-[#387ED1]" />}
+                        {isSelected && <ArrowRight className="w-3.5 h-3.5 text-[#A78BFA]" />}
                       </div>
                     </button>
                   );
@@ -304,9 +312,9 @@ const CommandPalette = ({ isOpen, onClose }) => {
             </div>
 
             {/* Footer tip */}
-            <div className="px-4 py-2 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-              <span>Navigate with <kbd className="font-mono bg-white border border-slate-200 px-1 rounded">↑</kbd> <kbd className="font-mono bg-white border border-slate-200 px-1 rounded">↓</kbd></span>
-              <span>Press <kbd className="font-mono bg-white border border-slate-200 px-1 rounded">↵</kbd> to execute</span>
+            <div className="px-4 py-2 bg-[#13111C] border-t border-[#262135] flex items-center justify-between text-[11px] text-[#716B82]">
+              <span>Navigate with <kbd className="font-mono bg-[#1B1828] border border-[#262135] text-[#9E98AE] px-1 rounded">↑</kbd> <kbd className="font-mono bg-[#1B1828] border border-[#262135] text-[#9E98AE] px-1 rounded">↓</kbd></span>
+              <span>Press <kbd className="font-mono bg-[#1B1828] border border-[#262135] text-[#9E98AE] px-1 rounded">↵</kbd> to execute</span>
             </div>
           </motion.div>
         </div>
@@ -316,4 +324,3 @@ const CommandPalette = ({ isOpen, onClose }) => {
 };
 
 export default CommandPalette;
-

@@ -88,8 +88,8 @@ const Profile = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-campus-text">Account Settings</h1>
-        <p className="text-sm text-campus-textMuted mt-1">
+        <h1 className="font-display text-2xl font-bold text-white tracking-tight">Account Settings</h1>
+        <p className="text-sm text-[#9E98AE] mt-1">
           Manage your personal university credentials and security preferences.
         </p>
       </div>
@@ -98,32 +98,32 @@ const Profile = () => {
         {/* User Card info */}
         <div className="lg:col-span-1 space-y-6">
           <Card className="text-center">
-            <div className="w-20 h-20 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#387ED1] text-2xl font-bold shadow-sm mx-auto mb-4">
+            <div className="w-20 h-20 rounded-2xl bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center text-[#A78BFA] text-2xl font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)] mx-auto mb-4">
               {user?.fullName?.charAt(0) || 'U'}
             </div>
-            <h2 className="font-display font-semibold text-lg text-slate-900">
+            <h2 className="font-display font-semibold text-lg text-white">
               {user?.fullName}
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold mt-3 capitalize">
+            <p className="text-xs text-[#9E98AE] mt-0.5">{user?.email}</p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-xs text-[#C4B5FD] font-semibold mt-3 capitalize">
               {user?.role}
             </div>
 
-            <div className="mt-6 pt-6 border-t border-slate-100 text-left space-y-3 text-xs">
+            <div className="mt-6 pt-6 border-t border-[#262135] text-left space-y-3 text-xs">
               <div className="flex justify-between py-1">
-                <span className="text-slate-500">Department</span>
-                <span className="font-medium text-slate-900">{user?.department}</span>
+                <span className="text-[#716B82]">Department</span>
+                <span className="font-medium text-white">{user?.department}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-500">ID Number</span>
-                <span className="font-mono font-medium text-slate-900">
+                <span className="text-[#716B82]">ID Number</span>
+                <span className="font-mono font-medium text-white">
                   {user?.studentOrEmployeeId}
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-500">Status</span>
-                <span className="text-emerald-600 font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active
+                <span className="text-[#716B82]">Status</span>
+                <span className="text-[#34D399] font-medium flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> Active
                 </span>
               </div>
             </div>
@@ -138,7 +138,7 @@ const Profile = () => {
               <div
                 className={`p-3 rounded-xl mb-4 text-xs font-medium flex items-center gap-2 ${
                   profileMsg.type === 'success'
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                    ? 'bg-[#10B981]/15 text-[#34D399] border border-[#10B981]/30'
                     : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                 }`}
               >
@@ -189,7 +189,7 @@ const Profile = () => {
               <div
                 className={`p-3 rounded-xl mb-4 text-xs font-medium flex items-center gap-2 ${
                   passwordMsg.type === 'success'
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                    ? 'bg-[#10B981]/15 text-[#34D399] border border-[#10B981]/30'
                     : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                 }`}
               >
@@ -248,4 +248,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

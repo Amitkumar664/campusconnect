@@ -132,7 +132,7 @@ const BookResource = () => {
           particleCount: 90,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#387ED1', '#4CAF50', '#FF5722']
+          colors: ['#7C3AED', '#8B5CF6', '#10B981']
         });
         setSuccessModalOpen(true);
       }
@@ -153,21 +153,21 @@ const BookResource = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300 font-sans">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold mb-2 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5" /> High-Performance Infrastructure
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
+          <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> High-Performance Infrastructure
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
           Classroom & Laboratory Resource Booking
         </h1>
-        <p className="text-xs sm:text-sm text-slate-600 mt-1">
+        <p className="text-xs sm:text-sm text-[#9E98AE] mt-1">
           Reserve high-performance GPU labs, smart lecture amphitheaters, and seminar halls with automated collision avoidance.
         </p>
       </div>
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm">
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-inner">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -194,7 +194,7 @@ const BookResource = () => {
 
             <div className="max-h-[520px] overflow-y-auto space-y-2.5 pr-1">
               {filteredResources.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-8">
+                <p className="text-xs text-[#716B82] text-center py-8">
                   No resources matching your criteria.
                 </p>
               ) : (
@@ -208,32 +208,32 @@ const BookResource = () => {
                       onClick={() => setSelectedResource(res)}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-blue-50/70 border-blue-400 shadow-sm'
-                          : 'bg-slate-50/50 border-slate-200 hover:border-blue-300 hover:bg-blue-50/20'
+                          ? 'bg-[#7C3AED]/20 border-[#7C3AED] shadow-[0_0_15px_rgba(124,58,237,0.3)]'
+                          : 'bg-[#13111C] border-[#262135] hover:border-[#7C3AED]/40 hover:bg-white/[0.02]'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[#387ED1] font-bold">
+                            <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-[#C4B5FD] font-bold">
                               {res.code}
                             </span>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
+                            <span className="text-[10px] text-[#716B82] uppercase tracking-wider font-mono">
                               {res.type}
                             </span>
                           </div>
-                          <h4 className="font-display font-semibold text-sm text-slate-900 mt-1.5 tracking-tight">
+                          <h4 className="font-display font-semibold text-sm text-white mt-1.5 tracking-tight">
                             {res.name}
                           </h4>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-[#FF5722] font-semibold bg-orange-50 px-2.5 py-1 rounded-xl border border-orange-200 flex-shrink-0">
+                        <div className="flex items-center gap-1 text-xs text-[#A78BFA] font-semibold bg-[#7C3AED]/15 px-2.5 py-1 rounded-xl border border-[#7C3AED]/30 flex-shrink-0">
                           <Users className="w-3.5 h-3.5" />
                           <span>{res.capacity}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-2 font-mono">
-                        <MapPin className="w-3 h-3 text-slate-400" />
+                      <div className="flex items-center gap-1.5 text-[11px] text-[#9E98AE] mt-2 font-mono">
+                        <MapPin className="w-3 h-3 text-[#716B82]" />
                         <span>{res.building}, {res.floor}</span>
                       </div>
 
@@ -242,7 +242,7 @@ const BookResource = () => {
                           {res.amenities.slice(0, 3).map((a, i) => (
                             <span
                               key={i}
-                              className="text-[10px] px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600"
+                              className="text-[10px] px-2 py-0.5 rounded-md bg-[#1B1828] border border-[#262135] text-[#C7C3D6]"
                             >
                               ✓ {a}
                             </span>
@@ -267,7 +267,7 @@ const BookResource = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Date Picker */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                  <label className="block text-[11px] font-semibold text-[#9E98AE] uppercase tracking-wider mb-2">
                     Date of Reservation
                   </label>
                   <input
@@ -275,7 +275,7 @@ const BookResource = () => {
                     min={new Date().toISOString().split('T')[0]}
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#387ED1] focus:ring-2 focus:ring-[#387ED1]/20 shadow-sm"
+                    className="w-full bg-[#0D0C15] border border-[#262135] rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 shadow-inner font-mono"
                   />
                 </div>
 
@@ -302,27 +302,27 @@ const BookResource = () => {
 
                 {/* Existing Bookings Schedule Bar */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                  <label className="block text-[11px] font-semibold text-[#9E98AE] uppercase tracking-wider mb-2">
                     Confirmed Schedule on {bookingDate}
                   </label>
                   {loadingAvailability ? (
-                    <div className="py-4 text-center text-xs text-slate-500">
+                    <div className="py-4 text-center text-xs text-[#9E98AE]">
                       Checking room schedule...
                     </div>
                   ) : availabilityData?.occupiedBookings?.length === 0 ? (
-                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium flex items-center gap-2">
+                    <div className="p-3.5 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 text-[#34D399] text-xs font-medium flex items-center gap-2">
                       <Check className="w-4 h-4" /> This facility is completely free with no confirmed sessions on this date.
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[#9E98AE]">
                         Already booked intervals (conflicts will be rejected):
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {availabilityData?.occupiedBookings?.map((occ, idx) => (
                           <span
                             key={idx}
-                            className="px-3 py-1 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-mono font-medium"
+                            className="px-3 py-1 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono font-medium"
                           >
                             🔒 {occ.startTime} - {occ.endTime} ({occ.subject})
                           </span>
@@ -333,7 +333,7 @@ const BookResource = () => {
                 </div>
 
                 {/* Purpose and details */}
-                <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="space-y-4 pt-4 border-t border-[#262135]">
                   <Input
                     label="Booking Subject / Project Title"
                     name="subject"
@@ -367,12 +367,12 @@ const BookResource = () => {
               </form>
             </Card>
           ) : (
-            <div className="flex flex-col items-center justify-center p-14 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
-              <Building2 className="w-12 h-12 text-[#387ED1]/40 mb-3 animate-pulse" />
-              <h3 className="font-display font-semibold text-slate-900 text-base">
+            <div className="flex flex-col items-center justify-center p-14 text-center rounded-2xl border border-dashed border-[#262135] bg-[#0D0C15]/50">
+              <Building2 className="w-12 h-12 text-[#7C3AED]/40 mb-3 animate-pulse" />
+              <h3 className="font-display font-semibold text-white text-base">
                 Please select a classroom or laboratory
               </h3>
-              <p className="text-xs text-slate-500 mt-1 max-w-sm">
+              <p className="text-xs text-[#9E98AE] mt-1 max-w-sm">
                 Choose any facility from the left column to view its capacity, equipment list, and schedule a reservation.
               </p>
             </div>
@@ -390,14 +390,14 @@ const BookResource = () => {
         title="Resource Reservation Submitted!"
       >
         <div className="text-center py-4 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#387ED1] mx-auto shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center text-[#A78BFA] mx-auto shadow-[0_0_15px_rgba(124,58,237,0.3)]">
             <CheckCircle className="w-8 h-8" />
           </div>
           <div>
-            <h4 className="font-display font-bold text-lg text-slate-900">
+            <h4 className="font-display font-bold text-lg text-white">
               Request Sent for {selectedResource?.name}
             </h4>
-            <p className="text-xs text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-[#9E98AE] mt-1.5 max-w-md mx-auto leading-relaxed">
               Your request for <strong>{bookingDate}</strong> from <strong>{startTime} to {endTime}</strong> has been logged. Admin review will be notified to your account shortly.
             </p>
           </div>

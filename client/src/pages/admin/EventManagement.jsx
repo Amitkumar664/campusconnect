@@ -11,7 +11,8 @@ import {
   AlertCircle,
   Search,
   Eye,
-  Download
+  Download,
+  Sparkles
 } from 'lucide-react';
 import { eventAPI, resourceAPI } from '../../services/api';
 import Card from '../../components/common/Card';
@@ -181,13 +182,16 @@ const EventManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
+            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> University Symposium Desk
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
             College Event Management & Ticketing
           </h1>
-          <p className="text-sm text-campus-textMuted mt-1">
+          <p className="text-sm text-[#9E98AE] mt-1">
             Publish hackathons, masterclasses, and seminars with digital ticketing and automated capacity tracking.
           </p>
         </div>
@@ -199,9 +203,9 @@ const EventManagement = () => {
 
       {feedback.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 shadow-inner ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
               : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
           }`}
         >
@@ -218,8 +222,8 @@ const EventManagement = () => {
       />
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-sm text-[#9E98AE] flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
           Loading events...
         </div>
       ) : (
@@ -230,45 +234,45 @@ const EventManagement = () => {
             return (
               <div
                 key={evt._id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between shadow-sm hover:border-blue-400 hover:shadow-md transition-all"
+                className="bg-[#0D0C15] rounded-2xl border border-[#262135] p-5 flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.85)] hover:border-[#7C3AED]/50 transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-lg bg-orange-50 text-[#FF5722] border border-orange-200">
+                    <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-lg bg-[#7C3AED]/20 text-[#C4B5FD] border border-[#7C3AED]/40">
                       {evt.category}
                     </span>
-                    <span className="text-xs font-mono font-medium text-slate-500">
+                    <span className="text-xs font-mono font-medium text-[#9E98AE]">
                       {evt.registeredCount} / {evt.capacity} seats ({fillRatio}%)
                     </span>
                   </div>
 
-                  <h3 className="font-display font-bold text-base text-slate-900 mt-3">
+                  <h3 className="font-display font-bold text-base text-white mt-3">
                     {evt.title}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#9E98AE] mt-1 line-clamp-2 leading-relaxed">
                     {evt.description}
                   </p>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-500">
+                  <div className="mt-4 pt-3 border-t border-[#262135] space-y-1.5 text-xs text-[#9E98AE]">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-[#387ED1]" />
+                      <Calendar className="w-3.5 h-3.5 text-[#A78BFA]" />
                       <span>{new Date(evt.eventDate).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-[#FF5722]" />
+                      <Clock className="w-3.5 h-3.5 text-[#06B6D4]" />
                       <span>{evt.startTime} - {evt.endTime}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-campus-mint" />
+                      <MapPin className="w-3.5 h-3.5 text-[#716B82]" />
                       <span className="truncate">{evt.venue}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-campus-border/60 flex items-center justify-between">
+                <div className="pt-4 mt-4 border-t border-[#262135] flex items-center justify-between">
                   <button
                     onClick={() => handleViewAttendees(evt)}
-                    className="text-xs font-semibold text-campus-primary hover:underline flex items-center gap-1"
+                    className="text-xs font-semibold text-[#A78BFA] hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <Eye className="w-3.5 h-3.5" /> Attendees ({evt.registeredCount})
                   </button>
@@ -276,14 +280,14 @@ const EventManagement = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openEditModal(evt)}
-                      className="p-1.5 rounded-lg text-campus-textSubtle hover:text-campus-text hover:bg-white/5"
+                      className="p-1.5 rounded-lg text-[#716B82] hover:text-white hover:bg-white/5 cursor-pointer"
                       title="Edit"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(evt._id)}
-                      className="p-1.5 rounded-lg text-campus-textSubtle hover:text-campus-danger hover:bg-rose-500/10"
+                      className="p-1.5 rounded-lg text-[#716B82] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -420,17 +424,17 @@ const EventManagement = () => {
         maxWidth="max-w-2xl"
       >
         {loadingAttendees ? (
-          <div className="py-8 text-center text-xs text-campus-textMuted">
+          <div className="py-8 text-center text-xs text-[#9E98AE]">
             Fetching ticket registrations...
           </div>
         ) : attendeeModal.attendees.length === 0 ? (
-          <p className="text-center py-6 text-sm text-campus-textMuted">
+          <p className="text-center py-6 text-sm text-[#716B82]">
             No students registered yet.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-campus-surface text-campus-textMuted font-mono text-[10px]">
+              <thead className="bg-[#13111C] text-[#9E98AE] font-mono text-[10px] border-b border-[#262135]">
                 <tr>
                   <th className="py-2.5 px-3">Ticket Code</th>
                   <th className="py-2.5 px-3">Student Name</th>
@@ -439,22 +443,22 @@ const EventManagement = () => {
                   <th className="py-2.5 px-3">Registered At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-campus-border/60">
+              <tbody className="divide-y divide-[#262135]">
                 {attendeeModal.attendees.map((att) => (
-                  <tr key={att._id} className="hover:bg-white/5">
-                    <td className="py-2.5 px-3 font-mono font-bold text-campus-primary">
+                  <tr key={att._id} className="hover:bg-white/[0.02]">
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#A78BFA]">
                       {att.ticketCode}
                     </td>
-                    <td className="py-2.5 px-3 font-semibold text-campus-text">
+                    <td className="py-2.5 px-3 font-semibold text-white">
                       {att.user?.fullName}
                     </td>
-                    <td className="py-2.5 px-3 text-campus-textMuted">
+                    <td className="py-2.5 px-3 text-[#9E98AE]">
                       {att.user?.department}
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-campus-textSubtle">
+                    <td className="py-2.5 px-3 font-mono text-[#716B82]">
                       {att.user?.studentOrEmployeeId}
                     </td>
-                    <td className="py-2.5 px-3 text-campus-textSubtle font-mono">
+                    <td className="py-2.5 px-3 text-[#716B82] font-mono">
                       {new Date(att.registeredAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -469,4 +473,3 @@ const EventManagement = () => {
 };
 
 export default EventManagement;
-

@@ -47,19 +47,20 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300 font-sans">
       {/* Admin Hero Header */}
-      <div className="relative rounded-2xl p-6 sm:p-8 bg-gradient-to-r from-blue-50/80 via-white to-blue-50/30 border border-blue-200/80 overflow-hidden shadow-sm">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-400/[0.08] rounded-full blur-[100px] pointer-events-none" />
+      <div className="relative rounded-2xl p-6 sm:p-8 bg-[#0D0C15] border border-[#262135] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85)] group">
+        <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-60" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#7C3AED]/[0.08] rounded-full blur-[120px] pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#387ED1] font-semibold">
-              <Sparkles className="w-3.5 h-3.5" /> Central Administration Control
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold shadow-inner">
+              <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> Central Administration Control
             </div>
-            <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">
+            <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
               Institutional Operations Command
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-xl">
+            <p className="text-xs sm:text-sm text-[#9E98AE] max-w-xl">
               Audit room reservations, publish official events, manage faculty accounts, and analyze campus asset utilization.
             </p>
           </div>
@@ -86,7 +87,7 @@ const AdminDashboard = () => {
           value={kpis?.totalStudents || 0}
           subtitle="Verified active accounts"
           icon={Users}
-          variant="blue"
+          variant="purple"
         />
         <StatCard
           title="Faculty Members"
@@ -113,17 +114,17 @@ const AdminDashboard = () => {
 
       {/* Operational Modules Shortcut Grid */}
       <div>
-        <h3 className="font-display font-semibold text-lg text-slate-900 mb-4">
+        <h3 className="font-display font-semibold text-lg text-white mb-4 tracking-tight">
           Administrative Modules
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link to="/admin/bookings" className="group">
             <Card interactive className="h-full">
-              <CalendarCheck className="w-8 h-8 text-[#387ED1] mb-3 group-hover:scale-105 transition-transform" />
-              <h4 className="font-display font-semibold text-base text-slate-900">
+              <CalendarCheck className="w-8 h-8 text-[#A78BFA] mb-3 group-hover:scale-105 transition-transform" />
+              <h4 className="font-display font-semibold text-base text-white">
                 Master Bookings
               </h4>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[#9E98AE] mt-1">
                 Approve or reject resource allocations and monitor doubt sessions.
               </p>
             </Card>
@@ -131,11 +132,11 @@ const AdminDashboard = () => {
 
           <Link to="/admin/resources" className="group">
             <Card interactive className="h-full">
-              <Building2 className="w-8 h-8 text-[#FF5722] mb-3 group-hover:scale-105 transition-transform" />
-              <h4 className="font-display font-semibold text-base text-slate-900">
+              <Building2 className="w-8 h-8 text-[#06B6D4] mb-3 group-hover:scale-105 transition-transform" />
+              <h4 className="font-display font-semibold text-base text-white">
                 Facility & Lab Manager
               </h4>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[#9E98AE] mt-1">
                 Add computer labs, update equipment capacity, and toggle availability.
               </p>
             </Card>
@@ -143,11 +144,11 @@ const AdminDashboard = () => {
 
           <Link to="/admin/events" className="group">
             <Card interactive className="h-full">
-              <Calendar className="w-8 h-8 text-emerald-600 mb-3 group-hover:scale-105 transition-transform" />
-              <h4 className="font-display font-semibold text-base text-slate-900">
+              <Calendar className="w-8 h-8 text-[#10B981] mb-3 group-hover:scale-105 transition-transform" />
+              <h4 className="font-display font-semibold text-base text-white">
                 College Event Publishing
               </h4>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[#9E98AE] mt-1">
                 Create hackathons, workshops, set ticket caps, and monitor turnouts.
               </p>
             </Card>
@@ -155,11 +156,11 @@ const AdminDashboard = () => {
 
           <Link to="/admin/users" className="group">
             <Card interactive className="h-full">
-              <Users className="w-8 h-8 text-sky-600 mb-3 group-hover:scale-105 transition-transform" />
-              <h4 className="font-display font-semibold text-base text-slate-900">
+              <Users className="w-8 h-8 text-[#F59E0B] mb-3 group-hover:scale-105 transition-transform" />
+              <h4 className="font-display font-semibold text-base text-white">
                 User Directory & Roles
               </h4>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[#9E98AE] mt-1">
                 Manage student, faculty, and administrative account statuses.
               </p>
             </Card>
@@ -172,19 +173,19 @@ const AdminDashboard = () => {
         title="Pending Resource & Session Bookings Requiring Attention"
         subtitle="Review and action requests to release or commit campus spaces"
         action={
-          <Link to="/admin/bookings" className="text-xs text-[#387ED1] hover:underline flex items-center gap-1 font-medium">
+          <Link to="/admin/bookings" className="text-xs text-[#A78BFA] hover:text-white flex items-center gap-1 font-medium transition-colors">
             View master registry <ArrowRight className="w-3 h-3" />
           </Link>
         }
       >
         {pendingBookings.length === 0 ? (
-          <div className="py-8 text-center text-sm text-slate-400">
+          <div className="py-8 text-center text-sm text-[#716B82]">
             ✓ All booking requests are currently up to date!
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-500 uppercase font-mono text-[10px] border-b border-slate-200">
+              <thead className="bg-[#13111C] text-[#9E98AE] uppercase font-mono text-[10px] border-b border-[#262135]">
                 <tr>
                   <th className="py-3 px-4">Type</th>
                   <th className="py-3 px-4">Subject</th>
@@ -194,26 +195,26 @@ const AdminDashboard = () => {
                   <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#262135]">
                 {pendingBookings.map((b) => (
-                  <tr key={b._id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={b._id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-4">
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 uppercase">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-md bg-[#1B1828] text-[#9E98AE] border border-[#262135] uppercase">
                         {b.bookingType === 'faculty_session' ? 'Faculty Doubt' : 'Lab / Room'}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-slate-900 max-w-xs truncate">
+                    <td className="py-3 px-4 font-semibold text-white max-w-xs truncate">
                       {b.subject}
                     </td>
-                    <td className="py-3 px-4 text-slate-500">
+                    <td className="py-3 px-4 text-[#9E98AE]">
                       {b.requester?.fullName} ({b.requester?.studentOrEmployeeId})
                     </td>
-                    <td className="py-3 px-4 text-[#387ED1] font-medium">
+                    <td className="py-3 px-4 text-[#A78BFA] font-medium">
                       {b.bookingType === 'faculty_session'
                         ? b.faculty?.fullName
                         : b.resource?.name}
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-400">
+                    <td className="py-3 px-4 font-mono text-[#716B82]">
                       {new Date(b.date).toLocaleDateString()} • {b.startTime}-{b.endTime}
                     </td>
                     <td className="py-3 px-4 text-right">

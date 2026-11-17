@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   GraduationCap,
   Lock,
@@ -9,7 +9,6 @@ import {
   Building,
   IdCard,
   ArrowRight,
-  Sparkles,
   ShieldCheck,
   CheckCircle2
 } from 'lucide-react';
@@ -78,9 +77,9 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 relative overflow-hidden my-8">
+    <div className="min-h-screen bg-[#08070D] text-[#ECE8F5] mesh-bg flex items-center justify-center p-4 relative overflow-hidden my-8 font-sans">
       {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#7C3AED]/[0.08] rounded-full blur-[160px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -91,76 +90,69 @@ const Register = () => {
         {/* Header Branding */}
         <div className="text-center mb-6">
           <Link to="/" className="inline-flex items-center gap-3 mb-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-[#387ED1] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#7C3AED] flex items-center justify-center text-white shadow-[0_0_20px_rgba(124,58,237,0.5)] group-hover:scale-105 transition-transform">
               <GraduationCap className="w-6 h-6" />
             </div>
           </Link>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">
-            Join Campus<span className="text-[#387ED1]">Connect</span>
+          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+            CAMPUS<span className="text-[#8B5CF6]">.CONNECT</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Create your institutional university account for room booking & faculty mentorship
+          <p className="text-xs sm:text-sm text-[#9E98AE] mt-1">
+            Create your institutional account
           </p>
         </div>
 
-        {/* Card Form */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        {/* Card */}
+        <div className="bg-[#0D0C15] rounded-2xl border border-[#262135] p-6 sm:p-9 shadow-[0_25px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
+          <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-60" />
+
           {error && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-400 font-medium"
             >
               {error}
             </motion.div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Animated Role Switcher Tabs */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
-                Select Account Role
+            {/* Role Selector Pill */}
+            <div className="space-y-1.5">
+              <label className="block text-[11px] font-semibold text-[#9E98AE] uppercase tracking-wider">
+                Select Your Role <span className="text-[#8B5CF6]">*</span>
               </label>
-              <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 relative">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, role: 'student' })}
-                  className={`relative py-2.5 text-xs font-semibold rounded-lg transition-colors z-10 ${
-                    formData.role === 'student' ? 'text-[#387ED1]' : 'text-slate-600 hover:text-slate-900'
+                  onClick={() => setFormData((p) => ({ ...p, role: 'student' }))}
+                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    formData.role === 'student'
+                      ? 'bg-[#7C3AED]/20 border-[#7C3AED] text-white shadow-[0_0_15px_rgba(124,58,237,0.3)]'
+                      : 'bg-[#13111C] border-[#262135] text-[#9E98AE] hover:text-white'
                   }`}
                 >
-                  {formData.role === 'student' && (
-                    <motion.div
-                      layoutId="registerRolePill"
-                      className="absolute inset-0 bg-white border border-blue-200 rounded-lg shadow-sm -z-10"
-                      transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-                    />
-                  )}
+                  <GraduationCap className="w-4 h-4" />
                   Student Account
                 </button>
-
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, role: 'faculty' })}
-                  className={`relative py-2.5 text-xs font-semibold rounded-lg transition-colors z-10 ${
-                    formData.role === 'faculty' ? 'text-[#387ED1]' : 'text-slate-600 hover:text-slate-900'
+                  onClick={() => setFormData((p) => ({ ...p, role: 'faculty' }))}
+                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    formData.role === 'faculty'
+                      ? 'bg-[#7C3AED]/20 border-[#7C3AED] text-white shadow-[0_0_15px_rgba(124,58,237,0.3)]'
+                      : 'bg-[#13111C] border-[#262135] text-[#9E98AE] hover:text-white'
                   }`}
                 >
-                  {formData.role === 'faculty' && (
-                    <motion.div
-                      layoutId="registerRolePill"
-                      className="absolute inset-0 bg-white border border-blue-200 rounded-lg shadow-sm -z-10"
-                      transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-                    />
-                  )}
-                  Faculty / Mentor Account
+                  <Building className="w-4 h-4" />
+                  Faculty Account
                 </button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Full Name"
+                label="Full Legal Name"
                 name="fullName"
                 placeholder="e.g. Aarav Mehta"
                 value={formData.fullName}
@@ -170,7 +162,7 @@ const Register = () => {
               />
 
               <Input
-                label="Official University Email"
+                label="Institutional Email"
                 name="email"
                 type="email"
                 placeholder="e.g. name@campusconnect.edu"
@@ -183,17 +175,7 @@ const Register = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label={formData.role === 'student' ? 'Student ID / Roll No' : 'Employee ID'}
-                name="studentOrEmployeeId"
-                placeholder={formData.role === 'student' ? 'e.g. STU-2023-CS-042' : 'e.g. FAC-CSE-101'}
-                value={formData.studentOrEmployeeId}
-                onChange={handleChange}
-                icon={IdCard}
-                required
-              />
-
-              <Input
-                label="Account Password"
+                label="Password"
                 name="password"
                 type="password"
                 placeholder="Min 6 characters"
@@ -202,60 +184,73 @@ const Register = () => {
                 icon={Lock}
                 required
               />
+
+              <Input
+                label={formData.role === 'student' ? 'Roll / Enrollment #' : 'Employee / Faculty ID'}
+                name="studentOrEmployeeId"
+                placeholder={formData.role === 'student' ? 'e.g. CS2026-042' : 'e.g. FAC-CSE-009'}
+                value={formData.studentOrEmployeeId}
+                onChange={handleChange}
+                icon={IdCard}
+                required
+              />
             </div>
 
-            <Input
-              label="Academic Department"
-              name="department"
-              type="select"
-              value={formData.department}
-              onChange={handleChange}
-              options={departments}
-              required
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Academic Department"
+                name="department"
+                type="select"
+                value={formData.department}
+                onChange={handleChange}
+                options={departments}
+                icon={Building}
+              />
 
-            <AnimatePresence>
-              {formData.role === 'faculty' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100"
-                >
-                  <Input
-                    label="Designation"
-                    name="designation"
-                    placeholder="e.g. Associate Professor"
-                    value={formData.designation}
-                    onChange={handleChange}
-                  />
-                  <Input
-                    label="Office Cabin"
-                    name="officeRoom"
-                    placeholder="e.g. Block B, Cabin 302"
-                    value={formData.officeRoom}
-                    onChange={handleChange}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <Input
+                label="Contact Phone (Optional)"
+                name="phone"
+                placeholder="e.g. +91 98765 43210"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+
+            {formData.role === 'faculty' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 rounded-xl bg-[#13111C] border border-[#262135]">
+                <Input
+                  label="Academic Designation"
+                  name="designation"
+                  placeholder="e.g. Associate Professor"
+                  value={formData.designation}
+                  onChange={handleChange}
+                />
+                <Input
+                  label="Office Room / Block"
+                  name="officeRoom"
+                  placeholder="e.g. Ramanujan Block 304"
+                  value={formData.officeRoom}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
             <Button
               type="submit"
               variant="primary"
               size="lg"
               loading={loading}
-              className="w-full mt-4 py-3"
+              className="w-full mt-4"
             >
-              Create Official Account <ArrowRight className="w-4 h-4 ml-1" />
+              Complete Registration <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </form>
         </div>
 
-        <p className="text-center text-xs text-slate-500 mt-5">
-          Already registered?{' '}
-          <Link to="/login" className="text-[#387ED1] hover:underline font-semibold">
-            Sign in to portal
+        <p className="text-center text-xs text-[#9E98AE] mt-6">
+          Already have an account?{' '}
+          <Link to="/login" className="text-[#A78BFA] hover:text-white font-semibold transition-colors">
+            Sign in here
           </Link>
         </p>
       </motion.div>

@@ -9,7 +9,8 @@ import {
   User,
   Building,
   Mail,
-  Phone
+  Phone,
+  Sparkles
 } from 'lucide-react';
 import { bookingAPI } from '../../services/api';
 import Card from '../../components/common/Card';
@@ -100,27 +101,30 @@ const SessionRequests = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
+            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> Student Inquiries Desk
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Doubt-Clearing Session Requests
           </h1>
-          <p className="text-sm text-campus-textMuted mt-1">
+          <p className="text-sm text-[#9E98AE] mt-1">
             Review incoming student inquiries and manage scheduled appointments.
           </p>
         </div>
 
         {/* Filter Toggle */}
-        <div className="flex items-center gap-2 bg-campus-card p-1 rounded-xl border border-campus-border">
+        <div className="flex items-center gap-2 bg-[#13111C] p-1 rounded-xl border border-[#262135]">
           {['pending', 'approved', 'rejected', 'all'].map((tab) => (
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
                 statusFilter === tab
-                  ? 'bg-[#387ED1] text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#7C3AED] text-white shadow-[0_0_12px_rgba(124,58,237,0.4)]'
+                  : 'text-[#9E98AE] hover:text-white hover:bg-white/5'
               }`}
             >
               {tab}
@@ -131,10 +135,10 @@ const SessionRequests = () => {
 
       {feedback.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 shadow-inner ${
             feedback.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              : 'bg-rose-50 border-rose-200 text-rose-700'
+              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
           }`}
         >
           {feedback.type === 'success' ? <CheckCircle className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
@@ -143,17 +147,17 @@ const SessionRequests = () => {
       )}
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-slate-500 flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-sm text-[#9E98AE] flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
           Loading student session requests...
         </div>
       ) : sessions.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
-          <ClipboardList className="w-12 h-12 text-[#387ED1]/40 mx-auto mb-3" />
-          <h3 className="font-display font-semibold text-slate-900 text-base">
+        <div className="p-12 text-center rounded-2xl border border-dashed border-[#262135] bg-[#0D0C15]/50">
+          <ClipboardList className="w-12 h-12 text-[#7C3AED]/40 mx-auto mb-3" />
+          <h3 className="font-display font-semibold text-white text-base">
             No {statusFilter !== 'all' ? statusFilter : ''} requests found
           </h3>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[#9E98AE] mt-1">
             There are currently no session requests matching this view filter.
           </p>
         </div>
@@ -162,42 +166,42 @@ const SessionRequests = () => {
           {sessions.map((req) => (
             <div
               key={req._id}
-              className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:border-blue-300 hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+              className="bg-[#0D0C15] rounded-2xl border border-[#262135] p-5 sm:p-6 shadow-[0_15px_35px_rgba(0,0,0,0.85)] hover:border-[#7C3AED]/40 transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-6"
             >
               {/* Student and Request Details */}
               <div className="space-y-2 flex-1">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="font-display font-bold text-base text-slate-900">
+                  <span className="font-display font-bold text-base text-white">
                     {req.requester?.fullName}
                   </span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 font-mono text-[#387ED1] font-semibold">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#7C3AED]/15 border border-[#7C3AED]/30 font-mono text-[#A78BFA] font-semibold">
                     {req.requester?.studentOrEmployeeId}
                   </span>
-                  <span className="text-xs text-slate-400">• {req.requester?.department}</span>
+                  <span className="text-xs text-[#716B82]">• {req.requester?.department}</span>
                   <StatusBadge status={req.status} />
                 </div>
 
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                  <h4 className="font-semibold text-sm text-[#387ED1]">
+                <div className="bg-[#13111C] p-3.5 rounded-xl border border-[#262135]">
+                  <h4 className="font-semibold text-sm text-[#A78BFA]">
                     Topic: {req.subject}
                   </h4>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                  <p className="text-xs text-[#C7C3D6] mt-1 leading-relaxed">
                     "{req.description}"
                   </p>
                 </div>
 
                 {req.rejectionReason && (
-                  <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
+                  <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-400">
                     <strong>Declined Reason:</strong> {req.rejectionReason}
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 font-mono pt-1">
+                <div className="flex flex-wrap items-center gap-4 text-xs text-[#9E98AE] font-mono pt-1">
                   <span>📅 {new Date(req.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   <span>⏰ {req.startTime} - {req.endTime} ({req.durationMinutes} mins)</span>
                   {req.requester?.email && (
                     <span className="flex items-center gap-1 font-sans">
-                      <Mail className="w-3 h-3 text-slate-400" /> {req.requester?.email}
+                      <Mail className="w-3 h-3 text-[#716B82]" /> {req.requester?.email}
                     </span>
                   )}
                 </div>
@@ -205,7 +209,7 @@ const SessionRequests = () => {
 
               {/* Action Buttons */}
               {req.status === 'pending' && (
-                <div className="flex items-center gap-3 flex-shrink-0 self-end lg:self-center pt-3 lg:pt-0 border-t lg:border-t-0 border-campus-border/60">
+                <div className="flex items-center gap-3 flex-shrink-0 self-end lg:self-center pt-3 lg:pt-0 border-t lg:border-t-0 border-[#262135]">
                   <Button
                     variant="ghost"
                     size="md"
@@ -213,7 +217,7 @@ const SessionRequests = () => {
                       setActiveSession(req);
                       setRejectModalOpen(true);
                     }}
-                    className="text-campus-danger hover:bg-rose-500/10 border border-campus-danger/30"
+                    className="text-rose-400 hover:bg-rose-500/10 border border-rose-500/30"
                   >
                     <X className="w-4 h-4 mr-1" /> Decline
                   </Button>
@@ -255,7 +259,7 @@ const SessionRequests = () => {
         }
       >
         <div className="space-y-4">
-          <p className="text-xs text-campus-textMuted">
+          <p className="text-xs text-[#9E98AE]">
             Please provide a constructive explanation for the student (e.g. Schedule clash with departmental meeting, Please submit doubt during lab hour):
           </p>
           <textarea
@@ -263,7 +267,7 @@ const SessionRequests = () => {
             value={rejectionReason}
             onChange={(e) => setRejectionReason(e.target.value)}
             placeholder="Enter reason..."
-            className="w-full bg-campus-surface border border-campus-border rounded-xl p-3 text-sm text-campus-text focus:outline-none focus:border-campus-primary"
+            className="w-full bg-[#0D0C15] border border-[#262135] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#8B5CF6] shadow-inner resize-none font-medium"
           />
         </div>
       </Modal>
@@ -272,4 +276,3 @@ const SessionRequests = () => {
 };
 
 export default SessionRequests;
-

@@ -10,14 +10,14 @@ const EmptyState = ({
   onAction
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center rounded-2xl border border-dashed border-campus-border bg-campus-card/50">
-      <div className="w-14 h-14 rounded-2xl bg-campus-primary/10 border border-campus-primary/20 flex items-center justify-center text-campus-primary mb-4">
+    <div className="flex flex-col items-center justify-center py-12 px-4 text-center rounded-2xl border border-dashed border-[#262135] bg-[#0D0C15]/50">
+      <div className="w-14 h-14 rounded-2xl bg-[#7C3AED]/10 border border-[#7C3AED]/20 flex items-center justify-center text-[#A78BFA] mb-4">
         <Icon className="w-7 h-7" />
       </div>
-      <h4 className="font-display font-semibold text-campus-text text-base md:text-lg mb-1">
+      <h4 className="font-display font-semibold text-white text-base md:text-lg mb-1">
         {title}
       </h4>
-      <p className="text-sm text-campus-textMuted max-w-sm mb-6">
+      <p className="text-sm text-[#9E98AE] max-w-sm mb-6">
         {description}
       </p>
       {actionLabel && onAction && (
@@ -30,4 +30,3 @@ const EmptyState = ({
 };
 
 export default EmptyState;
-

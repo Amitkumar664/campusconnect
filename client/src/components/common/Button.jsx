@@ -13,21 +13,25 @@ const Button = ({
   icon: Icon
 }) => {
   const baseClasses =
-    'relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed select-none shine-sweep overflow-hidden cursor-pointer';
+    'relative inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#08070D] disabled:opacity-50 disabled:cursor-not-allowed select-none shine-sweep overflow-hidden cursor-pointer';
 
   const variants = {
     primary:
-      'bg-[#387ED1] hover:bg-[#2B6EB8] text-white font-semibold shadow-[0_2px_6px_rgba(56,126,209,0.25)] hover:shadow-[0_4px_12px_rgba(56,126,209,0.35)] focus:ring-[#387ED1]',
-    amber:
-      'bg-[#FF5722] hover:bg-[#EA4A16] text-white font-semibold shadow-[0_2px_6px_rgba(255,87,34,0.25)] hover:shadow-[0_4px_12px_rgba(255,87,34,0.35)] focus:ring-[#FF5722]',
+      'bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-semibold shadow-[0_0_25px_-4px_rgba(124,58,237,0.5)] hover:shadow-[0_0_35px_-4px_rgba(124,58,237,0.7)] border-t border-white/20 focus:ring-[#7C3AED]',
+    white:
+      'bg-white hover:bg-slate-100 text-[#08070D] font-bold shadow-md focus:ring-white',
     secondary:
-      'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 shadow-sm hover:border-slate-300 focus:ring-[#387ED1]',
+      'bg-white/[0.05] hover:bg-white/[0.09] text-white border border-white/10 hover:border-violet-500/40 shadow-sm focus:ring-[#7C3AED]',
     outline:
-      'bg-transparent border border-[#387ED1] text-[#387ED1] hover:bg-blue-50/60 focus:ring-[#387ED1]',
+      'bg-transparent border border-[#7C3AED] text-[#A78BFA] hover:bg-violet-500/10 focus:ring-[#7C3AED]',
+    emerald:
+      'bg-[#10B981] hover:bg-[#059669] text-white font-semibold shadow-sm focus:ring-[#10B981]',
     danger:
-      'bg-[#DF514C] hover:bg-[#CF403B] text-white font-medium shadow-sm focus:ring-[#DF514C]',
+      'bg-[#EF4444] hover:bg-[#DC2626] text-white font-medium shadow-sm focus:ring-[#EF4444]',
+    amber:
+      'bg-[#F59E0B] hover:bg-[#D97706] text-[#08070D] font-bold shadow-sm focus:ring-[#F59E0B]',
     ghost:
-      'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent focus:ring-slate-300'
+      'bg-transparent text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent focus:ring-white/10'
   };
 
   const sizes = {

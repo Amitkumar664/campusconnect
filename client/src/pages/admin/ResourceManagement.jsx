@@ -10,7 +10,8 @@ import {
   AlertCircle,
   Search,
   Check,
-  Ban
+  Ban,
+  Sparkles
 } from 'lucide-react';
 import { resourceAPI } from '../../services/api';
 import Card from '../../components/common/Card';
@@ -159,13 +160,16 @@ const ResourceManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-campus-text">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
+            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> Campus Physical Asset Registry
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Campus Resource Management
           </h1>
-          <p className="text-sm text-campus-textMuted mt-1">
+          <p className="text-sm text-[#9E98AE] mt-1">
             Provision smart lecture halls, advanced computer laboratories, and specialized facilities.
           </p>
         </div>
@@ -177,9 +181,9 @@ const ResourceManagement = () => {
 
       {feedback.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 ${
+          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 shadow-inner ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
               : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
           }`}
         >
@@ -198,8 +202,8 @@ const ResourceManagement = () => {
 
       {/* Resource Cards Grid */}
       {loading ? (
-        <div className="py-16 text-center text-sm text-campus-textMuted flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-campus-primary border-t-transparent rounded-full animate-spin" />
+        <div className="py-16 text-center text-sm text-[#9E98AE] flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
           Loading campus inventory...
         </div>
       ) : (
@@ -207,30 +211,30 @@ const ResourceManagement = () => {
           {filteredResources.map((res) => (
             <div
               key={res._id}
-              className={`bg-white rounded-2xl border p-5 flex flex-col justify-between shadow-sm transition-all ${
-                res.isActive ? 'border-slate-200 hover:border-blue-400 hover:shadow-md' : 'border-slate-200 opacity-60'
+              className={`bg-[#0D0C15] rounded-2xl border p-5 flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.85)] transition-all ${
+                res.isActive ? 'border-[#262135] hover:border-[#7C3AED]/50' : 'border-[#262135]/60 opacity-60'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[#387ED1] font-bold">
+                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-[#C4B5FD] font-bold">
                     {res.code}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-[#FF5722] font-semibold bg-orange-50 px-2 py-0.5 rounded-lg border border-orange-200">
+                  <div className="flex items-center gap-1.5 text-xs text-[#A78BFA] font-semibold bg-[#7C3AED]/15 px-2 py-0.5 rounded-lg border border-[#7C3AED]/30">
                     <Users className="w-3.5 h-3.5" />
                     <span>{res.capacity} seats</span>
                   </div>
                 </div>
 
-                <h3 className="font-display font-bold text-base text-slate-900 mt-3">
+                <h3 className="font-display font-bold text-base text-white mt-3">
                   {res.name}
                 </h3>
-                <p className="text-xs text-slate-500 capitalize mt-0.5">
+                <p className="text-xs text-[#9E98AE] capitalize mt-0.5">
                   Type: {res.type}
                 </p>
 
-                <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-xs text-[#716B82] mt-2 font-mono">
+                  <MapPin className="w-3.5 h-3.5 text-[#716B82] flex-shrink-0" />
                   <span>{res.building}, {res.floor}</span>
                 </div>
 
@@ -239,7 +243,7 @@ const ResourceManagement = () => {
                     {res.amenities.map((a, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-slate-600"
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-[#1B1828] border border-[#262135] text-[#C7C3D6]"
                       >
                         ✓ {a}
                       </span>
@@ -249,13 +253,13 @@ const ResourceManagement = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-4 mt-4 border-t border-[#262135] flex items-center justify-between">
                 <button
                   onClick={() => handleToggleStatus(res)}
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all ${
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     res.isActive
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : 'bg-slate-100 text-slate-600 border border-slate-200'
+                      ? 'bg-[#10B981]/15 text-[#34D399] border border-[#10B981]/30'
+                      : 'bg-[#1B1828] text-[#716B82] border border-[#262135]'
                   }`}
                 >
                   {res.isActive ? 'Active' : 'Deactivated'}
@@ -264,14 +268,14 @@ const ResourceManagement = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => openEditModal(res)}
-                    className="p-1.5 rounded-lg text-campus-textSubtle hover:text-campus-text hover:bg-white/5"
+                    className="p-1.5 rounded-lg text-[#716B82] hover:text-white hover:bg-white/5 cursor-pointer"
                     title="Edit"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(res._id)}
-                    className="p-1.5 rounded-lg text-campus-textSubtle hover:text-campus-danger hover:bg-rose-500/10"
+                    className="p-1.5 rounded-lg text-[#716B82] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -383,4 +387,3 @@ const ResourceManagement = () => {
 };
 
 export default ResourceManagement;
-

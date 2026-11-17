@@ -17,23 +17,23 @@ const Input = ({
   icon: Icon
 }) => {
   const baseInputClasses =
-    'w-full bg-white hover:bg-slate-50/50 border rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none transition-all duration-200 text-xs sm:text-sm font-medium shadow-sm';
+    'w-full bg-[#0D0C15] hover:bg-[#13111C] border rounded-xl text-white placeholder-[#716B82] focus:outline-none transition-all duration-200 text-xs sm:text-sm font-medium shadow-inner';
   const borderClasses = error
-    ? 'border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-    : 'border-slate-200 focus:border-[#387ED1] focus:ring-2 focus:ring-[#387ED1]/20 focus:bg-white';
+    ? 'border-rose-500/60 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
+    : 'border-[#262135] focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:bg-[#141220]';
   const paddingClasses = Icon ? 'pl-10 pr-4 py-2.5' : 'px-4 py-2.5';
 
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
-          {label} {required && <span className="text-rose-500">*</span>}
+        <label htmlFor={name} className="block text-[11px] font-semibold text-[#9E98AE] uppercase tracking-wider">
+          {label} {required && <span className="text-[#8B5CF6]">*</span>}
         </label>
       )}
 
       <div className="relative">
         {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#716B82]">
             <Icon className="w-4 h-4" />
           </div>
         )}
@@ -59,7 +59,7 @@ const Input = ({
             className={`${baseInputClasses} ${borderClasses} ${paddingClasses} appearance-none cursor-pointer`}
           >
             {options.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-white text-slate-900">
+              <option key={opt.value} value={opt.value} className="bg-[#13111C] text-white">
                 {opt.label}
               </option>
             ))}
@@ -79,9 +79,9 @@ const Input = ({
       </div>
 
       {error ? (
-        <p className="text-xs text-rose-500 mt-1 font-medium">{error}</p>
+        <p className="text-xs text-rose-400 mt-1 font-medium">{error}</p>
       ) : helperText ? (
-        <p className="text-xs text-slate-400 mt-1">{helperText}</p>
+        <p className="text-xs text-[#716B82] mt-1">{helperText}</p>
       ) : null}
     </div>
   );

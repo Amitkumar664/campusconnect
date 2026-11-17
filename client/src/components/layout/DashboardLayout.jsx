@@ -22,10 +22,10 @@ const DashboardLayout = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex relative overflow-hidden mesh-bg">
-      {/* Ambient background glows */}
-      <div className="fixed top-0 left-1/4 w-[600px] h-[350px] bg-blue-500/[0.03] rounded-full blur-[140px] pointer-events-none" />
-      <div className="fixed bottom-0 right-10 w-[500px] h-[400px] bg-sky-500/[0.02] rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-[#08070D] text-[#ECE8F5] flex relative overflow-hidden mesh-bg">
+      {/* Ambient atmospheric violet glows */}
+      <div className="fixed -top-40 left-1/4 w-[650px] h-[450px] bg-[#7C3AED]/[0.08] rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed -bottom-40 right-10 w-[550px] h-[450px] bg-[#8B5CF6]/[0.06] rounded-full blur-[170px] pointer-events-none" />
 
       {/* Sidebar Navigation */}
       <Sidebar
