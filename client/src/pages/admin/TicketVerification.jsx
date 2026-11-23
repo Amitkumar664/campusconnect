@@ -12,7 +12,9 @@ import {
   Undo2,
   RefreshCw,
   ShieldCheck,
-  Check
+  Check,
+  Smartphone,
+  Monitor
 } from 'lucide-react';
 import { ticketAPI, eventAPI } from '../../services/api';
 
@@ -21,6 +23,7 @@ const TicketVerification = () => {
   const [selectedEventId, setSelectedEventId] = useState('');
   const [doorData, setDoorData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [viewMode, setViewMode] = useState('desk'); // 'desk' | 'mobile'
 
   // Scanner / Quick search input
   const [scanQuery, setScanQuery] = useState('');
