@@ -87,10 +87,8 @@ const bookingSchema = new mongoose.Schema(
   }
 );
 
-// Prevent duplicate active booking by the same student for the same event
+// Compound indexes
 bookingSchema.index({ event: 1, user: 1, status: 1 });
-bookingSchema.index({ ticketCode: 1 }, { unique: true });
-bookingSchema.index({ bookingId: 1 }, { unique: true });
 bookingSchema.index({ user: 1, createdAt: -1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

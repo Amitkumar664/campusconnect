@@ -44,9 +44,11 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, message: res.data.message || 'Login failed' };
     } catch (error) {
+      const msg = error.response?.data?.message ||
+        (!error.response ? 'Cannot connect to server. Please ensure the backend is running on port 5000.' : 'Login failed. Please verify your credentials.');
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed. Please verify your credentials.'
+        message: msg
       };
     }
   };
@@ -63,9 +65,11 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, message: res.data.message };
     } catch (error) {
+      const msg = error.response?.data?.message ||
+        (!error.response ? 'Cannot connect to server. Please ensure the backend is running on port 5000.' : 'Registration failed.');
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed.'
+        message: msg
       };
     }
   };

@@ -52,7 +52,8 @@ const eventSchema = new mongoose.Schema(
           'competition',
           'festival',
           'hackathon',
-          'sports'
+          'sports',
+          'webinar'
         ],
         message: '{VALUE} is not a valid event category'
       },
