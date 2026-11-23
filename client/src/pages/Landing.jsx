@@ -225,21 +225,21 @@ const Landing = () => {
          ======================================================== */}
       <div className="bg-black text-white text-[11px] font-mono font-bold tracking-widest uppercase py-2.5 px-4 overflow-hidden border-b border-black">
         <div className="flex items-center gap-8 whitespace-nowrap animate-marquee">
-          <span>THE 2026 CAMPUS FESTIVAL</span>
+          <span>THE 2026-2027 CAMPUS FESTIVAL</span>
           <span className="text-[#FFE600]">★</span>
-          <span>GRAVITY HAS NO LIMITS HERE</span>
+          <span>COLLEGE HACKATHONS & SQUAD BUILDER</span>
           <span className="text-[#FFE600]">★</span>
-          <span>FEEL THE THRILL • LIVE THE STUNT</span>
+          <span>INTER-COLLEGE SPORTS CHAMPIONSHIPS</span>
           <span className="text-[#FFE600]">★</span>
-          <span>LEARN & WIN PRIZES</span>
+          <span>VIRTUAL WEBINARS & LIVE SESSIONS</span>
           <span className="text-[#FFE600]">★</span>
-          <span>JOIN THE ADVENTURE ON TWO WHEELS & CODE</span>
+          <span>INSTANT DIGITAL QR TICKETS & SEATS</span>
           <span className="text-[#FFE600]">★</span>
-          <span>100+ EVENTS & HACKATHONS</span>
+          <span>100+ CAMPUS COMPETITIONS & FESTIVALS</span>
           <span className="text-[#FFE600]">★</span>
-          <span>ATOMIC QR TICKETING & DOOR VERIFICATION</span>
+          <span>ANALYZE WITH AI (COMING SOON)</span>
           <span className="text-[#FFE600]">★</span>
-          <span>AI-POWERED PREDICTOR</span>
+          <span>DOOR STAFF SCANNER (COMING SOON)</span>
         </div>
       </div>
 
@@ -259,7 +259,7 @@ const Landing = () => {
         <div className="absolute top-44 left-10 sm:left-24 -rotate-12 z-20 hidden md:block">
           <div className="bg-[#E9D5FF] text-black border-2 border-black font-mono font-black text-xs px-3.5 py-1.5 shadow-[3px_3px_0px_#000] flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-black" />
-            <span>CAMPUS ARENA · 24-26 NOV 2026</span>
+            <span>CAMPUS ARENA · 2026-2027</span>
           </div>
         </div>
 
@@ -267,7 +267,7 @@ const Landing = () => {
         <div className="absolute top-28 right-8 sm:right-20 pointer-events-none select-none z-10 hidden sm:block">
           <div className="w-24 h-24 rounded-full bg-[#E9D5FF] border-2 border-black flex items-center justify-center p-2 shadow-[4px_4px_0px_#000] text-center rotate-6">
             <span className="font-mono text-[9px] font-black tracking-tight text-black leading-tight uppercase">
-              ★ CAMPUSCONNECT ★<br />2026 EDITION<br />CREATIVITY
+              ★ CAMPUSCONNECT ★<br />2026-2027 EDITION<br />CREATIVITY
             </span>
           </div>
         </div>
@@ -284,11 +284,11 @@ const Landing = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <span className="font-display font-black text-2xl sm:text-3xl text-black tracking-tighter uppercase drop-shadow-[1px_1px_0px_#FFF]">
-              CONFERIO<span className="text-[#387ED1]">.CC</span>
+              CAMPUSCONNECT<span className="text-[#387ED1]">.CC</span>
             </span>
           </Link>
 
-          {/* Center Links (CONFERIO style: HOME +, EVENTS +, PAGES +, CONTACT) */}
+          {/* Center Links (CONFERIO style) */}
           <div className="hidden lg:flex items-center gap-7 text-xs font-mono font-extrabold text-black uppercase tracking-wider">
             <a href="#events" className="hover:underline flex items-center gap-1">
               Events +
@@ -299,8 +299,8 @@ const Landing = () => {
             <a href="#tickets" className="hover:underline flex items-center gap-1">
               Tickets +
             </a>
-            <a href="#door-app" className="hover:underline flex items-center gap-1">
-              Door App +
+            <a href="#coming-soon" className="hover:underline flex items-center gap-1 text-slate-800">
+              Coming Soon ★
             </a>
             <a href="#about" className="hover:underline">
               About
@@ -794,169 +794,101 @@ const Landing = () => {
       </section>
 
       {/* ========================================================
-          7. FRONT DOOR CHECK-IN APP SIMULATOR (Hi.events style)
+          7. UPCOMING FACILITIES · COMING SOON SECTION
          ======================================================== */}
-      <section id="door-app" className="bg-[#FAF8F5] text-black py-24 px-4 sm:px-8 border-b-4 border-black">
+      <section id="coming-soon" className="bg-[#FAF8F5] text-black py-24 px-4 sm:px-8 border-b-4 border-black">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Description */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="bg-[#F5DF4D] text-black font-mono font-black text-xs px-3.5 py-1 border border-black shadow-[2px_2px_0px_#000] inline-block">
-                AT THE ENTRANCE GATE
-              </div>
-              <h2 className="font-display font-black text-3xl sm:text-5xl text-black tracking-tight uppercase leading-tight">
-                WHAT YOUR DOOR STAFF ACTUALLY SEE
-              </h2>
-              <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed">
-                You send your volunteer staff a link and that is the whole setup — no install, no account, no seat to pay for.
-                Camera scan, barcode scanner, or search a student name and tap.
-              </p>
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-block bg-[#E9D5FF] text-black font-mono font-black text-xs px-4 py-1.5 border-2 border-black shadow-[3px_3px_0px_#000] mb-3 uppercase">
+              ★ ROADMAP & UPCOMING INNOVATIONS
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-5xl text-black tracking-tight uppercase">
+              NEXT-GEN FACILITIES · COMING SOON
+            </h2>
+            <p className="font-mono text-xs sm:text-sm text-slate-600 max-w-xl mx-auto mt-2">
+              We are actively developing powerful new modules to make campus event logistics effortless.
+            </p>
+          </div>
 
-              <div className="space-y-3 font-mono text-xs text-black pt-2">
-                <div className="flex items-start gap-3">
-                  <span className="text-emerald-600 font-bold text-sm">✓</span>
-                  <span>Every device works from the same live MongoDB list, so no ticket gets in twice</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Facility 1: Door Staff Mobile Scanner App (Coming Soon) */}
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#F5DF4D] p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#F5DF4D] border-2 border-black flex items-center justify-center text-black font-black">
+                    <QrCode className="w-6 h-6" />
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-black text-[#F5DF4D] font-mono text-[10px] font-black uppercase tracking-wider">
+                    COMING SOON · v2.0
+                  </span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-emerald-600 font-bold text-sm">✓</span>
-                  <span>Undo a check-in in one tap if a student steps out to the cafeteria</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-emerald-600 font-bold text-sm">✓</span>
-                  <span>A separate list per door or auditorium, each with its own live counter</span>
+
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-2">
+                  Door Staff Mobile Scanner
+                </h3>
+                <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
+                  A standalone handheld Android & iOS volunteer gate app. Send volunteers a quick link with zero login required to verify student tickets and camera-scan QR passes at the entrance.
+                </p>
+
+                <div className="space-y-2.5 font-mono text-xs text-slate-800 border-t-2 border-black/10 pt-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Instant camera barcode and QR recognition</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Live check-in counters synced across all doors</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>One-tap check-out / undo for temporary exits</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-4">
-                <span className="font-mono text-xs font-bold text-black bg-[#E9D5FF] px-3 py-1.5 border border-black">
-                  Interactive Demo: Click "Check out" or "Check in" on the phone →
-                </span>
+              <div className="mt-8 p-3 bg-slate-100 border border-black/20 text-center font-mono text-xs text-slate-600 font-bold">
+                ⚡ All digital tickets with unique QR passes are live in Student Wallet
               </div>
             </div>
 
-            {/* Right Phone Mockup (Exact Hi.events front door view) */}
-            <div className="lg:col-span-7 flex justify-center">
-              <div className="w-full max-w-sm rounded-[36px] p-4 bg-black border-4 border-black shadow-[10px_10px_0px_#F5DF4D]">
-                <div className="rounded-[24px] bg-white text-slate-900 p-5 overflow-hidden font-sans border-2 border-slate-200">
-                  {/* Status Bar */}
-                  <div className="flex items-center justify-between text-xs text-slate-500 pb-3 border-b border-slate-100">
-                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
-                      <span className="text-[10px] font-mono tracking-wider text-slate-400">CHECK-IN</span>
-                      <span>Front door</span>
-                    </div>
-                    <div className="flex items-center gap-1 font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-                      <span>{checkedInCount}/{attendees.length}</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    </div>
+            {/* Facility 2: AI-Powered Predictive Analytics (Coming Soon) */}
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#BAE6FD] p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#BAE6FD] border-2 border-black flex items-center justify-center text-black font-black">
+                    <Sparkles className="w-6 h-6" />
                   </div>
+                  <span className="px-3 py-1 rounded-full bg-black text-[#BAE6FD] font-mono text-[10px] font-black uppercase tracking-wider">
+                    COMING SOON · v2.0
+                  </span>
+                </div>
 
-                  {/* Search Bar */}
-                  <div className="mt-3 relative">
-                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={doorSearch}
-                      onChange={(e) => setDoorSearch(e.target.value)}
-                      placeholder="Search by name, roll # or ticket"
-                      className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-black font-mono"
-                    />
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-2">
+                  Analyze With AI & Forecasting
+                </h3>
+                <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
+                  Machine learning models powered by Scikit-Learn to accurately predict registration velocity, category turnout patterns, and venue capacity demand before events start.
+                </p>
+
+                <div className="space-y-2.5 font-mono text-xs text-slate-800 border-t-2 border-black/10 pt-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Registration prediction using RandomForest regression</span>
                   </div>
-
-                  {/* 2 Big Counters */}
-                  <div className="grid grid-cols-2 gap-2 mt-3">
-                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-left">
-                      <div className="text-lg font-black text-slate-900">
-                        {checkedInCount}<span className="text-xs font-normal text-slate-400">/{attendees.length}</span>
-                      </div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                        CHECKED IN
-                      </div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-left">
-                      <div className="text-lg font-black text-slate-900">
-                        {remainingCount}
-                      </div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                        REMAINING
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Automated capacity bottleneck detection</span>
                   </div>
-
-                  {/* Filter Pills */}
-                  <div className="flex items-center gap-1 mt-3 pb-2 text-[10px] font-mono font-bold">
-                    <button
-                      onClick={() => setDoorFilter('all')}
-                      className={`px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
-                        doorFilter === 'all'
-                          ? 'bg-black text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
-                    >
-                      All {attendees.length}
-                    </button>
-                    <button
-                      onClick={() => setDoorFilter('remaining')}
-                      className={`px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
-                        doorFilter === 'remaining'
-                          ? 'bg-black text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
-                    >
-                      Remaining {remainingCount}
-                    </button>
-                    <button
-                      onClick={() => setDoorFilter('checked_in')}
-                      className={`px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
-                        doorFilter === 'checked_in'
-                          ? 'bg-black text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
-                    >
-                      Checked in {checkedInCount}
-                    </button>
-                  </div>
-
-                  {/* Attendee Live List */}
-                  <div className="mt-1 space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                    {filteredAttendees.map((a) => (
-                      <div
-                        key={a.id}
-                        className="flex items-center justify-between p-2 rounded-lg border border-slate-100 bg-white shadow-xs"
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${
-                              a.checkedIn
-                                ? 'bg-emerald-500 text-white'
-                                : 'bg-slate-100 text-slate-400'
-                            }`}
-                          >
-                            {a.checkedIn ? '✓' : a.name.charAt(0)}
-                          </div>
-                          <div className="truncate text-left">
-                            <p className="text-xs font-bold text-slate-900 truncate">
-                              {a.name}
-                            </p>
-                            <p className="text-[9px] text-slate-400 font-mono truncate">
-                              {a.code} • {a.type}
-                            </p>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => toggleCheckIn(a.id)}
-                          className={`ml-2 px-2.5 py-1 rounded text-[10px] font-mono font-bold uppercase transition-all cursor-pointer shrink-0 ${
-                            a.checkedIn
-                              ? 'bg-[#EF4444] text-white hover:bg-rose-600'
-                              : 'bg-emerald-500 text-white hover:bg-emerald-600'
-                          }`}
-                        >
-                          {a.checkedIn ? 'Check out' : 'Check in'}
-                        </button>
-                      </div>
-                    ))}
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Executive AI insights synthesized from real trends</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-8 p-3 bg-slate-100 border border-black/20 text-center font-mono text-xs text-slate-600 font-bold">
+                ⚡ Scikit-learn analytical pipeline currently undergoing calibration
               </div>
             </div>
           </div>
@@ -1050,7 +982,7 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <span className="font-display font-black text-xl text-white tracking-tighter uppercase">
-              CONFERIO<span className="text-[#F5DF4D]">.CC</span>
+              CAMPUSCONNECT<span className="text-[#F5DF4D]">.CC</span>
             </span>
             <span className="text-slate-600 font-mono">|</span>
             <span className="font-mono text-xs text-slate-400">
@@ -1062,7 +994,7 @@ const Landing = () => {
             <a href="#events" className="hover:text-white transition-colors">Events</a>
             <a href="#schedule" className="hover:text-white transition-colors">Schedule</a>
             <a href="#tickets" className="hover:text-white transition-colors">Passes</a>
-            <a href="#door-app" className="hover:text-white transition-colors">Door App</a>
+            <a href="#coming-soon" className="hover:text-[#F5DF4D] transition-colors">Coming Soon</a>
             <Link to="/login" className="hover:text-[#F5DF4D] transition-colors">Sign In</Link>
             <Link to="/register" className="text-[#F5DF4D] hover:underline font-bold">Register Free</Link>
           </div>

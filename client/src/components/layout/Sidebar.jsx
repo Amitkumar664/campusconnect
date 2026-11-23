@@ -36,12 +36,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
   const getNavLinks = () => {
     if (user?.role === 'admin') {
       return [
-        { name: 'AI Analytics', path: '/admin/analytics', icon: BarChart3, highlight: true },
+        { name: 'AI Analytics', path: '/admin/analytics', icon: BarChart3, badge: 'Soon' },
         { name: 'Admin Overview', path: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Event Management', path: '/admin/events', icon: Calendar },
         { name: 'Hackathon Desk', path: '/admin/hackathons', icon: Code2 },
         { name: 'Sports Tournaments', path: '/admin/sports', icon: Trophy },
-        { name: 'Door Check-In Desk', path: '/admin/ticket-verification', icon: QrCode, badge: 'Live' },
+        { name: 'Door Check-In Desk', path: '/admin/ticket-verification', icon: QrCode, badge: 'Soon' },
         { name: 'Master Bookings', path: '/admin/bookings', icon: Ticket },
         { name: 'User Directory', path: '/admin/users', icon: Users },
         { name: 'Broadcasts & Notices', path: '/admin/notifications', icon: Bell },
