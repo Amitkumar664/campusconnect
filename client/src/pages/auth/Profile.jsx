@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { User, Lock, Mail, Building, IdCard, Check, AlertCircle } from 'lucide-react';
+import { User, Lock, Mail, Building, IdCard, Check, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/api';
-import Card from '../../components/common/Card';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
 
 const Profile = () => {
   const { user, updateUserProfile } = useAuth();
@@ -12,10 +9,7 @@ const Profile = () => {
   const [profileData, setProfileData] = useState({
     fullName: user?.fullName || '',
     phone: user?.phone || '',
-    department: user?.department || '',
-    designation: '',
-    officeRoom: '',
-    bio: ''
+    department: user?.department || ''
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -51,197 +45,99 @@ const Profile = () => {
     }
   };
 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setPasswordMsg({ type: '', text: '' });
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordMsg({ type: 'error', text: 'New passwords do not match.' });
-      return;
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      setPasswordMsg({ type: 'error', text: 'New password must be at least 6 characters.' });
-      return;
-    }
-
-    setPasswordLoading(true);
-    try {
-      const res = await authAPI.changePassword({
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword
-      });
-      if (res.data.success) {
-        setPasswordMsg({ type: 'success', text: 'Password changed successfully.' });
-        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      }
-    } catch (error) {
-      setPasswordMsg({
-        type: 'error',
-        text: error.response?.data?.message || 'Failed to change password.'
-      });
-    } finally {
-      setPasswordLoading(false);
-    }
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
+      {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold text-white tracking-tight">Account Settings</h1>
-        <p className="text-sm text-[#9E98AE] mt-1">
-          Manage your personal university credentials and security preferences.
+        <h1 className="text-2xl font-display font-extrabold text-white tracking-tight flex items-center gap-2.5">
+          <User className="w-6 h-6 text-[#387ED1]" />
+          <span>Account Settings & Profile</span>
+        </h1>
+        <p className="text-xs text-[#94A3B8] mt-1">
+          Manage your personal campus profile and credentials.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* User Card info */}
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="text-center">
-            <div className="w-20 h-20 rounded-2xl bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center text-[#A78BFA] text-2xl font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)] mx-auto mb-4">
-              {user?.fullName?.charAt(0) || 'U'}
-            </div>
-            <h2 className="font-display font-semibold text-lg text-white">
-              {user?.fullName}
-            </h2>
-            <p className="text-xs text-[#9E98AE] mt-0.5">{user?.email}</p>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-xs text-[#C4B5FD] font-semibold mt-3 capitalize">
+      {/* Profile Overview Card */}
+      <div className="p-6 rounded-2xl bg-[#0F172A] border border-[#1E293B] shadow-xl flex items-center gap-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#387ED1] to-[#2563EB] text-white font-extrabold text-2xl flex items-center justify-center shadow-lg">
+          {user?.fullName?.charAt(0) || 'U'}
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-white">{user?.fullName}</h2>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#387ED1]/20 text-[#60A5FA] border border-[#387ED1]/30">
               {user?.role}
+            </span>
+            <span className="text-xs text-[#64748B] font-mono">ID: {user?.studentOrEmployeeId}</span>
+          </div>
+          <p className="text-xs text-[#94A3B8] mt-1">{user?.email} • {user?.department}</p>
+        </div>
+      </div>
+
+      {/* Edit Profile Form */}
+      <div className="p-6 rounded-2xl bg-[#0F172A] border border-[#1E293B] shadow-xl space-y-4">
+        <h3 className="text-sm font-bold text-white uppercase tracking-wider">Update Profile Information</h3>
+
+        {profileMsg.text && (
+          <div
+            className={`p-3.5 rounded-xl text-xs flex items-center gap-2 ${
+              profileMsg.type === 'error'
+                ? 'bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#EF4444]'
+                : 'bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981]'
+            }`}
+          >
+            {profileMsg.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+            <span>{profileMsg.text}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleProfileSubmit} className="space-y-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[#94A3B8] font-medium mb-1">Full Name</label>
+              <input
+                type="text"
+                required
+                value={profileData.fullName}
+                onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+              />
             </div>
 
-            <div className="mt-6 pt-6 border-t border-[#262135] text-left space-y-3 text-xs">
-              <div className="flex justify-between py-1">
-                <span className="text-[#716B82]">Department</span>
-                <span className="font-medium text-white">{user?.department}</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-[#716B82]">ID Number</span>
-                <span className="font-mono font-medium text-white">
-                  {user?.studentOrEmployeeId}
-                </span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-[#716B82]">Status</span>
-                <span className="text-[#34D399] font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> Active
-                </span>
-              </div>
+            <div>
+              <label className="block text-[#94A3B8] font-medium mb-1">Contact Phone</label>
+              <input
+                type="text"
+                value={profileData.phone}
+                onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                placeholder="+91 98765 00000"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+              />
             </div>
-          </Card>
-        </div>
+          </div>
 
-        {/* Update Profile & Password */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Personal Information */}
-          <Card title="Personal Information" subtitle="Update your contact and identification details">
-            {profileMsg.text && (
-              <div
-                className={`p-3 rounded-xl mb-4 text-xs font-medium flex items-center gap-2 ${
-                  profileMsg.type === 'success'
-                    ? 'bg-[#10B981]/15 text-[#34D399] border border-[#10B981]/30'
-                    : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                }`}
-              >
-                {profileMsg.type === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                {profileMsg.text}
-              </div>
-            )}
+          <div>
+            <label className="block text-[#94A3B8] font-medium mb-1">Department</label>
+            <input
+              type="text"
+              required
+              value={profileData.department}
+              onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+            />
+          </div>
 
-            <form onSubmit={handleProfileSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  label="Full Name"
-                  name="fullName"
-                  value={profileData.fullName}
-                  onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                  icon={User}
-                  required
-                />
-                <Input
-                  label="Phone Number"
-                  name="phone"
-                  value={profileData.phone}
-                  onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                  placeholder="+91 98765 43210"
-                />
-              </div>
-
-              <Input
-                label="Department"
-                name="department"
-                value={profileData.department}
-                onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
-                icon={Building}
-                required
-              />
-
-              <div className="flex justify-end pt-2">
-                <Button type="submit" variant="primary" loading={profileLoading}>
-                  Save Changes
-                </Button>
-              </div>
-            </form>
-          </Card>
-
-          {/* Change Password */}
-          <Card title="Security & Password" subtitle="Ensure your account is using a secure password">
-            {passwordMsg.text && (
-              <div
-                className={`p-3 rounded-xl mb-4 text-xs font-medium flex items-center gap-2 ${
-                  passwordMsg.type === 'success'
-                    ? 'bg-[#10B981]/15 text-[#34D399] border border-[#10B981]/30'
-                    : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                }`}
-              >
-                {passwordMsg.type === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                {passwordMsg.text}
-              </div>
-            )}
-
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <Input
-                label="Current Password"
-                name="currentPassword"
-                type="password"
-                placeholder="Enter current password"
-                value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                icon={Lock}
-                required
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  label="New Password"
-                  name="newPassword"
-                  type="password"
-                  placeholder="Min 6 characters"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  icon={Lock}
-                  required
-                />
-
-                <Input
-                  label="Confirm New Password"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Re-enter new password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                  icon={Lock}
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <Button type="submit" variant="secondary" loading={passwordLoading}>
-                  Update Password
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </div>
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={profileLoading}
+              className="px-5 py-2.5 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] disabled:opacity-50 text-white font-semibold text-xs shadow-md transition-all"
+            >
+              {profileLoading ? 'Saving changes...' : 'Save Profile Changes'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

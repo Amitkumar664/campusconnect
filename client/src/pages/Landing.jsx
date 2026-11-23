@@ -40,7 +40,6 @@ const Landing = () => {
   // If already authenticated, redirect to corresponding dashboard
   if (isAuthenticated && user) {
     if (user.role === 'admin') return <Navigate to="/admin/analytics" replace />;
-    if (user.role === 'faculty') return <Navigate to="/faculty/dashboard" replace />;
     return <Navigate to="/student/dashboard" replace />;
   }
 
@@ -52,7 +51,7 @@ const Landing = () => {
     { id: '4', name: 'Tomás Ferreira', code: 'A-2DJDXV2', type: 'General admit', checkedIn: false, time: null },
     { id: '5', name: 'Hannah Okonkwo', code: 'A-89KLP12', type: 'Hackathon VIP', checkedIn: false, time: null },
     { id: '6', name: 'Arjun Mehta', code: 'A-77PLQ99', type: 'AI Lab Station 4', checkedIn: false, time: null },
-    { id: '7', name: 'Devon Vance', code: 'A-33TRM81', type: 'Speaker / Faculty', checkedIn: true, time: '14:35' },
+    { id: '7', name: 'Devon Vance', code: 'A-33TRM81', type: 'Keynote Speaker', checkedIn: true, time: '14:35' },
     { id: '8', name: 'Sarah Lin', code: 'A-44BVC22', type: 'General admit', checkedIn: false, time: null },
   ]);
 
@@ -187,8 +186,8 @@ const Landing = () => {
 
         {/* Subhead */}
         <p className="text-base sm:text-lg text-[#9E98AE] max-w-2xl mx-auto leading-relaxed mb-10">
-          Manage your events and lab bookings from Claude or ChatGPT, reserve exact seats and GPU stations,
-          track door admissions in real-time, and give every student and faculty member exactly the access they need.
+          Manage your campus events, reserve seats, track door admissions in real-time,
+          and give every student and administrator exactly the access they need.
         </p>
 
         {/* Interactive AI Assistant Command Console Mockup */}
@@ -284,7 +283,7 @@ const Landing = () => {
                 <input
                   type="text"
                   readOnly
-                  value="Ask about faculty office hours or lab reservations..."
+                  value="Ask about upcoming hackathons or sports championships..."
                   className="bg-transparent text-[11px] text-[#716B82] w-full focus:outline-none cursor-default"
                 />
                 <button className="w-6 h-6 rounded-lg bg-[#7C3AED] text-white flex items-center justify-center shrink-0">
@@ -310,7 +309,7 @@ const Landing = () => {
             See it work before you sign up
           </h2>
           <p className="text-sm sm:text-base text-[#9E98AE] max-w-xl">
-            Every frame is a live workflow: working the door, preventing room conflicts, building the faculty schedule.
+            Every frame is a live workflow: working the door, atomic ticket booking, AI forecasting.
           </p>
         </div>
 
@@ -658,7 +657,7 @@ const Landing = () => {
               </div>
               <div className="p-4 rounded-xl bg-white text-slate-900 shadow-md">
                 <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono uppercase">
-                  <span>FACULTY HOURS CLEARED</span>
+                  <span>COLLEGIATE HACKATHONS</span>
                   <span className="text-emerald-600 font-bold">● Live Sync</span>
                 </div>
                 <div className="text-2xl font-black text-slate-900 font-mono mt-1">420.5 hrs</div>
@@ -715,24 +714,24 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* Bento 3: Faculty Doubt Clearing */}
+          {/* Bento 3: Hackathons & Team Builder */}
           <div className="rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 flex flex-col justify-between">
             <div>
               <h4 className="font-display font-bold text-lg text-white mb-2">
-                Faculty office hours & doubt clearing
+                Hackathons & Team Builder
               </h4>
               <p className="text-xs text-[#9E98AE] leading-relaxed mb-6">
-                Professors configure recurring weekly availability windows, block exam preparation blackout days, and approve 1-on-1 mentorship with full student query context.
+                Students form multi-disciplinary squads using 6-character team codes, submit code repos & live demos, and compete for grants and prizes.
               </p>
             </div>
             <div className="space-y-2 text-xs font-mono">
               <div className="p-2.5 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-between text-[#C7C3D6]">
-                <span>Dr. Sarah Jenkins</span>
-                <span className="text-[#34D399]">Mon 2:00 PM</span>
+                <span>NeuralKnights (4/4)</span>
+                <span className="text-[#34D399]">Submitted</span>
               </div>
               <div className="p-2.5 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-between text-[#C7C3D6]">
-                <span>Prof. Robert Lang</span>
-                <span className="text-[#A78BFA]">Wed 10:30 AM</span>
+                <span>AlgoRhythms (3/4)</span>
+                <span className="text-[#A78BFA]">Code: TEAM-AR91</span>
               </div>
               <div className="p-2.5 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-between text-[#C7C3D6]">
                 <span>Dr. Michael Chang</span>
@@ -791,7 +790,7 @@ const Landing = () => {
                 <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
                   <div className="text-3xl font-black text-white font-mono tracking-tight">98.4%</div>
                   <div className="text-xs font-semibold text-[#C7C3D6] mt-1">Approval Velocity</div>
-                  <div className="text-[10px] text-[#716B82] mt-0.5">Instant faculty turnaround</div>
+                  <div className="text-[10px] text-[#716B82] mt-0.5">Instant door turnaround</div>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
@@ -803,7 +802,7 @@ const Landing = () => {
                 <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
                   <div className="text-3xl font-black text-white font-mono tracking-tight">RBAC 3.0</div>
                   <div className="text-xs font-semibold text-[#C7C3D6] mt-1">Security Architecture</div>
-                  <div className="text-[10px] text-[#716B82] mt-0.5">Student, Faculty, Dean roles</div>
+                  <div className="text-[10px] text-[#716B82] mt-0.5">Student & Admin roles</div>
                 </div>
               </div>
 
@@ -831,21 +830,14 @@ const Landing = () => {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/login?role=student"
-            className="px-5 py-2.5 rounded-xl bg-[#13111C] border border-[#262135] hover:border-[#7C3AED] text-white text-xs sm:text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-[#13111C] border border-[#262135] hover:border-[#387ED1] text-white text-xs sm:text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(56,126,209,0.3)] flex items-center gap-2"
           >
-            <GraduationCap className="w-4 h-4 text-[#8B5CF6]" />
+            <GraduationCap className="w-4 h-4 text-[#60A5FA]" />
             Student Portal
           </Link>
           <Link
-            to="/login?role=faculty"
-            className="px-5 py-2.5 rounded-xl bg-[#13111C] border border-[#262135] hover:border-[#7C3AED] text-white text-xs sm:text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2"
-          >
-            <Users className="w-4 h-4 text-[#8B5CF6]" />
-            Faculty Portal
-          </Link>
-          <Link
             to="/login?role=admin"
-            className="px-5 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs sm:text-sm font-semibold transition-all shadow-[0_0_20px_rgba(124,58,237,0.4)] flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] text-white text-xs sm:text-sm font-semibold transition-all shadow-[0_0_20px_rgba(56,126,209,0.4)] flex items-center gap-2"
           >
             <BarChart3 className="w-4 h-4" />
             Executive Admin & Analytics

@@ -26,8 +26,8 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: ['student', 'faculty', 'admin'],
-        message: '{VALUE} is not a valid user role'
+        values: ['student', 'admin'],
+        message: '{VALUE} is not a valid user role. Only student and admin are permitted.'
       },
       default: 'student'
     },
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     },
     studentOrEmployeeId: {
       type: String,
-      required: [true, 'Student / Employee ID is required'],
+      required: [true, 'Student ID is required'],
       unique: true,
       uppercase: true,
       trim: true
@@ -63,19 +63,19 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
-    return;
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-// Compare password helper
+// Compare hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
-

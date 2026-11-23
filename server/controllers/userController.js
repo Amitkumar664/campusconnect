@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const FacultyProfile = require('../models/FacultyProfile');
 
 // @desc    Get all users (with search and filters)
 // @route   GET /api/users
@@ -58,12 +57,12 @@ const getUserById = async (req, res) => {
   }
 };
 
-// @desc    Create new user by Admin (e.g. Faculty account)
+// @desc    Create new user by Admin (Student or Admin)
 // @route   POST /api/users
 // @access  Private/Admin
 const createUser = async (req, res) => {
   try {
-    const { fullName, email, password, role, department, studentOrEmployeeId, phone, designation, officeRoom, subjects } = req.body;
+    const { fullName, email, password, role, department, studentOrEmployeeId, phone } = req.body;
 
     const existingEmail = await User.findOne({ email: email.toLowerCase() });
     if (existingEmail) {
@@ -75,24 +74,17 @@ const createUser = async (req, res) => {
       return res.status(400).json({ success: false, message: 'ID is already registered' });
     }
 
+    const assignedRole = role === 'admin' ? 'admin' : 'student';
+
     const user = await User.create({
       fullName,
       email: email.toLowerCase(),
       password,
-      role: role || 'faculty',
+      role: assignedRole,
       department,
       studentOrEmployeeId: studentOrEmployeeId.toUpperCase(),
       phone: phone || ''
     });
-
-    if (user.role === 'faculty') {
-      await FacultyProfile.create({
-        user: user._id,
-        designation: designation || 'Assistant Professor',
-        officeRoom: officeRoom || 'Faculty Cabin',
-        subjects: Array.isArray(subjects) ? subjects : ['Computer Science']
-      });
-    }
 
     res.status(201).json({
       success: true,
@@ -103,7 +95,9 @@ const createUser = async (req, res) => {
         email: user.email,
         role: user.role,
         department: user.department,
-        studentOrEmployeeId: user.studentOrEmployeeId
+        studentOrEmployeeId: user.studentOrEmployeeId,
+        avatarUrl: user.avatarUrl,
+        phone: user.phone
       }
     });
   } catch (error) {
@@ -111,7 +105,7 @@ const createUser = async (req, res) => {
   }
 };
 
-// @desc    Toggle user status (Active / Deactive)
+// @desc    Toggle user active/deactivated status
 // @route   PUT /api/users/:id/status
 // @access  Private/Admin
 const toggleUserStatus = async (req, res) => {
@@ -121,24 +115,25 @@ const toggleUserStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
+    // Prevent deactivating own admin account
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ success: false, message: 'You cannot deactivate your own administrative account.' });
+    }
+
     user.isActive = !user.isActive;
     await user.save();
 
     res.json({
       success: true,
-      message: `User account is now ${user.isActive ? 'Active' : 'Deactivated'}`,
-      user: {
-        _id: user._id,
-        fullName: user.fullName,
-        isActive: user.isActive
-      }
+      message: `User account has been ${user.isActive ? 'activated' : 'deactivated'} successfully.`,
+      isActive: user.isActive
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    Update user details / role
+// @desc    Update user details by Admin
 // @route   PUT /api/users/:id
 // @access  Private/Admin
 const updateUser = async (req, res) => {
@@ -148,17 +143,28 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    user.fullName = req.body.fullName || user.fullName;
-    user.department = req.body.department || user.department;
-    user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
-    if (req.body.role) user.role = req.body.role;
+    const { fullName, department, phone, role, isActive } = req.body;
 
-    const updatedUser = await user.save();
+    if (fullName) user.fullName = fullName;
+    if (department) user.department = department;
+    if (phone !== undefined) user.phone = phone;
+    if (role && ['student', 'admin'].includes(role)) user.role = role;
+    if (isActive !== undefined) user.isActive = isActive;
+
+    await user.save();
 
     res.json({
       success: true,
-      message: 'User updated successfully',
-      user: updatedUser
+      message: 'User details updated successfully',
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        studentOrEmployeeId: user.studentOrEmployeeId,
+        isActive: user.isActive
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -172,4 +178,3 @@ module.exports = {
   toggleUserStatus,
   updateUser
 };
-

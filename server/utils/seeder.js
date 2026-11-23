@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
+const QRCode = require('qrcode');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const User = require('../models/User');
-const FacultyProfile = require('../models/FacultyProfile');
-const Resource = require('../models/Resource');
-const Booking = require('../models/Booking');
 const Event = require('../models/Event');
-const EventRegistration = require('../models/EventRegistration');
+const Booking = require('../models/Booking');
+const Team = require('../models/Team');
 const Notification = require('../models/Notification');
 const connectDB = require('../config/db');
 
@@ -17,70 +16,31 @@ const seedData = async () => {
   try {
     await connectDB();
 
-    console.log('[Seeder] Clearing old records...');
+    console.log('[Seeder] Clearing obsolete records...');
     await Promise.all([
       User.deleteMany({}),
-      FacultyProfile.deleteMany({}),
-      Resource.deleteMany({}),
-      Booking.deleteMany({}),
       Event.deleteMany({}),
-      EventRegistration.deleteMany({}),
+      Booking.deleteMany({}),
+      Team.deleteMany({}),
       Notification.deleteMany({})
     ]);
 
-    console.log('[Seeder] Creating realistic campus users...');
-    // 1. Create Users
-    // Admin
+    console.log('[Seeder] Creating realistic campus users (Strictly Admin and Student)...');
+
+    // 1. Admin
     const adminUser = await User.create({
-      fullName: 'Dr. Rajeshwar Rao (Registrar)',
+      fullName: 'Dr. Rajeshwar Rao',
       email: 'admin@campusconnect.edu',
       password: 'Admin@123',
       role: 'admin',
-      department: 'Central Academic Administration',
+      department: 'Central Student Affairs & Administration',
       studentOrEmployeeId: 'ADM-2026-001',
       phone: '+91 98765 00001',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
       isActive: true
     });
 
-    // Faculty members
-    const faculty1 = await User.create({
-      fullName: 'Dr. Vikram Sharma',
-      email: 'dr.sharma@campusconnect.edu',
-      password: 'Faculty@123',
-      role: 'faculty',
-      department: 'Computer Science & Engineering',
-      studentOrEmployeeId: 'FAC-CSE-101',
-      phone: '+91 98765 11001',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
-      isActive: true
-    });
-
-    const faculty2 = await User.create({
-      fullName: 'Prof. Ananya Patel',
-      email: 'prof.patel@campusconnect.edu',
-      password: 'Faculty@123',
-      role: 'faculty',
-      department: 'Artificial Intelligence & Data Science',
-      studentOrEmployeeId: 'FAC-AID-102',
-      phone: '+91 98765 11002',
-      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80',
-      isActive: true
-    });
-
-    const faculty3 = await User.create({
-      fullName: 'Dr. Sanjay Kulkarni',
-      email: 'dr.kulkarni@campusconnect.edu',
-      password: 'Faculty@123',
-      role: 'faculty',
-      department: 'Electronics & Communication',
-      studentOrEmployeeId: 'FAC-ECE-103',
-      phone: '+91 98765 11003',
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&q=80',
-      isActive: true
-    });
-
-    // Students
+    // 2. Students
     const student1 = await User.create({
       fullName: 'Aarav Mehta',
       email: 'aarav.student@campusconnect.edu',
@@ -99,413 +59,334 @@ const seedData = async () => {
       password: 'Student@123',
       role: 'student',
       department: 'Information Technology',
-      studentOrEmployeeId: 'STU-2023-IT-088',
+      studentOrEmployeeId: 'STU-2023-IT-018',
       phone: '+91 98765 22002',
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80',
       isActive: true
     });
 
     const student3 = await User.create({
-      fullName: 'Vikramaditya Verma',
-      email: 'vikram.student@campusconnect.edu',
+      fullName: 'Kunal Verma',
+      email: 'kunal.student@campusconnect.edu',
       password: 'Student@123',
       role: 'student',
-      department: 'Artificial Intelligence & Data Science',
-      studentOrEmployeeId: 'STU-2023-AI-015',
+      department: 'Mechanical Engineering',
+      studentOrEmployeeId: 'STU-2024-ME-055',
       phone: '+91 98765 22003',
-      avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=256&q=80',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
       isActive: true
     });
 
-    console.log('[Seeder] Creating Faculty Profiles with schedule configurations...');
-    // 2. Create Faculty Profiles
-    await FacultyProfile.create([
-      {
-        user: faculty1._id,
-        designation: 'Professor & Head of Department',
-        officeRoom: 'Turing Block, 4th Floor, Cabin 408',
-        bio: 'Over 16 years of academic & research experience in Distributed Systems, Operating Systems, and Cloud Architectures.',
-        subjects: ['Distributed Systems', 'Cloud Computing', 'Database Internals'],
-        weeklyAvailability: [
-          { dayOfWeek: 'Monday', startTime: '10:00', endTime: '13:00', slotDurationMinutes: 30 },
-          { dayOfWeek: 'Wednesday', startTime: '14:00', endTime: '17:00', slotDurationMinutes: 30 },
-          { dayOfWeek: 'Friday', startTime: '10:00', endTime: '12:30', slotDurationMinutes: 30 }
-        ],
-        acceptingBookings: true
-      },
-      {
-        user: faculty2._id,
-        designation: 'Associate Professor',
-        officeRoom: 'Aryabhata Research Wing, Cabin 205',
-        bio: 'Specialist in Natural Language Processing, Deep Learning Pipelines, and Computer Vision.',
-        subjects: ['Machine Learning', 'Deep Learning', 'Data Structures & Algorithms'],
-        weeklyAvailability: [
-          { dayOfWeek: 'Tuesday', startTime: '11:00', endTime: '15:00', slotDurationMinutes: 30 },
-          { dayOfWeek: 'Thursday', startTime: '11:00', endTime: '16:00', slotDurationMinutes: 30 }
-        ],
-        acceptingBookings: true
-      },
-      {
-        user: faculty3._id,
-        designation: 'Assistant Professor',
-        officeRoom: 'Bhabha Tech Block, Cabin 302',
-        bio: 'Focus on Embedded Systems, Edge IoT Computing, and VLSI circuit verification.',
-        subjects: ['Embedded Systems', 'IoT Architectures', 'Signals & Systems'],
-        weeklyAvailability: [
-          { dayOfWeek: 'Monday', startTime: '14:00', endTime: '17:00', slotDurationMinutes: 45 },
-          { dayOfWeek: 'Wednesday', startTime: '10:00', endTime: '13:00', slotDurationMinutes: 45 }
-        ],
-        acceptingBookings: true
-      }
-    ]);
+    const student4 = await User.create({
+      fullName: 'Sneha Kulkarni',
+      email: 'sneha.student@campusconnect.edu',
+      password: 'Student@123',
+      role: 'student',
+      department: 'Electronics & Communication',
+      studentOrEmployeeId: 'STU-2023-EC-089',
+      phone: '+91 98765 22004',
+      avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=256&q=80',
+      isActive: true
+    });
 
-    console.log('[Seeder] Creating campus classrooms and laboratories...');
-    // 3. Create Resources
-    const resources = await Resource.create([
-      {
-        name: 'Alan Turing Advanced Computing Lab',
-        code: 'LAB-CS-101',
-        type: 'laboratory',
-        building: 'Turing Block',
-        floor: 'Ground Floor',
-        capacity: 65,
-        amenities: ['65 Dell Precision i7 Workstations', 'NVIDIA RTX GPUs', 'Dual 4K Projectors', 'High Speed Gigabit LAN'],
-        description: 'Specialized lab for Distributed Computing, Systems Programming, and High-Performance Simulation.',
-        isActive: true
-      },
-      {
-        name: 'Ada Lovelace AI & Data Science Lab',
-        code: 'LAB-CS-204',
-        type: 'laboratory',
-        building: 'Aryabhata Wing',
-        floor: '2nd Floor',
-        capacity: 50,
-        amenities: ['50 High-Memory Workstations', 'Dual Smartboards', 'Linux Cluster Access', 'Central AC'],
-        description: 'Dedicated infrastructure for Deep Learning experiments, NLP labs, and Data Mining practicums.',
-        isActive: true
-      },
-      {
-        name: 'Dr. APJ Abdul Kalam Smart Lecture Hall',
-        code: 'LH-ENG-301',
-        type: 'classroom',
-        building: 'Academic Block A',
-        floor: '3rd Floor',
-        capacity: 120,
-        amenities: ['Acoustic Microphones', 'Motorized Smart Screen', 'Lecture Capture Camera', 'Central HVAC'],
-        description: 'Tiered amphitheater style smart hall designed for foundational engineering lectures and keynotes.',
-        isActive: true
-      },
-      {
-        name: 'Ramanujan Mathematical Science Hall',
-        code: 'LH-SCI-102',
-        type: 'classroom',
-        building: 'Science Block',
-        floor: '1st Floor',
-        capacity: 80,
-        amenities: ['Dual Ceramic Chalkboards', '4K Laser Projector', 'Ergonomic Tiered Seating'],
-        description: 'Quiet, acoustically optimized lecture hall for advanced algorithmic and mathematical seminars.',
-        isActive: true
-      },
-      {
-        name: 'Sir CV Raman Optics & IoT Lab',
-        code: 'LAB-EC-105',
-        type: 'laboratory',
-        building: 'Bhabha Tech Block',
-        floor: '1st Floor',
-        capacity: 45,
-        amenities: ['Digital Storage Oscilloscopes', 'FPGA Kits', 'RF Spectrum Analyzers', 'IoT Sensor Nodes'],
-        description: 'Electronics workbench environment for embedded hardware design and IoT experimentation.',
-        isActive: true
-      },
-      {
-        name: 'Vivekananda Grand Auditorium',
-        code: 'AUD-MAIN-01',
-        type: 'seminar_hall',
-        building: 'Central Campus Complex',
-        floor: 'Ground Floor',
-        capacity: 600,
-        amenities: ['Line-Array Surround Audio', 'Broadcast Stage Lighting', 'Green Rooms', 'Dual 300-inch LED Walls'],
-        description: 'Premise for inter-college symposiums, national hackathons, and convocations.',
-        isActive: true
-      }
-    ]);
+    console.log('[Seeder] Creating rich collegiate events (Hackathons, Sports, Virtual, Cultural)...');
 
-    console.log('[Seeder] Creating upcoming college events...');
-    // 4. Create Events
     const now = new Date();
-    const event1Date = new Date(now);
-    event1Date.setDate(event1Date.getDate() + 7);
 
-    const event2Date = new Date(now);
-    event2Date.setDate(event2Date.getDate() + 14);
+    // 1. Hackathon Event
+    const hackathonDate = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const hackathonDeadline = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000);
+    const hackathon = await Event.create({
+      title: 'HackNova 2026: Campus AI & Web3 Hackathon',
+      description: 'The flagship annual 36-hour hackathon bringing together over 300 passionate campus developers to build disruptive solutions across Generative AI, Sustainable Tech, and Decentralized Networks.',
+      category: 'hackathon',
+      eventType: 'hackathon',
+      venue: 'Dr. APJ Abdul Kalam Innovation Centre & High-Performance Lab',
+      eventDate: hackathonDate,
+      startTime: '09:00',
+      endTime: '21:00',
+      capacity: 120,
+      registeredCount: 88,
+      registrationStartDate: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000),
+      registrationDeadline: hackathonDeadline,
+      ticketPrice: 0,
+      bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
+      status: 'filling_fast',
+      organizer: adminUser._id,
+      organizerName: 'Turing Computing Society',
+      tags: ['Hackathon', 'AI', 'Coding', 'Web3', 'Prizes'],
+      minTeamSize: 2,
+      maxTeamSize: 4,
+      problemStatement: 'Track 1: Real-time Campus Resource Optimization using Machine Learning\nTrack 2: Decentralized Student Identity & Verifiable Credentials\nTrack 3: Climate Action and Campus Energy Footprint Reduction',
+      submissionDeadline: new Date(hackathonDate.getTime() + 36 * 60 * 60 * 1000),
+      submissionInstructions: 'Submit a public GitHub repository link with a working README, architecture diagram, and an unlisted 3-minute YouTube or Loom demo video.',
+      prizes: [
+        { title: '1st Place Winner', reward: '₹50,000 Cash + Cloud Credits + Trophy', description: 'Best overall innovation and engineering rigor' },
+        { title: '1st Runner Up', reward: '₹25,000 Cash + Swag Box', description: 'Strongest execution and real-world viability' },
+        { title: 'Best AI Track Solution', reward: '₹15,000 Special Recognition', description: 'Awarded to top generative AI model implementation' }
+      ]
+    });
 
-    const event3Date = new Date(now);
-    event3Date.setDate(event3Date.getDate() + 21);
+    // 2. Sports Event (Cricket)
+    const cricketDate = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000);
+    const cricketEvent = await Event.create({
+      title: 'Inter-Department Cricket Premier Cup 2026',
+      description: 'The electrifying annual T10 cricket clash between engineering departments. 8 departments battle for campus bragging rights and the championship trophy.',
+      category: 'sports',
+      eventType: 'sports',
+      venue: 'Main University Cricket Stadium (Pavilion Ground)',
+      eventDate: cricketDate,
+      startTime: '08:30',
+      endTime: '17:30',
+      capacity: 250,
+      registeredCount: 160,
+      registrationStartDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+      registrationDeadline: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000),
+      ticketPrice: 0,
+      bannerUrl: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1200&q=80',
+      status: 'open',
+      organizer: adminUser._id,
+      organizerName: 'Campus Sports Board',
+      sportType: 'Cricket',
+      tournamentFormat: 'Knockout',
+      matchSchedule: [
+        { matchNumber: 1, round: 'Quarterfinal 1', team1: 'CSE Strikers', team2: 'ECE Dynamos', matchTime: '09:00 AM', courtOrField: 'Pitch A', score: 'CSE 112/4 (10 ov) vs ECE 98/7', winner: 'CSE Strikers', status: 'completed' },
+        { matchNumber: 2, round: 'Quarterfinal 2', team1: 'Mechanical Warriors', team2: 'Civil Titans', matchTime: '11:30 AM', courtOrField: 'Pitch A', score: '', winner: '', status: 'scheduled' },
+        { matchNumber: 3, round: 'Semifinal 1', team1: 'CSE Strikers', team2: 'TBD', matchTime: '02:00 PM', courtOrField: 'Pitch A', score: '', winner: '', status: 'scheduled' },
+        { matchNumber: 4, round: 'Grand Final', team1: 'TBD', team2: 'TBD', matchTime: '04:30 PM', courtOrField: 'Pavilion Turf', score: '', winner: '', status: 'scheduled' }
+      ]
+    });
 
-    const events = await Event.create([
-      {
-        title: 'CampusHacks 2026: 36-Hour National Hackathon',
-        description: 'The flagship annual hackathon bringing together 300+ visionary developers, designers, and innovators to build production-grade solutions across AI, Web3, and GreenTech.',
-        category: 'hackathon',
-        venue: 'Vivekananda Grand Auditorium & Turing Lab',
-        resource: resources[0]._id,
-        eventDate: event1Date,
-        startTime: '09:00',
-        endTime: '21:00',
-        capacity: 150,
-        registeredCount: 3,
-        registrationDeadline: new Date(event1Date.getTime() - 24 * 60 * 60 * 1000),
-        bannerUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
-        status: 'upcoming',
-        organizer: adminUser._id,
-        tags: ['Hackathon', 'AI', 'FullStack', 'Prizes']
+    // 3. Virtual Webinar Event
+    const webinarDate = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    const webinar = await Event.create({
+      title: 'Global Engineering Keynote: Scaling Distributed Systems to 10M QPS',
+      description: 'Exclusive fireside masterclass with ex-Google Principal Architect exploring resilient distributed pipelines, Raft consensus, and high-throughput microservices.',
+      category: 'webinar',
+      eventType: 'virtual',
+      venue: 'Google Meet (Virtual Conference Room)',
+      isVirtual: true,
+      platform: 'Google Meet',
+      virtualMeetingUrl: 'https://meet.google.com/xyz-camp-2026',
+      eventDate: webinarDate,
+      startTime: '18:00',
+      endTime: '20:00',
+      capacity: 300,
+      registeredCount: 285,
+      registrationStartDate: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000),
+      registrationDeadline: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+      ticketPrice: 0,
+      bannerUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80',
+      status: 'filling_fast',
+      organizer: adminUser._id,
+      organizerName: 'IEEE Student Branch',
+      tags: ['Cloud', 'Systems', 'Virtual', 'Webinar']
+    });
+
+    // 4. Cultural Festival
+    const festivalDate = new Date(now.getTime() + 25 * 24 * 60 * 60 * 1000);
+    const festival = await Event.create({
+      title: 'RHYTHM 2026: Annual Inter-College Cultural Extravaganza',
+      description: 'Three nights of high-octane music, dance battles, dramatics, battle of the bands, celebrity artist concert, and food stalls.',
+      category: 'festival',
+      eventType: 'general',
+      venue: 'Main Open Air Theatre (OAT) & Campus Amphitheatre',
+      eventDate: festivalDate,
+      startTime: '16:00',
+      endTime: '23:00',
+      capacity: 800,
+      registeredCount: 540,
+      registrationStartDate: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+      registrationDeadline: new Date(now.getTime() + 22 * 24 * 60 * 60 * 1000),
+      ticketPrice: 150,
+      bannerUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
+      status: 'open',
+      organizer: adminUser._id,
+      organizerName: 'Student Cultural Council',
+      tags: ['Music', 'Dance', 'Concert', 'Festival']
+    });
+
+    // 5. Technical Workshop
+    const workshopDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const workshop = await Event.create({
+      title: 'Hands-On Workshop: Deep Learning with PyTorch & HuggingFace',
+      description: 'Intensive laboratory session training fine-tuned transformer models and deploying quantized inferences on edge GPUs.',
+      category: 'workshop',
+      eventType: 'general',
+      venue: 'Alan Turing Advanced Computing Lab, Room 302',
+      eventDate: workshopDate,
+      startTime: '10:00',
+      endTime: '16:00',
+      capacity: 45,
+      registeredCount: 45,
+      registrationStartDate: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000),
+      registrationDeadline: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000),
+      ticketPrice: 0,
+      bannerUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
+      status: 'sold_out',
+      organizer: adminUser._id,
+      organizerName: 'Data Science Club'
+    });
+
+    console.log('[Seeder] Creating teams for HackNova and Sports...');
+
+    // Team for Aarav & Riya in HackNova
+    const hackTeam = await Team.create({
+      teamName: 'NeuralKnights',
+      event: hackathon._id,
+      leader: student1._id,
+      teamCode: 'TEAM-NK88',
+      maxMembers: 4,
+      members: [
+        { user: student1._id, role: 'leader', joinedAt: new Date() },
+        { user: student2._id, role: 'member', joinedAt: new Date() }
+      ],
+      projectSubmission: {
+        title: 'CampuSync - Automated Sensor Grid Analytics',
+        repoUrl: 'https://github.com/campusconnect/campusync-ml',
+        demoUrl: 'https://campusync-demo.vercel.app',
+        description: 'IoT Edge energy anomaly detection using TinyML',
+        submittedAt: new Date()
       },
-      {
-        title: 'Masterclass: LLM Architectures & Production Agents',
-        description: 'Deep dive into Transformer internals, RAG retrieval benchmarking, and agentic function calling systems conducted by industry research leads.',
-        category: 'workshop',
-        venue: 'Ada Lovelace AI & Data Science Lab',
-        resource: resources[1]._id,
-        eventDate: event2Date,
-        startTime: '14:00',
-        endTime: '17:30',
-        capacity: 50,
-        registeredCount: 2,
-        registrationDeadline: new Date(event2Date.getTime() - 48 * 60 * 60 * 1000),
-        bannerUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
-        status: 'upcoming',
-        organizer: faculty2._id,
-        tags: ['AI', 'LLM', 'HandsOn']
-      },
-      {
-        title: 'CyberDefend: Campus CTF & Ethical Hacking Summit',
-        description: 'Capture The Flag cybersecurity competition covering reverse engineering, web exploit defense, and binary inspection under timed conditions.',
-        category: 'technical',
-        venue: 'Dr. APJ Abdul Kalam Smart Lecture Hall',
-        resource: resources[2]._id,
-        eventDate: event3Date,
-        startTime: '10:00',
-        endTime: '16:00',
-        capacity: 80,
-        registeredCount: 1,
-        registrationDeadline: new Date(event3Date.getTime() - 72 * 60 * 60 * 1000),
-        bannerUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80',
-        status: 'upcoming',
-        organizer: faculty1._id,
-        tags: ['Cybersecurity', 'CTF', 'Networking']
+      status: 'submitted'
+    });
+
+    console.log('[Seeder] Generating valid digital tickets with QR codes...');
+
+    // Generate QR for Aarav's hackathon ticket
+    const qrPayloadAarav = JSON.stringify({
+      bookingId: 'BK-58291',
+      ticketCode: 'CC-TKT-HACK01',
+      eventId: hackathon._id.toString(),
+      eventTitle: hackathon.title,
+      studentName: student1.fullName,
+      studentId: student1.studentOrEmployeeId
+    });
+
+    const qrDataUrlAarav = await QRCode.toDataURL(qrPayloadAarav, {
+      margin: 2,
+      width: 280,
+      color: { dark: '#0F172A', light: '#FFFFFF' }
+    });
+
+    const booking1 = await Booking.create({
+      bookingId: 'BK-58291',
+      ticketCode: 'CC-TKT-HACK01',
+      event: hackathon._id,
+      user: student1._id,
+      registrationType: 'team',
+      team: hackTeam._id,
+      qrCode: qrDataUrlAarav,
+      ticketPrice: 0,
+      paymentStatus: 'free',
+      status: 'confirmed',
+      checkInStatus: 'unattended',
+      attendeeDetails: {
+        fullName: student1.fullName,
+        email: student1.email,
+        studentOrEmployeeId: student1.studentOrEmployeeId,
+        department: student1.department,
+        phone: student1.phone
       }
-    ]);
+    });
 
-    console.log('[Seeder] Creating confirmed event registrations & tickets...');
-    // 5. Event Registrations
-    await EventRegistration.create([
-      {
-        event: events[0]._id,
-        user: student1._id,
-        ticketCode: 'CC-HACK-7721',
-        status: 'confirmed'
-      },
-      {
-        event: events[0]._id,
-        user: student2._id,
-        ticketCode: 'CC-HACK-8419',
-        status: 'confirmed'
-      },
-      {
-        event: events[0]._id,
-        user: student3._id,
-        ticketCode: 'CC-HACK-9032',
-        status: 'confirmed'
-      },
-      {
-        event: events[1]._id,
-        user: student1._id,
-        ticketCode: 'CC-AIWS-1044',
-        status: 'confirmed'
-      },
-      {
-        event: events[1]._id,
-        user: student3._id,
-        ticketCode: 'CC-AIWS-2155',
-        status: 'confirmed'
-      },
-      {
-        event: events[2]._id,
-        user: student2._id,
-        ticketCode: 'CC-SEC-4411',
-        status: 'confirmed'
+    // Aarav's ticket for the virtual webinar
+    const qrPayloadAaravWebinar = JSON.stringify({
+      bookingId: 'BK-77412',
+      ticketCode: 'CC-TKT-WEB02',
+      eventId: webinar._id.toString(),
+      eventTitle: webinar.title,
+      studentName: student1.fullName,
+      studentId: student1.studentOrEmployeeId
+    });
+
+    const qrDataUrlWebinar = await QRCode.toDataURL(qrPayloadAaravWebinar, {
+      margin: 2,
+      width: 280,
+      color: { dark: '#0F172A', light: '#FFFFFF' }
+    });
+
+    const booking2 = await Booking.create({
+      bookingId: 'BK-77412',
+      ticketCode: 'CC-TKT-WEB02',
+      event: webinar._id,
+      user: student1._id,
+      registrationType: 'individual',
+      qrCode: qrDataUrlWebinar,
+      ticketPrice: 0,
+      paymentStatus: 'free',
+      status: 'confirmed',
+      checkInStatus: 'checked_in', // Already checked in to test Door Check-in UI
+      checkedInAt: new Date(now.getTime() - 2 * 60 * 60 * 1000),
+      checkedInBy: adminUser._id,
+      attendeeDetails: {
+        fullName: student1.fullName,
+        email: student1.email,
+        studentOrEmployeeId: student1.studentOrEmployeeId,
+        department: student1.department,
+        phone: student1.phone
       }
-    ]);
+    });
 
-    console.log('[Seeder] Creating realistic historical & upcoming bookings...');
-    // 6. Bookings (Faculty Doubt sessions & Room bookings across statuses)
-    const bookingDay1 = new Date(now);
-    bookingDay1.setDate(bookingDay1.getDate() + 2);
-    bookingDay1.setUTCHours(0, 0, 0, 0);
+    // Riya's ticket for cricket
+    const qrPayloadRiya = JSON.stringify({
+      bookingId: 'BK-33910',
+      ticketCode: 'CC-TKT-SPT03',
+      eventId: cricketEvent._id.toString(),
+      eventTitle: cricketEvent.title,
+      studentName: student2.fullName,
+      studentId: student2.studentOrEmployeeId
+    });
 
-    const bookingDay2 = new Date(now);
-    bookingDay2.setDate(bookingDay2.getDate() + 4);
-    bookingDay2.setUTCHours(0, 0, 0, 0);
+    const qrDataUrlRiya = await QRCode.toDataURL(qrPayloadRiya, {
+      margin: 2,
+      width: 280,
+      color: { dark: '#0F172A', light: '#FFFFFF' }
+    });
 
-    const pastDay = new Date(now);
-    pastDay.setDate(pastDay.getDate() - 3);
-    pastDay.setUTCHours(0, 0, 0, 0);
-
-    await Booking.create([
-      // Faculty doubt session - Approved
-      {
-        bookingType: 'faculty_session',
-        requester: student1._id,
-        faculty: faculty1._id,
-        date: bookingDay1,
-        startTime: '10:00',
-        endTime: '10:30',
-        startMinutes: 600,
-        endMinutes: 630,
-        durationMinutes: 30,
-        subject: 'Distributed Consensus & Raft Algorithm Doubts',
-        description: 'Need clarification on leader election split-vote scenarios in Raft protocol for my final year major project.',
-        status: 'approved',
-        actionedBy: faculty1._id,
-        actionedAt: new Date()
-      },
-      // Faculty doubt session - Pending
-      {
-        bookingType: 'faculty_session',
-        requester: student2._id,
-        faculty: faculty1._id,
-        date: bookingDay1,
-        startTime: '11:00',
-        endTime: '11:30',
-        startMinutes: 660,
-        endMinutes: 690,
-        durationMinutes: 30,
-        subject: 'Database Sharding & Replication Lag',
-        description: 'Seeking guidance on MongoDB replica set failovers and read concern linearizability.',
-        status: 'pending'
-      },
-      // Faculty doubt session with Dr. Patel - Approved
-      {
-        bookingType: 'faculty_session',
-        requester: student3._id,
-        faculty: faculty2._id,
-        date: bookingDay2,
-        startTime: '11:00',
-        endTime: '11:30',
-        startMinutes: 660,
-        endMinutes: 690,
-        durationMinutes: 30,
-        subject: 'Attention Mechanism & Multi-Head Projections',
-        description: 'Mathematical derivation question regarding dot-product scaling factor in self-attention.',
-        status: 'approved',
-        actionedBy: faculty2._id,
-        actionedAt: new Date()
-      },
-      // Resource booking - Turing Lab Approved
-      {
-        bookingType: 'resource_booking',
-        requester: student1._id,
-        resource: resources[0]._id,
-        date: bookingDay2,
-        startTime: '14:00',
-        endTime: '16:00',
-        startMinutes: 840,
-        endMinutes: 960,
-        durationMinutes: 120,
-        subject: 'Final Year Capstone Project Team Evaluation',
-        description: 'Need Turing Lab GPU workstations for running LLM inference latency benchmarks with 4 project members.',
-        status: 'approved',
-        actionedBy: adminUser._id,
-        actionedAt: new Date()
-      },
-      // Resource booking - Smart Lecture Hall Pending
-      {
-        bookingType: 'resource_booking',
-        requester: faculty3._id,
-        resource: resources[2]._id,
-        date: bookingDay1,
-        startTime: '15:00',
-        endTime: '17:00',
-        startMinutes: 900,
-        endMinutes: 1020,
-        durationMinutes: 120,
-        subject: 'Embedded Systems & Drone Telemetry Seminar',
-        description: 'Guest lecture by alumni engineer on real-time flight controllers.',
-        status: 'pending'
-      },
-      // Past completed booking
-      {
-        bookingType: 'resource_booking',
-        requester: student2._id,
-        resource: resources[1]._id,
-        date: pastDay,
-        startTime: '10:00',
-        endTime: '12:00',
-        startMinutes: 600,
-        endMinutes: 720,
-        durationMinutes: 120,
-        subject: 'Open Source Club Hack Sprint',
-        description: 'Sprint planning and hands-on PR contributions.',
-        status: 'completed',
-        actionedBy: adminUser._id,
-        actionedAt: pastDay
+    await Booking.create({
+      bookingId: 'BK-33910',
+      ticketCode: 'CC-TKT-SPT03',
+      event: cricketEvent._id,
+      user: student2._id,
+      registrationType: 'individual',
+      qrCode: qrDataUrlRiya,
+      ticketPrice: 0,
+      paymentStatus: 'free',
+      status: 'confirmed',
+      checkInStatus: 'unattended',
+      attendeeDetails: {
+        fullName: student2.fullName,
+        email: student2.email,
+        studentOrEmployeeId: student2.studentOrEmployeeId,
+        department: student2.department,
+        phone: student2.phone
       }
-    ]);
+    });
 
-    console.log('[Seeder] Creating in-app notification records...');
-    // 7. Notifications
-    await Notification.create([
-      {
-        recipient: student1._id,
-        title: 'Booking Approved!',
-        message: 'Your doubt session with Dr. Vikram Sharma on Raft Consensus was approved for 10:00 AM.',
-        type: 'booking_status',
-        actionUrl: '/student/my-bookings',
-        isRead: false
-      },
-      {
-        recipient: student1._id,
-        title: 'Event Ticket Generated',
-        message: 'Your registration for CampusHacks 2026 is confirmed. Ticket: CC-HACK-7721.',
-        type: 'event_alert',
-        actionUrl: '/student/events',
-        isRead: true
-      },
-      {
-        recipient: faculty1._id,
-        title: 'New Doubt Request from Riya Sen',
-        message: 'Student requested a 30-min slot on Database Sharding & Replication Lag.',
-        type: 'session_request',
-        actionUrl: '/faculty/requests',
-        isRead: false
-      },
-      {
-        recipient: adminUser._id,
-        title: 'Resource Request Needs Review',
-        message: 'Prof. Sanjay Kulkarni requested Smart Lecture Hall 301 for a Guest Lecture.',
-        type: 'system',
-        actionUrl: '/admin/bookings',
-        isRead: false
-      }
-    ]);
+    console.log('[Seeder] Creating notifications...');
+    await Notification.create({
+      recipient: student1._id,
+      title: 'Digital Pass Issued: HackNova 2026',
+      message: 'Your team "NeuralKnights" is confirmed. Your unique ticket code is CC-TKT-HACK01.',
+      type: 'event',
+      actionUrl: '/student/my-tickets'
+    });
 
-    console.log('========================================================');
-    console.log(' CampusConnect Seed Data Ingestion Completed Successfully!');
-    console.log('========================================================');
-    console.log(' DEMO CREDENTIALS:');
-    console.log('   Admin:   admin@campusconnect.edu     / Admin@123');
-    console.log('   Faculty: dr.sharma@campusconnect.edu / Faculty@123');
-    console.log('   Faculty: prof.patel@campusconnect.edu / Faculty@123');
-    console.log('   Student: aarav.student@campusconnect.edu / Student@123');
-    console.log('   Student: riya.student@campusconnect.edu  / Student@123');
-    console.log('========================================================');
+    await Notification.create({
+      recipient: student1._id,
+      title: 'Webinar Starting Soon',
+      message: 'Scaling Distributed Systems masterclass begins in 2 days. Access your private Google Meet link in the portal.',
+      type: 'reminder',
+      actionUrl: '/student/virtual-events'
+    });
 
+    console.log('[Seeder] CampusConnect database successfully primed with 2.0 modernized schema!');
     process.exit(0);
   } catch (error) {
-    console.error(`[Seeder Error] Ingestion failed: ${error.message}`);
+    console.error('[Seeder Error]', error);
     process.exit(1);
   }
 };
 
 seedData();
-

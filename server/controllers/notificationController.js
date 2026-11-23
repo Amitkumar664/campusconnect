@@ -1,4 +1,7 @@
 const Notification = require('../models/Notification');
+const User = require('../models/User');
+const Booking = require('../models/Booking');
+const { createNotification, sendEmail } = require('../utils/notify');
 
 // @desc    Get user's notifications with unread count
 // @route   GET /api/notifications
@@ -57,9 +60,62 @@ const markAllNotificationsRead = async (req, res) => {
   }
 };
 
+// @desc    Send broadcast or event announcement (Admin)
+// @route   POST /api/notifications/broadcast
+// @access  Private/Admin
+const sendBroadcast = async (req, res) => {
+  try {
+    const { title, message, type = 'announcement', target = 'all', eventId, sendAsEmail = true } = req.body;
+
+    if (!title || !message) {
+      return res.status(400).json({ success: false, message: 'Title and message are required.' });
+    }
+
+    let recipients = [];
+
+    if (target === 'event_attendees' && eventId) {
+      const bookings = await Booking.find({ event: eventId, status: 'confirmed' }).populate('user', 'email fullName');
+      recipients = bookings.map((b) => b.user).filter(Boolean);
+    } else {
+      recipients = await User.find({ role: 'student', isActive: true }).select('_id email fullName');
+    }
+
+    // Dispatch notifications in parallel batches
+    const notificationPromises = recipients.map((user) =>
+      createNotification({
+        recipientId: user._id,
+        title,
+        message,
+        type: type === 'reminder' ? 'reminder' : 'announcement',
+        actionUrl: eventId ? `/student/events` : ''
+      })
+    );
+
+    await Promise.all(notificationPromises);
+
+    // Optional email blast
+    if (sendAsEmail && recipients.length > 0) {
+      recipients.slice(0, 50).forEach((user) => {
+        sendEmail({
+          to: user.email,
+          subject: `[CampusConnect Notice] ${title}`,
+          html: `<div style="font-family: sans-serif; padding: 20px;"><h3>${title}</h3><p>${message}</p></div>`
+        });
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Announcement dispatched to ${recipients.length} students successfully.`
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getMyNotifications,
   markNotificationRead,
-  markAllNotificationsRead
+  markAllNotificationsRead,
+  sendBroadcast
 };
-

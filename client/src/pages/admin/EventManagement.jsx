@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar,
   Plus,
@@ -12,36 +13,47 @@ import {
   Search,
   Eye,
   Download,
-  Sparkles
+  Video,
+  Code2,
+  Trophy,
+  X
 } from 'lucide-react';
-import { eventAPI, resourceAPI } from '../../services/api';
-import Card from '../../components/common/Card';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
-import Modal from '../../components/common/Modal';
+import { eventAPI } from '../../services/api';
 
 const EventManagement = () => {
   const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-
+  const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+
+  // Form Data
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'hackathon',
+    category: 'technical',
+    eventType: 'general',
     venue: '',
+    isVirtual: false,
+    virtualMeetingUrl: '',
+    platform: 'In-Person',
     eventDate: '',
     startTime: '09:00',
     endTime: '17:00',
     capacity: 100,
     registrationDeadline: '',
+    ticketPrice: 0,
     bannerUrl: '',
-    tags: ''
+    status: 'open',
+    // Hackathon fields
+    minTeamSize: 2,
+    maxTeamSize: 4,
+    problemStatement: '',
+    // Sports fields
+    sportType: 'Cricket',
+    tournamentFormat: 'Knockout'
   });
+
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', text: '' });
 
@@ -51,10 +63,10 @@ const EventManagement = () => {
 
   const loadEvents = async () => {
     try {
+      setLoading(true);
       const res = await eventAPI.getAll();
       if (res.data.success) {
-        setEvents(res.data.events);
-        setFilteredEvents(res.data.events);
+        setEvents(res.data.events || []);
       }
     } catch (error) {
       console.error('Failed to load events:', error);
@@ -67,59 +79,58 @@ const EventManagement = () => {
     loadEvents();
   }, []);
 
-  useEffect(() => {
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      setFilteredEvents(
-        events.filter(
-          (e) =>
-            e.title.toLowerCase().includes(q) ||
-            e.category.toLowerCase().includes(q) ||
-            e.venue.toLowerCase().includes(q)
-        )
-      );
-    } else {
-      setFilteredEvents(events);
-    }
-  }, [search, events]);
-
   const openCreateModal = () => {
     setEditingEvent(null);
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7);
-    const deadline = new Date();
-    deadline.setDate(deadline.getDate() + 5);
-
     setFormData({
       title: '',
       description: '',
-      category: 'hackathon',
+      category: 'technical',
+      eventType: 'general',
       venue: '',
-      eventDate: futureDate.toISOString().split('T')[0],
+      isVirtual: false,
+      virtualMeetingUrl: '',
+      platform: 'In-Person',
+      eventDate: '',
       startTime: '09:00',
       endTime: '17:00',
       capacity: 100,
-      registrationDeadline: deadline.toISOString().split('T')[0],
-      bannerUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=800&q=80',
-      tags: 'Tech, Innovation'
+      registrationDeadline: '',
+      ticketPrice: 0,
+      bannerUrl: '',
+      status: 'open',
+      minTeamSize: 2,
+      maxTeamSize: 4,
+      problemStatement: '',
+      sportType: 'Cricket',
+      tournamentFormat: 'Knockout'
     });
     setModalOpen(true);
   };
 
-  const openEditModal = (evt) => {
-    setEditingEvent(evt);
+  const openEditModal = (event) => {
+    setEditingEvent(event);
     setFormData({
-      title: evt.title,
-      description: evt.description,
-      category: evt.category,
-      venue: evt.venue,
-      eventDate: new Date(evt.eventDate).toISOString().split('T')[0],
-      startTime: evt.startTime,
-      endTime: evt.endTime,
-      capacity: evt.capacity,
-      registrationDeadline: new Date(evt.registrationDeadline).toISOString().split('T')[0],
-      bannerUrl: evt.bannerUrl || '',
-      tags: (evt.tags || []).join(', ')
+      title: event.title,
+      description: event.description,
+      category: event.category,
+      eventType: event.eventType || 'general',
+      venue: event.venue,
+      isVirtual: event.isVirtual || false,
+      virtualMeetingUrl: event.virtualMeetingUrl || '',
+      platform: event.platform || 'In-Person',
+      eventDate: event.eventDate ? event.eventDate.split('T')[0] : '',
+      startTime: event.startTime,
+      endTime: event.endTime,
+      capacity: event.capacity,
+      registrationDeadline: event.registrationDeadline ? event.registrationDeadline.split('T')[0] : '',
+      ticketPrice: event.ticketPrice || 0,
+      bannerUrl: event.bannerUrl || '',
+      status: event.status,
+      minTeamSize: event.minTeamSize || 2,
+      maxTeamSize: event.maxTeamSize || 4,
+      problemStatement: event.problemStatement || '',
+      sportType: event.sportType || 'Cricket',
+      tournamentFormat: event.tournamentFormat || 'Knockout'
     });
     setModalOpen(true);
   };
@@ -130,344 +141,496 @@ const EventManagement = () => {
     setFeedback({ type: '', text: '' });
 
     try {
+      const payload = { ...formData };
+      if (payload.eventType === 'virtual') payload.isVirtual = true;
+
       if (editingEvent) {
-        const res = await eventAPI.update(editingEvent._id, formData);
-        if (res.data.success) {
-          setFeedback({ type: 'success', text: 'Event updated successfully!' });
-        }
+        await eventAPI.update(editingEvent._id, payload);
+        setFeedback({ type: 'success', text: 'Event updated successfully.' });
       } else {
-        const res = await eventAPI.create(formData);
-        if (res.data.success) {
-          setFeedback({ type: 'success', text: 'New event published successfully!' });
-        }
+        await eventAPI.create(payload);
+        setFeedback({ type: 'success', text: 'Event published successfully.' });
       }
+
       setModalOpen(false);
-      await loadEvents();
+      loadEvents();
     } catch (error) {
-      setFeedback({
-        type: 'error',
-        text: error.response?.data?.message || 'Failed to save event.'
-      });
+      setFeedback({ type: 'error', text: error.response?.data?.message || 'Failed to save event.' });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this event and its registrations?')) return;
+  const handleDelete = async (id, title) => {
+    if (!window.confirm(`Are you sure you want to delete event "${title}"? Associated bookings will be cancelled.`)) {
+      return;
+    }
     try {
-      const res = await eventAPI.delete(id);
-      if (res.data.success) {
-        setFeedback({ type: 'success', text: 'Event removed.' });
-        await loadEvents();
-      }
-    } catch (error) {
-      alert(error.response?.data?.message || 'Failed to delete event');
+      await eventAPI.delete(id);
+      loadEvents();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete event');
     }
   };
 
-  const handleViewAttendees = async (event) => {
+  const openAttendees = async (event) => {
     setAttendeeModal({ open: true, eventTitle: event.title, attendees: [] });
-    setLoadingAttendees(true);
     try {
+      setLoadingAttendees(true);
       const res = await eventAPI.getAttendees(event._id);
       if (res.data.success) {
-        setAttendeeModal({ open: true, eventTitle: event.title, attendees: res.data.attendees });
+        setAttendeeModal({ open: true, eventTitle: event.title, attendees: res.data.attendees || [] });
       }
-    } catch (error) {
-      alert('Could not fetch attendees');
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoadingAttendees(false);
     }
   };
 
+  const filteredEvents = events.filter((e) =>
+    e.title.toLowerCase().includes(search.toLowerCase()) ||
+    e.venue.toLowerCase().includes(search.toLowerCase()) ||
+    e.category.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="space-y-6 font-sans animate-in fade-in duration-300">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
-            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> University Symposium Desk
-          </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            College Event Management & Ticketing
+          <h1 className="text-2xl font-display font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            <Calendar className="w-6 h-6 text-[#387ED1]" />
+            <span>Campus Event Management</span>
           </h1>
-          <p className="text-sm text-[#9E98AE] mt-1">
-            Publish hackathons, masterclasses, and seminars with digital ticketing and automated capacity tracking.
+          <p className="text-xs text-[#94A3B8] mt-1">
+            Create, configure capacity, publish, and oversee hackathons, sports championships, and workshops.
           </p>
         </div>
 
-        <Button variant="primary" icon={Plus} onClick={openCreateModal}>
-          Publish New Event
-        </Button>
+        <button
+          onClick={openCreateModal}
+          className="px-4 py-2.5 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] text-white text-xs font-semibold shadow-md transition-all flex items-center gap-2 self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Create New Event</span>
+        </button>
       </div>
 
       {feedback.text && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 shadow-inner ${
-            feedback.type === 'success'
-              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+          className={`p-4 rounded-xl text-xs flex items-center gap-2 ${
+            feedback.type === 'error'
+              ? 'bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#EF4444]'
+              : 'bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981]'
           }`}
         >
-          {feedback.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+          {feedback.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
           <span>{feedback.text}</span>
         </div>
       )}
 
-      <Input
-        placeholder="Search events by title or venue..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        icon={Search}
-      />
+      {/* Search Input */}
+      <div className="relative max-w-md">
+        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Filter events by title, venue, or category..."
+          className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-xs text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1]"
+        />
+      </div>
 
-      {loading ? (
-        <div className="py-16 text-center text-sm text-[#9E98AE] flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
-          Loading events...
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((evt) => {
-            const fillRatio = Math.round((evt.registeredCount / evt.capacity) * 100);
-
-            return (
-              <div
-                key={evt._id}
-                className="bg-[#0D0C15] rounded-2xl border border-[#262135] p-5 flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.85)] hover:border-[#7C3AED]/50 transition-all"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-lg bg-[#7C3AED]/20 text-[#C4B5FD] border border-[#7C3AED]/40">
-                      {evt.category}
-                    </span>
-                    <span className="text-xs font-mono font-medium text-[#9E98AE]">
-                      {evt.registeredCount} / {evt.capacity} seats ({fillRatio}%)
-                    </span>
-                  </div>
-
-                  <h3 className="font-display font-bold text-base text-white mt-3">
-                    {evt.title}
-                  </h3>
-                  <p className="text-xs text-[#9E98AE] mt-1 line-clamp-2 leading-relaxed">
-                    {evt.description}
-                  </p>
-
-                  <div className="mt-4 pt-3 border-t border-[#262135] space-y-1.5 text-xs text-[#9E98AE]">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-[#A78BFA]" />
-                      <span>{new Date(evt.eventDate).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-[#06B6D4]" />
-                      <span>{evt.startTime} - {evt.endTime}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-[#716B82]" />
-                      <span className="truncate">{evt.venue}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-[#262135] flex items-center justify-between">
-                  <button
-                    onClick={() => handleViewAttendees(evt)}
-                    className="text-xs font-semibold text-[#A78BFA] hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    <Eye className="w-3.5 h-3.5" /> Attendees ({evt.registeredCount})
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => openEditModal(evt)}
-                      className="p-1.5 rounded-lg text-[#716B82] hover:text-white hover:bg-white/5 cursor-pointer"
-                      title="Edit"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(evt._id)}
-                      className="p-1.5 rounded-lg text-[#716B82] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Publish Event Modal */}
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingEvent ? 'Edit College Event' : 'Publish College Event'}
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Event Title"
-            name="title"
-            placeholder="e.g. National Hackathon 2026: CodeSpark"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Category"
-              name="category"
-              type="select"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              options={[
-                { label: 'Hackathon', value: 'hackathon' },
-                { label: 'Workshop', value: 'workshop' },
-                { label: 'Seminar', value: 'seminar' },
-                { label: 'Technical Contest', value: 'technical' },
-                { label: 'Cultural', value: 'cultural' }
-              ]}
-            />
-            <Input
-              label="Venue"
-              name="venue"
-              placeholder="e.g. Central Auditorium / Turing Lab"
-              value={formData.venue}
-              onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Input
-              label="Event Date"
-              name="eventDate"
-              type="date"
-              value={formData.eventDate}
-              onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-              required
-            />
-            <Input
-              label="Start Time"
-              name="startTime"
-              placeholder="09:00"
-              value={formData.startTime}
-              onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-              required
-            />
-            <Input
-              label="End Time"
-              name="endTime"
-              placeholder="17:00"
-              value={formData.endTime}
-              onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Seating Capacity"
-              name="capacity"
-              type="number"
-              value={formData.capacity}
-              onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-              required
-            />
-            <Input
-              label="Registration Deadline"
-              name="registrationDeadline"
-              type="date"
-              value={formData.registrationDeadline}
-              onChange={(e) => setFormData({ ...formData, registrationDeadline: e.target.value })}
-              required
-            />
-          </div>
-
-          <Input
-            label="Banner Image URL"
-            name="bannerUrl"
-            placeholder="https://..."
-            value={formData.bannerUrl}
-            onChange={(e) => setFormData({ ...formData, bannerUrl: e.target.value })}
-          />
-
-          <Input
-            label="Description"
-            name="description"
-            type="textarea"
-            rows={3}
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            required
-          />
-
-          <div className="flex justify-end gap-3 pt-3">
-            <Button variant="secondary" onClick={() => setModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" loading={submitting}>
-              {editingEvent ? 'Update Event' : 'Publish Event'}
-            </Button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Attendees List Modal */}
-      <Modal
-        isOpen={attendeeModal.open}
-        onClose={() => setAttendeeModal({ open: false, eventTitle: '', attendees: [] })}
-        title={`Registered Attendees: ${attendeeModal.eventTitle}`}
-        maxWidth="max-w-2xl"
-      >
-        {loadingAttendees ? (
-          <div className="py-8 text-center text-xs text-[#9E98AE]">
-            Fetching ticket registrations...
-          </div>
-        ) : attendeeModal.attendees.length === 0 ? (
-          <p className="text-center py-6 text-sm text-[#716B82]">
-            No students registered yet.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#13111C] text-[#9E98AE] font-mono text-[10px] border-b border-[#262135]">
+      {/* Events Table */}
+      <div className="rounded-2xl bg-[#0F172A] border border-[#1E293B] overflow-hidden shadow-lg">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#111827] text-[#94A3B8] uppercase text-[10px] tracking-wider border-b border-[#1E293B]">
+              <tr>
+                <th className="py-3 px-4">Event Title</th>
+                <th className="py-3 px-4">Type / Category</th>
+                <th className="py-3 px-4">Date & Venue</th>
+                <th className="py-3 px-4">Capacity / Booked</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1E293B]">
+              {loading ? (
                 <tr>
-                  <th className="py-2.5 px-3">Ticket Code</th>
-                  <th className="py-2.5 px-3">Student Name</th>
-                  <th className="py-2.5 px-3">Department</th>
-                  <th className="py-2.5 px-3">Student ID</th>
-                  <th className="py-2.5 px-3">Registered At</th>
+                  <td colSpan={6} className="py-8 text-center text-[#64748B]">
+                    Loading events...
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-[#262135]">
-                {attendeeModal.attendees.map((att) => (
-                  <tr key={att._id} className="hover:bg-white/[0.02]">
-                    <td className="py-2.5 px-3 font-mono font-bold text-[#A78BFA]">
-                      {att.ticketCode}
+              ) : filteredEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-[#64748B]">
+                    No events matching your search.
+                  </td>
+                </tr>
+              ) : (
+                filteredEvents.map((evt) => (
+                  <tr key={evt._id} className="hover:bg-[#1E293B]/40 transition-colors">
+                    <td className="py-3.5 px-4">
+                      <p className="font-bold text-white text-sm line-clamp-1">{evt.title}</p>
+                      <p className="text-[11px] text-[#64748B]">
+                        Deadline: {new Date(evt.registrationDeadline).toLocaleDateString()}
+                      </p>
                     </td>
-                    <td className="py-2.5 px-3 font-semibold text-white">
-                      {att.user?.fullName}
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#1E293B] text-[#60A5FA] border border-[#334155]">
+                        {evt.category}
+                      </span>
+                      {evt.eventType !== 'general' && (
+                        <span className="ml-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#F59E0B]/20 text-[#F59E0B]">
+                          {evt.eventType}
+                        </span>
+                      )}
                     </td>
-                    <td className="py-2.5 px-3 text-[#9E98AE]">
-                      {att.user?.department}
+                    <td className="py-3.5 px-4 text-[#94A3B8]">
+                      <p className="text-white font-medium">{new Date(evt.eventDate).toLocaleDateString()}</p>
+                      <p className="text-[11px] text-[#64748B] truncate max-w-xs">{evt.venue}</p>
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-[#716B82]">
-                      {att.user?.studentOrEmployeeId}
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white">{evt.registeredCount}</span>
+                        <span className="text-[#64748B]">/ {evt.capacity}</span>
+                        <span className="text-[10px] text-[#10B981] font-mono">
+                          ({evt.capacity > 0 ? Math.round((evt.registeredCount / evt.capacity) * 100) : 0}%)
+                        </span>
+                      </div>
                     </td>
-                    <td className="py-2.5 px-3 text-[#716B82] font-mono">
-                      {new Date(att.registeredAt).toLocaleDateString()}
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                          evt.status === 'open'
+                            ? 'bg-[#10B981]/20 text-[#10B981]'
+                            : evt.status === 'filling_fast'
+                            ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
+                            : evt.status === 'sold_out'
+                            ? 'bg-[#EF4444]/20 text-[#EF4444]'
+                            : 'bg-[#1E293B] text-[#64748B]'
+                        }`}
+                      >
+                        {evt.status}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => openAttendees(evt)}
+                          title="View Attendee Roster"
+                          className="p-1.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] text-[#60A5FA] transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => openEditModal(evt)}
+                          title="Edit Event"
+                          className="p-1.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] text-white transition-colors"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(evt._id, evt.title)}
+                          title="Delete Event"
+                          className="p-1.5 rounded-lg bg-[#1E293B] hover:bg-[#EF4444]/20 text-[#EF4444] transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Create / Edit Modal */}
+      <AnimatePresence>
+        {modalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setModalOpen(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-2xl bg-[#0F172A] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            >
+              <div className="p-5 border-b border-[#1E293B] bg-[#0B0F19] flex items-center justify-between">
+                <h3 className="text-base font-bold text-white">
+                  {editingEvent ? 'Edit Event Details' : 'Publish New Campus Event'}
+                </h3>
+                <button onClick={() => setModalOpen(false)} className="text-[#64748B] hover:text-white">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
+                <div>
+                  <label className="block text-[#94A3B8] font-medium mb-1">Event Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="e.g. HackNova 2026, Annual Cricket Cup"
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#94A3B8] font-medium mb-1">Description</label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Provide details about expectations, prerequisites, and schedules..."
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Category</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    >
+                      <option value="technical">Technical</option>
+                      <option value="cultural">Cultural</option>
+                      <option value="workshop">Workshop</option>
+                      <option value="seminar">Seminar</option>
+                      <option value="guest_lecture">Guest Lecture</option>
+                      <option value="competition">Competition</option>
+                      <option value="festival">Festival</option>
+                      <option value="hackathon">Hackathon</option>
+                      <option value="sports">Sports</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Event Type Subsystem</label>
+                    <select
+                      value={formData.eventType}
+                      onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    >
+                      <option value="general">General Campus Event</option>
+                      <option value="hackathon">Hackathon (Team builder enabled)</option>
+                      <option value="sports">Sports (Match schedules enabled)</option>
+                      <option value="virtual">Virtual (Protected meeting URL)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Venue or Location</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.venue}
+                      onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                      placeholder="e.g. Main Auditorium, Pavilion Ground"
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Capacity Limit</label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={formData.capacity}
+                      onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value, 10) })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+                </div>
+
+                {/* If Virtual Event */}
+                {formData.eventType === 'virtual' && (
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Private Meeting URL (Zoom / Meet)</label>
+                    <input
+                      type="url"
+                      value={formData.virtualMeetingUrl}
+                      onChange={(e) => setFormData({ ...formData, virtualMeetingUrl: e.target.value })}
+                      placeholder="https://meet.google.com/xyz-abc"
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+                )}
+
+                {/* If Hackathon Event */}
+                {formData.eventType === 'hackathon' && (
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Problem Statement / Tracks</label>
+                    <textarea
+                      rows={2}
+                      value={formData.problemStatement}
+                      onChange={(e) => setFormData({ ...formData, problemStatement: e.target.value })}
+                      placeholder="Track 1: AI Analytics, Track 2: Sustainability..."
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+                )}
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Event Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.eventDate}
+                      onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Start Time</label>
+                    <input
+                      type="time"
+                      required
+                      value={formData.startTime}
+                      onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">End Time</label>
+                    <input
+                      type="time"
+                      required
+                      value={formData.endTime}
+                      onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Registration Deadline</label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.registrationDeadline}
+                      onChange={(e) => setFormData({ ...formData, registrationDeadline: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#94A3B8] font-medium mb-1">Status Override</label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                    >
+                      <option value="open">Open</option>
+                      <option value="filling_fast">Filling Fast</option>
+                      <option value="sold_out">Sold Out</option>
+                      <option value="closed">Closed</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-[#1E293B] flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setModalOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-[#1E293B] hover:bg-[#334155] text-white font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="px-5 py-2 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] text-white font-semibold shadow-md"
+                  >
+                    {submitting ? 'Saving...' : 'Save & Publish'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
         )}
-      </Modal>
+      </AnimatePresence>
+
+      {/* Attendees Roster Modal */}
+      <AnimatePresence>
+        {attendeeModal.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setAttendeeModal({ open: false, eventTitle: '', attendees: [] })}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-2xl bg-[#0F172A] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden z-10 max-h-[85vh] flex flex-col"
+            >
+              <div className="p-5 border-b border-[#1E293B] bg-[#0B0F19] flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-white">Registered Attendee Roster</h3>
+                  <p className="text-xs text-[#60A5FA] mt-0.5">{attendeeModal.eventTitle}</p>
+                </div>
+                <button
+                  onClick={() => setAttendeeModal({ open: false, eventTitle: '', attendees: [] })}
+                  className="text-[#64748B] hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-4 overflow-y-auto divide-y divide-[#1E293B] flex-1">
+                {loadingAttendees ? (
+                  <div className="py-8 text-center text-xs text-[#64748B]">Loading roster...</div>
+                ) : attendeeModal.attendees.length === 0 ? (
+                  <div className="py-8 text-center text-xs text-[#64748B]">No participants registered yet.</div>
+                ) : (
+                  attendeeModal.attendees.map((b) => (
+                    <div key={b._id} className="py-3 flex items-center justify-between text-xs">
+                      <div>
+                        <p className="font-bold text-white">{b.attendeeDetails?.fullName || b.user?.fullName}</p>
+                        <p className="text-[11px] text-[#64748B]">
+                          ID: {b.attendeeDetails?.studentOrEmployeeId || b.user?.studentOrEmployeeId} • {b.attendeeDetails?.department || b.user?.department}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-mono text-[11px] font-bold text-[#60A5FA]">{b.ticketCode}</span>
+                        <p className="text-[10px] text-[#10B981] capitalize mt-0.5">{b.checkInStatus}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

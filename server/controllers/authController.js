@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const FacultyProfile = require('../models/FacultyProfile');
 const { createNotification } = require('../utils/notify');
 
 /**
@@ -14,17 +13,17 @@ const generateToken = (id, role) => {
   );
 };
 
-// @desc    Register new student or faculty
+// @desc    Register new student
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { fullName, email, password, role, department, studentOrEmployeeId, phone } = req.body;
+    const { fullName, email, password, department, studentOrEmployeeId, phone } = req.body;
 
     if (!fullName || !email || !password || !department || !studentOrEmployeeId) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields (name, email, password, department, ID).'
+        message: 'Please provide all required fields (name, email, password, department, student ID).'
       });
     }
 
@@ -40,38 +39,26 @@ const registerUser = async (req, res) => {
     if (existingId) {
       return res.status(400).json({
         success: false,
-        message: 'An account with this Student / Employee ID already exists.'
+        message: 'An account with this Student ID already exists.'
       });
     }
 
-    // Disallow arbitrary self-registration as admin; allow student or faculty
-    const assignedRole = role === 'faculty' ? 'faculty' : 'student';
-
+    // Role is strictly student for public registration
     const user = await User.create({
       fullName,
       email: email.toLowerCase(),
       password,
-      role: assignedRole,
+      role: 'student',
       department,
       studentOrEmployeeId: studentOrEmployeeId.toUpperCase(),
       phone: phone || ''
     });
 
-    // If registered as faculty, automatically provision their profile
-    if (assignedRole === 'faculty') {
-      await FacultyProfile.create({
-        user: user._id,
-        designation: req.body.designation || 'Assistant Professor',
-        officeRoom: req.body.officeRoom || 'Main Faculty Block',
-        subjects: req.body.subjects ? req.body.subjects.split(',').map((s) => s.trim()) : ['Core Engineering']
-      });
-    }
-
     // Dispatch welcome notification
     await createNotification({
       recipientId: user._id,
       title: 'Welcome to CampusConnect!',
-      message: `Your ${assignedRole} account is active. Explore doubt sessions, events, and campus resources.`,
+      message: 'Your student account is active. Explore college hackathons, sports tournaments, and upcoming campus events.',
       type: 'system'
     });
 
@@ -109,23 +96,31 @@ const loginUser = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please enter both email and password.'
+        message: 'Please provide email and password.'
       });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
-    if (!user || !(await user.matchPassword(password))) {
+    if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email credentials or incorrect password.'
+        message: 'Invalid credentials. User not found.'
       });
     }
 
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'This account has been deactivated. Please contact the campus administrator.'
+        message: 'Account is deactivated. Contact campus administration.'
+      });
+    }
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials. Password incorrect.'
       });
     }
 
@@ -148,114 +143,81 @@ const loginUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Authentication error.'
+      message: error.message || 'Server error during login.'
     });
   }
 };
 
-// @desc    Get current logged in user details
+// @desc    Get current logged in user profile
 // @route   GET /api/auth/me
 // @access  Private
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    let facultyDetails = null;
-
-    if (user.role === 'faculty') {
-      facultyDetails = await FacultyProfile.findOne({ user: user._id });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     res.json({
       success: true,
-      user,
-      facultyProfile: facultyDetails
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        studentOrEmployeeId: user.studentOrEmployeeId,
+        avatarUrl: user.avatarUrl,
+        phone: user.phone,
+        createdAt: user.createdAt
+      }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to fetch user profile.'
+      message: error.message || 'Server error retrieving user profile.'
     });
   }
 };
 
-// @desc    Update user profile
+// @desc    Update current user profile
 // @route   PUT /api/auth/profile
 // @access  Private
 const updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    user.fullName = req.body.fullName || user.fullName;
-    user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
-    user.avatarUrl = req.body.avatarUrl !== undefined ? req.body.avatarUrl : user.avatarUrl;
-    user.department = req.body.department || user.department;
+    const { fullName, phone, avatarUrl, department } = req.body;
+
+    if (fullName) user.fullName = fullName;
+    if (phone !== undefined) user.phone = phone;
+    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+    if (department) user.department = department;
 
     const updatedUser = await user.save();
 
-    // If faculty, update faculty profile fields if provided
-    if (user.role === 'faculty') {
-      const faculty = await FacultyProfile.findOne({ user: user._id });
-      if (faculty) {
-        if (req.body.designation) faculty.designation = req.body.designation;
-        if (req.body.officeRoom) faculty.officeRoom = req.body.officeRoom;
-        if (req.body.bio) faculty.bio = req.body.bio;
-        if (req.body.subjects && Array.isArray(req.body.subjects)) faculty.subjects = req.body.subjects;
-        await faculty.save();
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        _id: updatedUser._id,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        department: updatedUser.department,
+        studentOrEmployeeId: updatedUser.studentOrEmployeeId,
+        avatarUrl: updatedUser.avatarUrl,
+        phone: updatedUser.phone
       }
-    }
-
-    res.json({
-      success: true,
-      user: updatedUser
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// @desc    Change password
-// @route   PUT /api/auth/change-password
-// @access  Private
-const changePassword = async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide both current and new password.'
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: 'New password must be at least 6 characters long.'
-      });
-    }
-
-    const user = await User.findById(req.user._id).select('+password');
-
-    if (!(await user.matchPassword(currentPassword))) {
-      return res.status(400).json({
-        success: false,
-        message: 'Current password provided is incorrect.'
-      });
-    }
-
-    user.password = newPassword;
-    await user.save();
-
-    res.json({
-      success: true,
-      message: 'Password updated successfully.'
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error updating profile.'
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -263,7 +225,5 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
-  updateProfile,
-  changePassword
+  updateProfile
 };
-
