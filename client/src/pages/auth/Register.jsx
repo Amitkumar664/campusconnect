@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  GraduationCap,
+  Compass,
   Lock,
   Mail,
   User,
@@ -13,20 +13,15 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
 
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
-    role: 'student',
     department: 'Computer Science & Engineering',
     studentOrEmployeeId: '',
-    phone: '',
-    designation: 'Assistant Professor',
-    officeRoom: 'Academic Block'
+    phone: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -47,210 +42,168 @@ const Register = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (formData.password.length < 4) {
+      setError('Password must be at least 4 characters.');
       return;
     }
 
     setLoading(true);
-    const result = await register(formData);
+    const result = await register({ ...formData, role: 'student' });
     setLoading(false);
 
     if (result.success) {
-      if (result.user.role === 'faculty') {
-        navigate('/faculty/dashboard');
-      } else {
-        navigate('/student/dashboard');
-      }
+      navigate('/student/dashboard');
     } else {
       setError(result.message);
     }
   };
 
   const departments = [
-    { label: 'Computer Science & Engineering', value: 'Computer Science & Engineering' },
-    { label: 'Information Technology', value: 'Information Technology' },
-    { label: 'Artificial Intelligence & Data Science', value: 'Artificial Intelligence & Data Science' },
-    { label: 'Electronics & Communication', value: 'Electronics & Communication' },
-    { label: 'Mechanical Engineering', value: 'Mechanical Engineering' },
-    { label: 'Civil Engineering', value: 'Civil Engineering' }
+    'Computer Science & Engineering',
+    'Information Technology',
+    'Artificial Intelligence & Data Science',
+    'Electronics & Communication',
+    'Mechanical Engineering',
+    'Civil Engineering',
+    'Electrical & Electronics',
+    'Biotechnology',
+    'Management Studies / MBA'
   ];
 
   return (
-    <div className="min-h-screen bg-[#08070D] text-[#ECE8F5] mesh-bg flex items-center justify-center p-4 relative overflow-hidden my-8 font-sans">
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#7C3AED]/[0.08] rounded-full blur-[160px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0B0F19] text-[#F8FAFC] mesh-bg flex items-center justify-center p-4 relative overflow-hidden font-sans">
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#387ED1]/[0.1] rounded-full blur-[160px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-xl relative z-10"
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="w-full max-w-lg relative z-10 my-8"
       >
-        {/* Header Branding */}
+        {/* Logo and header */}
         <div className="text-center mb-6">
-          <Link to="/" className="inline-flex items-center gap-3 mb-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-[#7C3AED] flex items-center justify-center text-white shadow-[0_0_20px_rgba(124,58,237,0.5)] group-hover:scale-105 transition-transform">
-              <GraduationCap className="w-6 h-6" />
-            </div>
-          </Link>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
-            CAMPUS<span className="text-[#8B5CF6]">.CONNECT</span>
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#387ED1] to-[#2563EB] flex items-center justify-center text-white mx-auto mb-3 shadow-[0_0_20px_rgba(56,126,209,0.5)]">
+            <Compass className="w-6 h-6" />
+          </div>
+          <h1 className="font-display font-extrabold text-2xl text-white tracking-tight">
+            Student Pass Registration
           </h1>
-          <p className="text-xs sm:text-sm text-[#9E98AE] mt-1">
-            Create your institutional account
+          <p className="text-xs text-[#94A3B8] mt-1 font-medium">
+            Activate your digital collegiate account to book event tickets & join hackathons
           </p>
         </div>
 
-        {/* Card */}
-        <div className="bg-[#0D0C15] rounded-2xl border border-[#262135] p-6 sm:p-9 shadow-[0_25px_70px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-60" />
-
+        {/* Form Card */}
+        <div className="p-7 rounded-2xl bg-[#0F172A] border border-[#1E293B] shadow-2xl backdrop-blur-xl">
           {error && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-400 font-medium"
-            >
+            <div className="mb-4 p-3.5 rounded-xl bg-[#EF4444]/15 border border-[#EF4444]/30 text-xs text-[#EF4444] font-medium flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444]" />
               {error}
-            </motion.div>
+            </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Role Selector Pill */}
-            <div className="space-y-1.5">
-              <label className="block text-[11px] font-semibold text-[#9E98AE] uppercase tracking-wider">
-                Select Your Role <span className="text-[#8B5CF6]">*</span>
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData((p) => ({ ...p, role: 'student' }))}
-                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    formData.role === 'student'
-                      ? 'bg-[#7C3AED]/20 border-[#7C3AED] text-white shadow-[0_0_15px_rgba(124,58,237,0.3)]'
-                      : 'bg-[#13111C] border-[#262135] text-[#9E98AE] hover:text-white'
-                  }`}
-                >
-                  <GraduationCap className="w-4 h-4" />
-                  Student Account
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData((p) => ({ ...p, role: 'faculty' }))}
-                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    formData.role === 'faculty'
-                      ? 'bg-[#7C3AED]/20 border-[#7C3AED] text-white shadow-[0_0_15px_rgba(124,58,237,0.3)]'
-                      : 'bg-[#13111C] border-[#262135] text-[#9E98AE] hover:text-white'
-                  }`}
-                >
-                  <Building className="w-4 h-4" />
-                  Faculty Account
-                </button>
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <div>
+              <label className="block text-[#94A3B8] font-medium mb-1">Full Name</label>
+              <div className="relative">
+                <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+                <input
+                  type="text"
+                  required
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="e.g. Aarav Mehta"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1]"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[#94A3B8] font-medium mb-1">Institutional Email</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+                  <input
+                    type="email"
+                    required
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="student@campusconnect.edu"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#94A3B8] font-medium mb-1">Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+                  <input
+                    type="password"
+                    required
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Min 6 characters"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1]"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Full Legal Name"
-                name="fullName"
-                placeholder="e.g. Aarav Mehta"
-                value={formData.fullName}
-                onChange={handleChange}
-                icon={User}
-                required
-              />
-
-              <Input
-                label="Institutional Email"
-                name="email"
-                type="email"
-                placeholder="e.g. name@campusconnect.edu"
-                value={formData.email}
-                onChange={handleChange}
-                icon={Mail}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Password"
-                name="password"
-                type="password"
-                placeholder="Min 6 characters"
-                value={formData.password}
-                onChange={handleChange}
-                icon={Lock}
-                required
-              />
-
-              <Input
-                label={formData.role === 'student' ? 'Roll / Enrollment #' : 'Employee / Faculty ID'}
-                name="studentOrEmployeeId"
-                placeholder={formData.role === 'student' ? 'e.g. CS2026-042' : 'e.g. FAC-CSE-009'}
-                value={formData.studentOrEmployeeId}
-                onChange={handleChange}
-                icon={IdCard}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Academic Department"
-                name="department"
-                type="select"
-                value={formData.department}
-                onChange={handleChange}
-                options={departments}
-                icon={Building}
-              />
-
-              <Input
-                label="Contact Phone (Optional)"
-                name="phone"
-                placeholder="e.g. +91 98765 43210"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </div>
-
-            {formData.role === 'faculty' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 rounded-xl bg-[#13111C] border border-[#262135]">
-                <Input
-                  label="Academic Designation"
-                  name="designation"
-                  placeholder="e.g. Associate Professor"
-                  value={formData.designation}
-                  onChange={handleChange}
-                />
-                <Input
-                  label="Office Room / Block"
-                  name="officeRoom"
-                  placeholder="e.g. Ramanujan Block 304"
-                  value={formData.officeRoom}
-                  onChange={handleChange}
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[#94A3B8] font-medium mb-1">Student Roll / ID Number</label>
+                <div className="relative">
+                  <IdCard className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+                  <input
+                    type="text"
+                    required
+                    name="studentOrEmployeeId"
+                    value={formData.studentOrEmployeeId}
+                    onChange={handleChange}
+                    placeholder="e.g. STU-2024-CS-042"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1] uppercase"
+                  />
+                </div>
               </div>
-            )}
 
-            <Button
+              <div>
+                <label className="block text-[#94A3B8] font-medium mb-1">Academic Department</label>
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-white focus:outline-none focus:border-[#387ED1]"
+                >
+                  {departments.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <button
               type="submit"
-              variant="primary"
-              size="lg"
-              loading={loading}
-              className="w-full mt-4"
+              disabled={loading}
+              className="w-full py-2.5 mt-2 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] disabled:opacity-50 text-white font-semibold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-2"
             >
-              Complete Registration <ArrowRight className="w-4 h-4 ml-1" />
-            </Button>
+              <span>{loading ? 'Creating Student Account...' : 'Complete Registration'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </form>
         </div>
 
-        <p className="text-center text-xs text-[#9E98AE] mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-[#A78BFA] hover:text-white font-semibold transition-colors">
-            Sign in here
+        {/* Footer */}
+        <p className="text-center text-xs text-[#64748B] mt-6">
+          Already registered?{' '}
+          <Link to="/login" className="font-semibold text-[#387ED1] hover:underline">
+            Sign In here
           </Link>
         </p>
       </motion.div>

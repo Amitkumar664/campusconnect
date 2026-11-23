@@ -8,28 +8,28 @@
 
 body {
   margin: 0;
-  background-color: #08070D;
-  color: #F9FAFB;
+  background-color: #0B0F19;
+  color: #F8FAFC;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* hi.events Deep Obsidian-Violet Atmospheric Lighting */
+/* Zerodha & Hi.events Deep Atmospheric Slate-Blue Background */
 .mesh-bg {
-  background-color: #08070D;
+  background-color: #0B0F19;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 60%),
-    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+    radial-gradient(at 0% 0%, rgba(56, 126, 209, 0.14) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(13, 148, 136, 0.05) 0px, transparent 60%),
+    radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0);
   background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
 }
 
-/* Elevated Dark Glass Surfaces */
+/* Elevated SaaS Glass Surfaces */
 .glass-surface {
-  background: linear-gradient(135deg, rgba(20, 18, 32, 0.85) 0%, rgba(13, 12, 21, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(22, 31, 55, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -37,17 +37,17 @@ body {
 }
 
 .glass-card-elevated {
-  background: linear-gradient(180deg, rgba(22, 19, 36, 0.8) 0%, rgba(15, 13, 25, 0.9) 100%);
+  background: linear-gradient(180deg, rgba(26, 36, 64, 0.85) 0%, rgba(17, 24, 39, 0.92) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card-elevated:hover {
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.85), 0 0 25px -4px rgba(124, 58, 237, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(56, 126, 209, 0.45);
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.85), 0 0 25px -4px rgba(56, 126, 209, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
 }
 
@@ -79,14 +79,14 @@ body {
   left: 120%;
 }
 
-/* hi.events Section Marker Tag (e.g. § 01 · IN THE APP) */
+/* Hi.events Section Marker Tag (e.g. § 03 · AT THE DOOR) */
 .section-tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #A78BFA;
+  color: #60A5FA;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -99,14 +99,39 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #08070D;
+  background: #0B0F19;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: #1E293B;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7C3AED;
+  background: #387ED1;
 }
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(56, 126, 209, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(56, 126, 209, 0.6);
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+

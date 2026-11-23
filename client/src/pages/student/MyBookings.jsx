@@ -1,335 +1,194 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  CalendarCheck,
-  GraduationCap,
-  Building2,
-  Ticket,
-  Clock,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Filter,
   Calendar,
-  Search,
-  Sparkles
+  Ticket,
+  MapPin,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ChevronRight,
+  Filter
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { bookingAPI, eventAPI } from '../../services/api';
-import Card from '../../components/common/Card';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
-import Modal from '../../components/common/Modal';
+import { bookingAPI } from '../../services/api';
 
 const MyBookings = () => {
-  const [activeTab, setActiveTab] = useState('all'); // all | faculty | resources | events
-  const [statusFilter, setStatusFilter] = useState('all');
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
-  const [eventRegistrations, setEventRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedFilter, setSelectedFilter] = useState('all'); // all, confirmed, attended, cancelled
+  const [cancellingId, setCancellingId] = useState(null);
 
-  const [cancelModal, setCancelModal] = useState({ open: false, bookingId: null, reason: '' });
-  const [actionLoading, setActionLoading] = useState(false);
-  const [feedbackMsg, setFeedbackMsg] = useState({ type: '', text: '' });
-
-  const loadData = async () => {
+  const fetchBookings = async () => {
     try {
-      const [bRes, eRes] = await Promise.all([
-        bookingAPI.getMy(),
-        eventAPI.getMyRegistrations()
-      ]);
-
-      if (bRes.data.success) {
-        setBookings(bRes.data.bookings);
+      setLoading(true);
+      const params = {};
+      if (selectedFilter !== 'all') params.status = selectedFilter;
+      const res = await bookingAPI.getMy(params);
+      if (res.data.success) {
+        setBookings(res.data.bookings || []);
       }
-      if (eRes.data.success) {
-        setEventRegistrations(eRes.data.registrations);
-      }
-    } catch (error) {
-      console.error('Failed to load my bookings:', error);
+    } catch (err) {
+      console.error('Failed to load bookings:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    fetchBookings();
+  }, [selectedFilter]);
 
-  const handleCancelBooking = async () => {
-    if (!cancelModal.bookingId) return;
-    setActionLoading(true);
-    setFeedbackMsg({ type: '', text: '' });
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to cancel this event ticket? Your seat will be released.')) {
+      return;
+    }
     try {
-      const res = await bookingAPI.cancel(cancelModal.bookingId, cancelModal.reason);
+      setCancellingId(bookingId);
+      const res = await bookingAPI.cancel(bookingId, 'Cancelled by student');
       if (res.data.success) {
-        setFeedbackMsg({ type: 'success', text: 'Booking successfully cancelled and slot released.' });
-        setCancelModal({ open: false, bookingId: null, reason: '' });
-        await loadData();
+        fetchBookings();
       }
-    } catch (error) {
-      setFeedbackMsg({
-        type: 'error',
-        text: error.response?.data?.message || 'Failed to cancel booking.'
-      });
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to cancel booking');
     } finally {
-      setActionLoading(false);
+      setCancellingId(null);
     }
   };
 
-  const filteredBookings = bookings.filter((b) => {
-    if (activeTab === 'faculty' && b.bookingType !== 'faculty_session') return false;
-    if (activeTab === 'resources' && b.bookingType !== 'resource_booking') return false;
-    if (statusFilter !== 'all' && b.status !== statusFilter) return false;
-    return true;
-  });
-
   return (
-    <div className="space-y-6 animate-in fade-in duration-300 font-sans">
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
-          <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> Live Schedule & Passes
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-display font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            <Calendar className="w-6 h-6 text-[#387ED1]" />
+            <span>My Event Registrations & Bookings</span>
+          </h1>
+          <p className="text-xs text-[#94A3B8] mt-1">
+            Track status, manage upcoming events, and view official digital booking confirmations.
+          </p>
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          My Schedule & Event Passes
-        </h1>
-        <p className="text-xs sm:text-sm text-[#9E98AE] mt-1">
-          Track real-time status of your faculty doubts, lab reservations, and digital admission tickets.
-        </p>
-      </div>
 
-      {feedbackMsg.text && (
-        <div
-          className={`p-4 rounded-xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-inner ${
-            feedbackMsg.type === 'success'
-              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-          }`}
-        >
-          {feedbackMsg.type === 'success' ? <CheckCircle className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
-          <span>{feedbackMsg.text}</span>
-        </div>
-      )}
-
-      {/* Modern Tabs and Status Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#262135] pb-4">
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0F172A] border border-[#1E293B]">
           {[
-            { id: 'all', label: `All Bookings (${bookings.length})` },
-            { id: 'faculty', label: 'Faculty Doubts' },
-            { id: 'resources', label: 'Lab & Room Bookings' },
-            { id: 'events', label: `Event Tickets (${eventRegistrations.length})` }
+            { id: 'all', label: 'All' },
+            { id: 'confirmed', label: 'Confirmed' },
+            { id: 'attended', label: 'Attended' },
+            { id: 'cancelled', label: 'Cancelled' }
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`relative px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === tab.id
-                  ? 'bg-[#7C3AED] text-white font-bold shadow-[0_0_15px_rgba(124,58,237,0.4)]'
-                  : 'bg-[#13111C] text-[#9E98AE] hover:text-white hover:bg-white/5 border border-[#262135]'
+              onClick={() => setSelectedFilter(tab.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                selectedFilter === tab.id
+                  ? 'bg-[#387ED1] text-white shadow-sm'
+                  : 'text-[#94A3B8] hover:text-white'
               }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-
-        {/* Status Dropdown */}
-        {activeTab !== 'events' && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[#716B82] flex items-center gap-1 font-mono">
-              <Filter className="w-3.5 h-3.5" /> Filter:
-            </span>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-[#0D0C15] border border-[#262135] rounded-xl px-3.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#8B5CF6] cursor-pointer shadow-inner"
-            >
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-        )}
       </div>
 
-      {/* Content Rendering */}
       {loading ? (
-        <div className="py-16 text-center text-xs text-[#9E98AE] flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
-          Loading your history...
+        <div className="py-20 text-center text-sm text-[#94A3B8]">
+          <div className="w-8 h-8 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          Loading your bookings...
         </div>
-      ) : activeTab === 'events' ? (
-        /* Event Passes Grid */
-        eventRegistrations.length === 0 ? (
-          <div className="p-14 text-center rounded-2xl border border-dashed border-[#262135] bg-[#0D0C15]/50">
-            <Ticket className="w-12 h-12 text-[#7C3AED]/40 mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-white text-base">
-              No registered event passes
-            </h3>
-            <p className="text-xs text-[#9E98AE] mt-1">
-              Browse upcoming college hackathons and masterclasses to claim your ticket.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {eventRegistrations.map((reg) => (
-              <motion.div
-                key={reg._id}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-[#0D0C15] rounded-2xl border border-[#262135] shadow-[0_15px_35px_rgba(0,0,0,0.85)] p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden group hover:border-[#7C3AED]/50 transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-[#A78BFA] uppercase tracking-widest bg-[#7C3AED]/15 px-2.5 py-0.5 rounded-full border border-[#7C3AED]/30">
-                    {reg.event?.category || 'Event'}
-                  </span>
-                  <StatusBadge status="confirmed" size="sm" />
-                </div>
-
-                <div className="my-5">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-white tracking-tight">
-                    {reg.event?.title}
-                  </h3>
-                  <div className="mt-2.5 space-y-1 text-xs text-[#9E98AE] font-mono">
-                    <p>📅 {new Date(reg.event?.eventDate).toLocaleDateString()}</p>
-                    <p>⏰ {reg.event?.startTime} - {reg.event?.endTime}</p>
-                    <p className="font-sans">📍 {reg.event?.venue}</p>
-                  </div>
-                </div>
-
-                <div className="pt-3.5 border-t border-[#262135] flex items-center justify-between bg-[#13111C] -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 p-4 sm:p-5">
-                  <div className="font-mono">
-                    <p className="text-[10px] text-[#716B82] uppercase tracking-wider">Pass Code</p>
-                    <p className="text-sm font-bold text-[#A78BFA]">{reg.ticketCode}</p>
-                  </div>
-                  <Ticket className="w-5 h-5 text-[#8B5CF6]" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )
+      ) : bookings.length === 0 ? (
+        <div className="py-20 text-center rounded-2xl bg-[#0F172A] border border-[#1E293B]">
+          <Ticket className="w-10 h-10 text-[#64748B] mx-auto mb-2 opacity-50" />
+          <h3 className="text-base font-bold text-white">No registrations found</h3>
+          <p className="text-xs text-[#94A3B8] mt-1">Explore campus events to reserve your passes.</p>
+          <button
+            onClick={() => navigate('/student/events')}
+            className="mt-4 px-4 py-2 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] text-white text-xs font-semibold shadow-sm"
+          >
+            Explore Events →
+          </button>
+        </div>
       ) : (
-        /* Bookings List */
-        filteredBookings.length === 0 ? (
-          <div className="p-14 text-center rounded-2xl border border-dashed border-[#262135] bg-[#0D0C15]/50">
-            <CalendarCheck className="w-12 h-12 text-[#7C3AED]/40 mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-white text-base">
-              No matching bookings found
-            </h3>
-            <p className="text-xs text-[#9E98AE] mt-1">
-              No reservation records under the selected tab and status filter.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3.5">
-            {filteredBookings.map((b) => (
-              <motion.div
-                key={b._id}
-                whileHover={{ y: -2 }}
-                className="bg-[#0D0C15] rounded-2xl border border-[#262135] shadow-[0_15px_35px_rgba(0,0,0,0.85)] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5 hover:border-[#7C3AED]/40 transition-all"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-center text-[#A78BFA] flex-shrink-0 shadow-inner mt-0.5">
-                    {b.bookingType === 'faculty_session' ? (
-                      <GraduationCap className="w-6 h-6" />
-                    ) : (
-                      <Building2 className="w-6 h-6" />
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-md bg-[#1B1828] text-[#9E98AE] border border-[#262135]">
-                        {b.bookingType === 'faculty_session' ? 'Faculty Doubt' : 'Campus Resource'}
-                      </span>
-                      <StatusBadge status={b.status} size="sm" />
-                    </div>
-                    <h3 className="font-display font-bold text-base text-white tracking-tight">
-                      {b.subject}
-                    </h3>
-                    <p className="text-xs text-[#9E98AE]">
-                      {b.bookingType === 'faculty_session'
-                        ? `Professor: ${b.faculty?.fullName || 'Faculty Member'} (${b.faculty?.department || ''})`
-                        : `Facility: ${b.resource?.name || 'Classroom/Lab'} (${b.resource?.building || ''})`}
-                    </p>
-                    <p className="text-xs text-[#716B82] line-clamp-2 max-w-xl">
-                      "{b.description}"
-                    </p>
-
-                    {b.rejectionReason && (
-                      <div className="mt-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-400">
-                        <strong>Reason:</strong> {b.rejectionReason}
-                      </div>
-                    )}
-                  </div>
+        <div className="space-y-3">
+          {bookings.map((booking) => (
+            <div
+              key={booking._id}
+              className="p-5 rounded-2xl bg-[#0F172A] border border-[#1E293B] hover:border-[#387ED1]/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#387ED1]/15 text-[#387ED1] flex items-center justify-center flex-shrink-0">
+                  <Ticket className="w-6 h-6" />
                 </div>
 
-                {/* Right metadata & Action */}
-                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-[#262135] flex-shrink-0">
-                  <div className="text-left md:text-right font-mono text-xs text-[#716B82]">
-                    <p>📅 {new Date(b.date).toLocaleDateString()}</p>
-                    <p className="text-white font-semibold pt-0.5">
-                      ⏰ {b.startTime} - {b.endTime}
-                    </p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#60A5FA]">{booking.ticketCode}</span>
+                    <span className="text-[#334155]">•</span>
+                    <span className="text-xs text-[#64748B] font-mono">{booking.bookingId}</span>
                   </div>
 
-                  {['pending', 'approved'].includes(b.status) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        setCancelModal({ open: true, bookingId: b._id, reason: '' })
-                      }
-                      className="text-rose-400 hover:bg-rose-500/10 text-xs"
+                  <h3 className="text-base font-bold text-white mt-0.5">{booking.event?.title}</h3>
+
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-[#64748B] mt-2">
+                    <span className="flex items-center gap-1.5 text-[#94A3B8]">
+                      <Calendar className="w-3.5 h-3.5 text-[#387ED1]" />
+                      {booking.event?.eventDate ? new Date(booking.event.eventDate).toLocaleDateString() : 'TBD'}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[#94A3B8]">
+                      <Clock className="w-3.5 h-3.5 text-[#387ED1]" />
+                      {booking.event?.startTime} - {booking.event?.endTime}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[#94A3B8] truncate max-w-xs">
+                      <MapPin className="w-3.5 h-3.5 text-[#387ED1]" />
+                      {booking.event?.venue}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status and Action Buttons */}
+              <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-[#1E293B]">
+                <div>
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                      booking.status === 'confirmed'
+                        ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/30'
+                        : booking.status === 'attended'
+                        ? 'bg-[#387ED1]/20 text-[#60A5FA] border border-[#387ED1]/30'
+                        : 'bg-[#EF4444]/20 text-[#EF4444] border border-[#EF4444]/30'
+                    }`}
+                  >
+                    {booking.status}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => navigate('/student/my-tickets')}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#1E293B] hover:bg-[#334155] text-white text-xs font-semibold border border-[#334155] transition-all"
+                  >
+                    View QR Pass
+                  </button>
+
+                  {booking.status === 'confirmed' && (
+                    <button
+                      onClick={() => handleCancelBooking(booking._id)}
+                      disabled={cancellingId === booking._id}
+                      className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors"
                     >
-                      Cancel Booking
-                    </Button>
+                      {cancellingId === booking._id ? 'Cancelling...' : 'Cancel'}
+                    </button>
                   )}
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        )
-      )}
-
-      {/* Cancel Reason Modal */}
-      <Modal
-        isOpen={cancelModal.open}
-        onClose={() => setCancelModal({ open: false, bookingId: null, reason: '' })}
-        title="Cancel Booking Request"
-        subtitle="This action will release the reserved time slot for other students."
-        footer={
-          <>
-            <Button
-              variant="secondary"
-              onClick={() => setCancelModal({ open: false, bookingId: null, reason: '' })}
-            >
-              Keep Booking
-            </Button>
-            <Button
-              variant="danger"
-              loading={actionLoading}
-              onClick={handleCancelBooking}
-            >
-              Confirm Cancellation
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <p className="text-xs text-[#9E98AE]">
-            Please optionally share why you are cancelling this appointment:
-          </p>
-          <textarea
-            rows={3}
-            placeholder="e.g. Schedule conflict with assignment submission..."
-            value={cancelModal.reason}
-            onChange={(e) => setCancelModal({ ...cancelModal, reason: e.target.value })}
-            className="w-full bg-[#0D0C15] border border-[#262135] rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-[#8B5CF6] shadow-inner resize-none font-medium"
-          />
+              </div>
+            </div>
+          ))}
         </div>
-      </Modal>
+      )}
     </div>
   );
 };

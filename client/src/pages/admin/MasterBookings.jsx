@@ -1,285 +1,209 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
-  CalendarCheck,
-  Check,
-  X,
-  Filter,
+  Ticket,
   Search,
-  Building2,
-  GraduationCap,
+  Download,
+  Filter,
+  CheckCircle2,
+  XCircle,
   Clock,
-  AlertCircle,
-  CheckCircle,
-  Sparkles
+  Calendar,
+  User
 } from 'lucide-react';
-import { bookingAPI } from '../../services/api';
-import Card from '../../components/common/Card';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
-import Modal from '../../components/common/Modal';
+import { bookingAPI, analyticsAPI } from '../../services/api';
 
 const MasterBookings = () => {
   const [bookings, setBookings] = useState([]);
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [exporting, setExporting] = useState(false);
 
-  const [activeBooking, setActiveBooking] = useState(null);
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: '', text: '' });
-
-  const loadBookings = async () => {
+  const fetchBookings = async () => {
     try {
-      const res = await bookingAPI.getAll({
-        bookingType: typeFilter,
-        status: statusFilter
-      });
+      setLoading(true);
+      const params = {};
+      if (statusFilter !== 'all') params.status = statusFilter;
+      if (search) params.search = search;
+
+      const res = await bookingAPI.getAll(params);
       if (res.data.success) {
-        setBookings(res.data.bookings);
+        setBookings(res.data.bookings || []);
       }
-    } catch (error) {
-      console.error('Failed to load master bookings:', error);
+    } catch (err) {
+      console.error('Failed to load bookings:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadBookings();
-  }, [typeFilter, statusFilter]);
+    fetchBookings();
+  }, [statusFilter]);
 
-  const handleApprove = async (booking) => {
-    setActionLoading(true);
-    setFeedback({ type: '', text: '' });
-    try {
-      const res = await bookingAPI.updateStatus(booking._id, { status: 'approved' });
-      if (res.data.success) {
-        setFeedback({
-          type: 'success',
-          text: `Booking "${booking.subject}" marked as APPROVED!`
-        });
-        await loadBookings();
-      }
-    } catch (error) {
-      setFeedback({
-        type: 'error',
-        text: error.response?.data?.message || 'Could not approve booking.'
-      });
-    } finally {
-      setActionLoading(false);
-    }
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchBookings();
   };
 
-  const handleRejectConfirm = async () => {
-    if (!rejectionReason.trim()) {
-      alert('Please provide a reason for rejecting the booking.');
-      return;
-    }
-
-    setActionLoading(true);
-    setFeedback({ type: '', text: '' });
+  const handleExportCSV = async () => {
     try {
-      const res = await bookingAPI.updateStatus(activeBooking._id, {
-        status: 'rejected',
-        rejectionReason
-      });
-      if (res.data.success) {
-        setFeedback({
-          type: 'success',
-          text: `Booking rejected. Requester has been notified.`
-        });
-        setRejectModalOpen(false);
-        setRejectionReason('');
-        await loadBookings();
-      }
-    } catch (error) {
-      setFeedback({
-        type: 'error',
-        text: error.response?.data?.message || 'Could not reject booking.'
-      });
+      setExporting(true);
+      const res = await analyticsAPI.exportCSV('bookings');
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'campusconnect_master_bookings.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      alert('Failed to export CSV');
     } finally {
-      setActionLoading(false);
+      setExporting(false);
     }
   };
 
   return (
-    <div className="space-y-6 font-sans animate-in fade-in duration-300">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
-            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> Global Schedule Desk
-          </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Master Campus Bookings Registry
+          <h1 className="text-2xl font-display font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            <Ticket className="w-6 h-6 text-[#387ED1]" />
+            <span>Master Ticket Bookings Directory</span>
           </h1>
-          <p className="text-sm text-[#9E98AE] mt-1">
-            Global administrative supervision across faculty doubt appointments and room reservations.
+          <p className="text-xs text-[#94A3B8] mt-1">
+            Global register of all student ticket issuances, cancellations, and door check-in states.
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-[#0D0C15] border border-[#262135] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#8B5CF6] shadow-inner cursor-pointer"
-          >
-            <option value="all">All Booking Types</option>
-            <option value="faculty_session">Faculty Doubts</option>
-            <option value="resource_booking">Lab & Room Bookings</option>
-          </select>
+        <button
+          onClick={handleExportCSV}
+          disabled={exporting}
+          className="px-4 py-2.5 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] disabled:opacity-50 text-white text-xs font-semibold shadow-md transition-all flex items-center gap-2 self-start sm:self-auto"
+        >
+          <Download className="w-4 h-4" />
+          <span>{exporting ? 'Exporting...' : 'Export to CSV'}</span>
+        </button>
+      </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#0D0C15] border border-[#262135] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#8B5CF6] shadow-inner cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <form onSubmit={handleSearchSubmit} className="relative max-w-md w-full">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by ticket code, student name, or ID..."
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-xs text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1]"
+          />
+        </form>
+
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0F172A] border border-[#1E293B]">
+          {[
+            { id: 'all', label: 'All' },
+            { id: 'confirmed', label: 'Confirmed' },
+            { id: 'attended', label: 'Attended' },
+            { id: 'cancelled', label: 'Cancelled' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setStatusFilter(tab.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                statusFilter === tab.id
+                  ? 'bg-[#387ED1] text-white shadow-sm'
+                  : 'text-[#94A3B8] hover:text-white'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {feedback.text && (
-        <div
-          className={`p-4 rounded-xl border text-sm font-medium flex items-center gap-3 shadow-inner ${
-            feedback.type === 'success'
-              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-          }`}
-        >
-          {feedback.type === 'success' ? <CheckCircle className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
-          <span>{feedback.text}</span>
-        </div>
-      )}
-
-      {/* Bookings Table Card */}
-      <Card>
-        {loading ? (
-          <div className="py-16 text-center text-sm text-[#9E98AE] flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
-            Loading master registry...
-          </div>
-        ) : bookings.length === 0 ? (
-          <div className="py-12 text-center text-sm text-[#716B82]">
-            No bookings found under the selected filters.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#13111C] text-[#9E98AE] uppercase font-mono text-[10px] border-b border-[#262135]">
+      {/* Bookings Table */}
+      <div className="rounded-2xl bg-[#0F172A] border border-[#1E293B] overflow-hidden shadow-lg">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#111827] text-[#94A3B8] uppercase text-[10px] tracking-wider border-b border-[#1E293B]">
+              <tr>
+                <th className="py-3 px-4">Ticket & Booking ID</th>
+                <th className="py-3 px-4">Attendee Details</th>
+                <th className="py-3 px-4">Event Details</th>
+                <th className="py-3 px-4">Booking Status</th>
+                <th className="py-3 px-4">Door Check-In</th>
+                <th className="py-3 px-4 text-right">Date Issued</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1E293B]">
+              {loading ? (
                 <tr>
-                  <th className="py-3 px-4">Type</th>
-                  <th className="py-3 px-4">Subject</th>
-                  <th className="py-3 px-4">Requester</th>
-                  <th className="py-3 px-4">Target Resource/Faculty</th>
-                  <th className="py-3 px-4">Scheduled Slot</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Admin Actions</th>
+                  <td colSpan={6} className="py-8 text-center text-[#64748B]">
+                    Loading master bookings...
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-[#262135]">
-                {bookings.map((b) => (
-                  <tr key={b._id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-mono text-[10px]">
-                      <span className="px-2 py-0.5 rounded-md bg-[#1B1828] border border-[#262135] text-[#9E98AE] uppercase">
-                        {b.bookingType === 'faculty_session' ? 'Faculty Doubt' : 'Lab / Room'}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 font-semibold text-white max-w-xs">
-                      <div>{b.subject}</div>
-                      <div className="text-[11px] text-[#716B82] line-clamp-1 mt-0.5">
-                        "{b.description}"
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-[#C7C3D6]">
-                      <div className="font-medium text-white">{b.requester?.fullName}</div>
-                      <div className="text-[10px] font-mono text-[#716B82]">{b.requester?.studentOrEmployeeId}</div>
-                    </td>
-                    <td className="py-3.5 px-4 text-[#A78BFA] font-medium">
-                      {b.bookingType === 'faculty_session'
-                        ? b.faculty?.fullName
-                        : `${b.resource?.name} (${b.resource?.code})`}
-                    </td>
-                    <td className="py-3.5 px-4 font-mono text-[#9E98AE] whitespace-nowrap">
-                      <div>📅 {new Date(b.date).toLocaleDateString()}</div>
-                      <div>⏰ {b.startTime} - {b.endTime}</div>
+              ) : bookings.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-[#64748B]">
+                    No bookings found matching filters.
+                  </td>
+                </tr>
+              ) : (
+                bookings.map((b) => (
+                  <tr key={b._id} className="hover:bg-[#1E293B]/40 transition-colors">
+                    <td className="py-3.5 px-4 font-mono">
+                      <p className="font-bold text-[#60A5FA]">{b.ticketCode}</p>
+                      <p className="text-[10px] text-[#64748B]">{b.bookingId}</p>
                     </td>
                     <td className="py-3.5 px-4">
-                      <StatusBadge status={b.status} size="sm" />
+                      <p className="font-semibold text-white">{b.attendeeDetails?.fullName || b.user?.fullName}</p>
+                      <p className="text-[10px] text-[#64748B]">
+                        ID: {b.attendeeDetails?.studentOrEmployeeId || b.user?.studentOrEmployeeId} • {b.attendeeDetails?.department || b.user?.department}
+                      </p>
                     </td>
-                    <td className="py-3.5 px-4 text-right">
-                      {b.status === 'pending' ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            loading={actionLoading}
-                            onClick={() => handleApprove(b)}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            onClick={() => {
-                              setActiveBooking(b);
-                              setRejectModalOpen(true);
-                            }}
-                          >
-                            Reject
-                          </Button>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-[#716B82] font-mono">
-                          Actioned
-                        </span>
-                      )}
+                    <td className="py-3.5 px-4 text-[#94A3B8]">
+                      <p className="font-medium text-white line-clamp-1">{b.event?.title}</p>
+                      <p className="text-[10px] text-[#64748B]">
+                        {b.event?.eventDate ? new Date(b.event.eventDate).toLocaleDateString() : 'TBD'} • {b.event?.venue}
+                      </p>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                          b.status === 'confirmed'
+                            ? 'bg-[#10B981]/20 text-[#10B981]'
+                            : b.status === 'attended'
+                            ? 'bg-[#387ED1]/20 text-[#60A5FA]'
+                            : 'bg-[#EF4444]/20 text-[#EF4444]'
+                        }`}
+                      >
+                        {b.status}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                          b.checkInStatus === 'checked_in'
+                            ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/30'
+                            : 'bg-[#1E293B] text-[#64748B]'
+                        }`}
+                      >
+                        {b.checkInStatus === 'checked_in' ? 'Checked In' : 'Unchecked'}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-[#64748B] font-mono text-[11px]">
+                      {new Date(b.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
-
-      {/* Reject Modal */}
-      <Modal
-        isOpen={rejectModalOpen}
-        onClose={() => setRejectModalOpen(false)}
-        title="Reject Booking Request"
-        subtitle={`Booking: ${activeBooking?.subject}`}
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setRejectModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="danger" loading={actionLoading} onClick={handleRejectConfirm}>
-              Confirm Rejection
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <p className="text-xs text-[#9E98AE]">
-            Enter the mandatory rejection explanation (sent to the user via notification):
-          </p>
-          <textarea
-            rows={3}
-            value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
-            placeholder="e.g. Facility is reserved for scheduled maintenance..."
-            className="w-full bg-[#0D0C15] border border-[#262135] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#8B5CF6] shadow-inner resize-none font-medium"
-          />
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      </Modal>
+      </div>
     </div>
   );
 };

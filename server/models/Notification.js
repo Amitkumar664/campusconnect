@@ -19,7 +19,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['booking_status', 'session_request', 'event_alert', 'system'],
+      enum: ['booking_status', 'event', 'event_alert', 'reminder', 'announcement', 'urgent', 'system'],
       default: 'system'
     },
     actionUrl: {

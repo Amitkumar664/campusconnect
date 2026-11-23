@@ -25,7 +25,6 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     // Redirect unauthorized role to their respective home dashboard
     if (user.role === 'admin') return <Navigate to="/admin/analytics" replace />;
-    if (user.role === 'faculty') return <Navigate to="/faculty/dashboard" replace />;
     return <Navigate to="/student/dashboard" replace />;
   }
 

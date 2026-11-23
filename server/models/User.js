@@ -20,14 +20,14 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minlength: [6, 'Password must be at least 6 characters'],
+      minlength: [4, 'Password must be at least 4 characters'],
       select: false
     },
     role: {
       type: String,
       enum: {
-        values: ['student', 'faculty', 'admin'],
-        message: '{VALUE} is not a valid user role'
+        values: ['student', 'admin'],
+        message: '{VALUE} is not a valid user role. Only student and admin are permitted.'
       },
       default: 'student'
     },
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     },
     studentOrEmployeeId: {
       type: String,
-      required: [true, 'Student / Employee ID is required'],
+      required: [true, 'Student ID is required'],
       unique: true,
       uppercase: true,
       trim: true
@@ -71,11 +71,10 @@ userSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare password helper
+// Compare hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
-

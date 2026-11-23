@@ -2,81 +2,82 @@ const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema(
   {
-    bookingType: {
+    bookingId: {
       type: String,
-      enum: {
-        values: ['faculty_session', 'resource_booking'],
-        message: '{VALUE} is not a valid booking type'
-      },
-      required: [true, 'Booking type is required']
+      required: true,
+      unique: true,
+      uppercase: true
     },
-    requester: {
+    ticketCode: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true
+    },
+    event: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event',
+      required: [true, 'Event is required']
+    },
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Requester is required']
+      required: [true, 'User is required']
     },
-    faculty: {
+    registrationType: {
+      type: String,
+      enum: ['individual', 'team'],
+      default: 'individual'
+    },
+    team: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Team',
       default: null
     },
-    resource: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Resource',
-      default: null
+    qrCode: {
+      type: String, // Data URL base64 image string
+      default: ''
     },
-    date: {
-      type: Date,
-      required: [true, 'Booking date is required']
-    },
-    startTime: {
-      type: String,
-      required: [true, 'Start time is required']
-    },
-    endTime: {
-      type: String,
-      required: [true, 'End time is required']
-    },
-    startMinutes: {
+    ticketPrice: {
       type: Number,
-      required: true
+      default: 0
     },
-    endMinutes: {
-      type: Number,
-      required: true
-    },
-    durationMinutes: {
-      type: Number,
-      required: true
-    },
-    subject: {
+    paymentStatus: {
       type: String,
-      required: [true, 'Subject or topic is required'],
-      trim: true
-    },
-    description: {
-      type: String,
-      required: [true, 'Description/purpose is required'],
-      trim: true
+      enum: ['free', 'completed', 'pending', 'refunded'],
+      default: 'free'
     },
     status: {
       type: String,
-      enum: {
-        values: ['pending', 'approved', 'rejected', 'cancelled', 'completed'],
-        message: '{VALUE} is not a valid booking status'
-      },
-      default: 'pending'
+      enum: ['confirmed', 'cancelled', 'attended'],
+      default: 'confirmed'
     },
-    rejectionReason: {
+    checkInStatus: {
       type: String,
-      default: ''
+      enum: ['unattended', 'checked_in', 'cancelled'],
+      default: 'unattended'
     },
-    actionedBy: {
+    checkedInAt: {
+      type: Date,
+      default: null
+    },
+    checkedInBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null
     },
-    actionedAt: {
+    attendeeDetails: {
+      fullName: { type: String, default: '' },
+      email: { type: String, default: '' },
+      studentOrEmployeeId: { type: String, default: '' },
+      department: { type: String, default: '' },
+      phone: { type: String, default: '' }
+    },
+    cancellationReason: {
+      type: String,
+      default: ''
+    },
+    cancelledAt: {
       type: Date,
       default: null
     }
@@ -86,12 +87,9 @@ const bookingSchema = new mongoose.Schema(
   }
 );
 
-// High performance compound indexes for collision checking and analytics
-bookingSchema.index({ faculty: 1, date: 1, status: 1, startMinutes: 1, endMinutes: 1 });
-bookingSchema.index({ resource: 1, date: 1, status: 1, startMinutes: 1, endMinutes: 1 });
-bookingSchema.index({ requester: 1, createdAt: -1 });
-bookingSchema.index({ bookingType: 1, status: 1, date: 1 });
+// Compound indexes
+bookingSchema.index({ event: 1, user: 1, status: 1 });
+bookingSchema.index({ user: 1, createdAt: -1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 module.exports = Booking;
-

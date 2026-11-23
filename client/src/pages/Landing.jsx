@@ -1,38 +1,32 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  GraduationCap,
-  CalendarCheck,
-  Building2,
   Calendar,
-  BarChart3,
-  ShieldCheck,
-  ArrowRight,
-  CheckCircle2,
-  Sparkles,
-  Zap,
   Clock,
-  Layers,
-  ChevronRight,
-  Code2,
-  Palette,
-  Terminal,
-  Cpu,
+  MapPin,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
   Star,
   Search,
-  Check,
-  X,
-  Smartphone,
-  CreditCard,
-  QrCode,
+  Sparkles,
+  Zap,
+  ShieldCheck,
+  Trophy,
   Users,
-  Sun,
-  Lock,
-  ArrowUpRight
+  Code2,
+  Tv,
+  QrCode,
+  Ticket,
+  ChevronDown,
+  ChevronUp,
+  Flame,
+  Globe,
+  Radio,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import Button from '../components/common/Button';
 
 const Landing = () => {
   const { user, isAuthenticated } = useAuth();
@@ -40,37 +34,64 @@ const Landing = () => {
   // If already authenticated, redirect to corresponding dashboard
   if (isAuthenticated && user) {
     if (user.role === 'admin') return <Navigate to="/admin/analytics" replace />;
-    if (user.role === 'faculty') return <Navigate to="/faculty/dashboard" replace />;
     return <Navigate to="/student/dashboard" replace />;
   }
 
-  // --- Interactive State for Mobile Door Check-in Simulator ---
-  const [attendees, setAttendees] = useState([
-    { id: '1', name: 'Aoife Brennan', code: 'A-06FNGUA', type: 'General admit', checkedIn: true, time: '14:22' },
-    { id: '2', name: 'Marcus Whitfield', code: 'A-00XJQ8U', type: 'General admit', checkedIn: true, time: '14:25' },
-    { id: '3', name: 'Priya Raghunathan', code: 'A-JVXNJAB', type: 'Research Lead', checkedIn: true, time: '14:30' },
-    { id: '4', name: 'Tomás Ferreira', code: 'A-2DJDXV2', type: 'General admit', checkedIn: false, time: null },
-    { id: '5', name: 'Hannah Okonkwo', code: 'A-89KLP12', type: 'Hackathon VIP', checkedIn: false, time: null },
-    { id: '6', name: 'Arjun Mehta', code: 'A-77PLQ99', type: 'AI Lab Station 4', checkedIn: false, time: null },
-    { id: '7', name: 'Devon Vance', code: 'A-33TRM81', type: 'Speaker / Faculty', checkedIn: true, time: '14:35' },
-    { id: '8', name: 'Sarah Lin', code: 'A-44BVC22', type: 'General admit', checkedIn: false, time: null },
-  ]);
+  // --- Live Countdown Timer State (Matches the 140 00 29 57 counter in CONFERIO screenshot) ---
+  const [timeLeft, setTimeLeft] = useState({
+    days: 140,
+    hours: 12,
+    mins: 29,
+    secs: 57
+  });
 
+  useEffect(() => {
+    // Target date set to an upcoming flagship festival date
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 140);
+    targetDate.setHours(targetDate.getHours() + 12);
+    targetDate.setMinutes(targetDate.getMinutes() + 30);
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+
+      if (distance <= 0) {
+        clearInterval(timer);
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+        setTimeLeft({
+          days: days < 10 ? `0${days}` : days,
+          hours: hours < 10 ? `0${hours}` : hours,
+          mins: mins < 10 ? `0${mins}` : mins,
+          secs: secs < 10 ? `0${secs}` : secs
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // --- Interactive Door Check-in Desk State (Hi.events front door view) ---
+  const [attendees, setAttendees] = useState([
+    { id: '1', name: 'Aoife Brennan', code: 'A-06FNGUA', type: 'General admit', checkedIn: true },
+    { id: '2', name: 'Marcus Whitfield', code: 'A-00XJQ8U', type: 'General admit', checkedIn: true },
+    { id: '3', name: 'Priya Raghunathan', code: 'A-JVXNJAB', type: 'Research Lead', checkedIn: true },
+    { id: '4', name: 'Tomás Ferreira', code: 'A-2DJDXV2', type: 'General admit', checkedIn: false },
+    { id: '5', name: 'Hannah Okonkwo', code: 'A-89KLP12', type: 'Hackathon VIP', checkedIn: false },
+    { id: '6', name: 'Arjun Mehta', code: 'A-77PLQ99', type: 'AI Station 4', checkedIn: false }
+  ]);
   const [doorSearch, setDoorSearch] = useState('');
-  const [doorFilter, setDoorFilter] = useState('all'); // 'all' | 'remaining' | 'checked_in'
+  const [doorFilter, setDoorFilter] = useState('all'); // all, remaining, checked_in
 
   const toggleCheckIn = (id) => {
     setAttendees((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              checkedIn: !item.checkedIn,
-              time: !item.checkedIn
-                ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                : null
-            }
-          : item
+        item.id === id ? { ...item, checkedIn: !item.checkedIn } : item
       )
     );
   };
@@ -80,803 +101,902 @@ const Landing = () => {
 
   const filteredAttendees = useMemo(() => {
     return attendees.filter((a) => {
-      const matchesSearch =
+      const match =
         a.name.toLowerCase().includes(doorSearch.toLowerCase()) ||
         a.code.toLowerCase().includes(doorSearch.toLowerCase()) ||
         a.type.toLowerCase().includes(doorSearch.toLowerCase());
-
-      if (!matchesSearch) return false;
+      if (!match) return false;
       if (doorFilter === 'remaining') return !a.checkedIn;
       if (doorFilter === 'checked_in') return a.checkedIn;
       return true;
     });
   }, [attendees, doorSearch, doorFilter]);
 
-  // --- Interactive State for Seat Map Picker ---
-  const [selectedSeat, setSelectedSeat] = useState('B-04');
-  const seats = [
-    { id: 'A-01', row: 'A', num: 1, status: 'occupied' },
-    { id: 'A-02', row: 'A', num: 2, status: 'occupied' },
-    { id: 'A-03', row: 'A', num: 3, status: 'available' },
-    { id: 'A-04', row: 'A', num: 4, status: 'available' },
-    { id: 'A-05', row: 'A', num: 5, status: 'occupied' },
-    { id: 'A-06', row: 'A', num: 6, status: 'available' },
-    { id: 'B-01', row: 'B', num: 1, status: 'available' },
-    { id: 'B-02', row: 'B', num: 2, status: 'occupied' },
-    { id: 'B-03', row: 'B', num: 3, status: 'available' },
-    { id: 'B-04', row: 'B', num: 4, status: 'selected' },
-    { id: 'B-05', row: 'B', num: 5, status: 'available' },
-    { id: 'B-06', row: 'B', num: 6, status: 'occupied' },
-    { id: 'C-01', row: 'C', num: 1, status: 'available' },
-    { id: 'C-02', row: 'C', num: 2, status: 'available' },
-    { id: 'C-03', row: 'C', num: 3, status: 'occupied' },
-    { id: 'C-04', row: 'C', num: 4, status: 'available' },
-    { id: 'C-05', row: 'C', num: 5, status: 'available' },
-    { id: 'C-06', row: 'C', num: 6, status: 'available' },
-  ];
+  // --- Date Tabs State for Schedule Section ---
+  const [activeDateTab, setActiveDateTab] = useState('24_nov');
 
-  // --- Interactive State for Pass Branding Color Picker ---
-  const colorOptions = [
-    { name: 'Forest Green', hex: '#10B981' },
-    { name: 'Electric Coral', hex: '#F43F5E' },
-    { name: 'Deep Violet', hex: '#8B5CF6' },
-    { name: 'Ocean Cyan', hex: '#0EA5E9' },
-    { name: 'Amber Gold', hex: '#F59E0B' },
+  const scheduleData = {
+    '24_nov': [
+      {
+        time: '09:00 AM - 10:30 AM',
+        title: 'Grand Keynote: Generative AI on Campus',
+        track: 'Technical',
+        speaker: 'Dr. Sarah Mitchell · Google Cloud',
+        venue: 'Main Auditorium',
+        seats: 'Available'
+      },
+      {
+        time: '11:00 AM - 01:00 PM',
+        title: '48-Hour National Collegiate Hackathon Kickoff',
+        track: 'Hackathon',
+        speaker: 'Campus Hackathon Council',
+        venue: 'Turing Innovation Lab',
+        seats: 'Filling Fast'
+      },
+      {
+        time: '02:30 PM - 05:00 PM',
+        title: 'Inter-College Football Premier Cup Match 1',
+        track: 'Sports',
+        speaker: 'Sports Directorate',
+        venue: 'University Stadium',
+        seats: 'Open'
+      }
+    ],
+    '25_nov': [
+      {
+        time: '10:00 AM - 12:00 PM',
+        title: 'Cloud DevOps & Kubernetes Hands-On Workshop',
+        track: 'Workshop',
+        speaker: 'Alexandre Roy · RedHat Architect',
+        venue: 'Virtual Classroom 1',
+        seats: 'Available'
+      },
+      {
+        time: '01:30 PM - 04:00 PM',
+        title: 'RoboWars & Hardware Drone Challenge',
+        track: 'Competition',
+        speaker: 'Robotics Society',
+        venue: 'Engineering Quad',
+        seats: 'Filling Fast'
+      },
+      {
+        time: '05:30 PM - 08:30 PM',
+        title: 'Annual Cultural Night: Symphony Under The Stars',
+        track: 'Cultural',
+        speaker: 'Performing Arts Guild',
+        venue: 'Open Air Amphitheatre',
+        seats: 'Almost Full'
+      }
+    ],
+    '26_nov': [
+      {
+        time: '10:00 AM - 01:00 PM',
+        title: 'Hackathon Grand Jury Pitches & Demo Day',
+        track: 'Hackathon',
+        speaker: 'VC & Alumni Jury Board',
+        venue: 'Tech Auditorium',
+        seats: 'Open'
+      },
+      {
+        time: '02:00 PM - 04:30 PM',
+        title: 'Inter-College Basketball Championship Finals',
+        track: 'Sports',
+        speaker: 'Campus Athletics Council',
+        venue: 'Indoor Sports Complex',
+        seats: 'Filling Fast'
+      },
+      {
+        time: '05:00 PM - 07:00 PM',
+        title: 'Felicitation & ₹10,00,000 Award Gala',
+        track: 'Closing Gala',
+        speaker: 'Chancellor & Guest Dignitaries',
+        venue: 'Grand Convocation Hall',
+        seats: 'VIP Reserved'
+      }
+    ]
+  };
+
+  // --- FAQ State ---
+  const [openFaq, setOpenFaq] = useState(null);
+  const faqs = [
+    {
+      q: 'How does digital ticket booking and QR verification work?',
+      a: 'When you register for an event, CampusConnect atomically reserves your seat and generates an encrypted digital QR pass. At the venue door, staff scan the QR or search your ticket code on the live door app to check you in with 0 duplication.'
+    },
+    {
+      q: 'Can students register individually or as teams for hackathons?',
+      a: 'Both! You can register as a solo developer or create a squad with a unique 6-character team code (e.g., TEAM-NK88) to invite fellow students.'
+    },
+    {
+      q: 'Are sports tournaments and live fixtures updated in real time?',
+      a: 'Yes. Administrators publish match schedules, and scores update live on the student sports hub with round brackets and tournament winners.'
+    },
+    {
+      q: 'How does AI-powered analytics help administrators?',
+      a: 'The platform integrates Python Scikit-Learn machine learning to forecast upcoming event turnout based on category, timing, and historical velocity — completely eliminating guesswork.'
+    }
   ];
-  const [brandColor, setBrandColor] = useState(colorOptions[0].hex);
 
   return (
-    <div className="min-h-screen bg-[#08070D] text-[#ECE8F5] flex flex-col justify-between selection:bg-[#7C3AED] selection:text-white relative overflow-hidden font-sans">
-      {/* Ambient background glows */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] bg-gradient-to-b from-[#7C3AED]/[0.09] via-[#8B5CF6]/[0.04] to-transparent rounded-full blur-[180px] pointer-events-none" />
-      <div className="fixed top-1/3 -right-20 w-[600px] h-[600px] bg-[#7C3AED]/[0.05] rounded-full blur-[200px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0E0E10] text-[#111111] font-sans selection:bg-[#FFE600] selection:text-black overflow-x-hidden">
+      
+      {/* ========================================================
+          1. TOP BLACK MARQUEE TICKER (from CONFERIO reference)
+         ======================================================== */}
+      <div className="bg-black text-white text-[11px] font-mono font-bold tracking-widest uppercase py-2.5 px-4 overflow-hidden border-b border-black">
+        <div className="flex items-center gap-8 whitespace-nowrap animate-marquee">
+          <span>THE 2026-2027 CAMPUS FESTIVAL</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>COLLEGE HACKATHONS & SQUAD BUILDER</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>INTER-COLLEGE SPORTS CHAMPIONSHIPS</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>VIRTUAL WEBINARS & LIVE SESSIONS</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>INSTANT DIGITAL QR TICKETS & SEATS</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>100+ CAMPUS COMPETITIONS & FESTIVALS</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>ANALYZE WITH AI (COMING SOON)</span>
+          <span className="text-[#FFE600]">★</span>
+          <span>DOOR STAFF SCANNER (COMING SOON)</span>
+        </div>
+      </div>
 
       {/* ========================================================
-          TOP NAVIGATION BAR (hi.events style)
+          2. ACID YELLOW HERO & NAVBAR (Matches CONFERIO screenshot)
          ======================================================== */}
-      <header className="max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between relative z-20 border-b border-[#262135]">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#7C3AED] flex items-center justify-center text-white shadow-[0_0_20px_rgba(124,58,237,0.5)]">
-            <GraduationCap className="w-5 h-5" />
-          </div>
-          <span className="font-display font-extrabold text-lg sm:text-xl text-white tracking-tight">
-            CAMPUS<span className="text-[#8B5CF6]">.CONNECT</span>
-          </span>
+      <section className="bg-[#F5DF4D] relative border-b-4 border-black pb-36 pt-4 px-4 sm:px-8 overflow-hidden">
+        {/* Playful Floating Stickers & Retro Doodles */}
+        {/* Blue 4-point star on the left */}
+        <div className="absolute top-28 left-6 sm:left-16 pointer-events-none select-none z-10 hidden sm:block">
+          <svg className="w-16 h-16 text-[#67C7FA] drop-shadow-[2px_2px_0px_#000]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M50 0 L58 38 L96 46 L58 54 L50 92 L42 54 L4 46 L42 38 Z" stroke="#000" strokeWidth="4" />
+          </svg>
         </div>
 
-        {/* Center Nav Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#9E98AE]">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#door-checkin" className="hover:text-white transition-colors">Door App</a>
-          <a href="#seating" className="hover:text-white transition-colors">Seat Maps</a>
-          <a href="#architecture" className="hover:text-white transition-colors">Platform Specs</a>
+        {/* Tilted location/date ribbon sticker */}
+        <div className="absolute top-44 left-10 sm:left-24 -rotate-12 z-20 hidden md:block">
+          <div className="bg-[#E9D5FF] text-black border-2 border-black font-mono font-black text-xs px-3.5 py-1.5 shadow-[3px_3px_0px_#000] flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-black" />
+            <span>CAMPUS ARENA · 2026-2027</span>
+          </div>
+        </div>
+
+        {/* Pink/Lavender Circular Spinning Badge on the right */}
+        <div className="absolute top-28 right-8 sm:right-20 pointer-events-none select-none z-10 hidden sm:block">
+          <div className="w-24 h-24 rounded-full bg-[#E9D5FF] border-2 border-black flex items-center justify-center p-2 shadow-[4px_4px_0px_#000] text-center rotate-6">
+            <span className="font-mono text-[9px] font-black tracking-tight text-black leading-tight uppercase">
+              ★ CAMPUSCONNECT ★<br />2026-2027 EDITION<br />CREATIVITY
+            </span>
+          </div>
+        </div>
+
+        {/* Hand-drawn star outline doodle */}
+        <div className="absolute bottom-40 right-14 sm:right-32 pointer-events-none select-none z-10 hidden lg:block">
+          <svg className="w-20 h-20 text-black rotate-12" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M50 5 L63 35 L95 38 L70 60 L78 92 L50 75 L22 92 L30 60 L5 38 L37 35 Z" />
+          </svg>
+        </div>
+
+        {/* --- Top Navigation Bar --- */}
+        <nav className="max-w-7xl mx-auto flex items-center justify-between py-4 border-b-2 border-black mb-12 sm:mb-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="font-display font-black text-2xl sm:text-3xl text-black tracking-tighter uppercase drop-shadow-[1px_1px_0px_#FFF]">
+              CAMPUSCONNECT<span className="text-[#387ED1]">.CC</span>
+            </span>
+          </Link>
+
+          {/* Center Links (CONFERIO style) */}
+          <div className="hidden lg:flex items-center gap-7 text-xs font-mono font-extrabold text-black uppercase tracking-wider">
+            <a href="#events" className="hover:underline flex items-center gap-1">
+              Events +
+            </a>
+            <a href="#schedule" className="hover:underline flex items-center gap-1">
+              Schedule +
+            </a>
+            <a href="#tickets" className="hover:underline flex items-center gap-1">
+              Tickets +
+            </a>
+            <a href="#coming-soon" className="hover:underline flex items-center gap-1 text-slate-800">
+              Coming Soon ★
+            </a>
+            <a href="#about" className="hover:underline">
+              About
+            </a>
+          </div>
+
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-3">
+            <Link
+              to="/login"
+              className="px-4 py-2 text-xs font-mono font-bold text-black hover:bg-black hover:text-white rounded-lg transition-all border-2 border-transparent hover:border-black"
+            >
+              SIGN IN
+            </Link>
+            <Link
+              to="/register"
+              className="px-5 py-2.5 bg-black text-white text-xs font-mono font-black uppercase tracking-wider rounded-lg border-2 border-black shadow-[3px_3px_0px_#FFF] hover:shadow-[1px_1px_0px_#FFF] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2"
+            >
+              <span>BUY TICKET</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </nav>
 
-        {/* Right CTA */}
-        <div className="flex items-center gap-4">
-          <Link
-            to="/login"
-            className="text-xs sm:text-sm font-semibold text-[#C7C3D6] hover:text-white transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            to="/register"
-            className="px-4 py-2 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs sm:text-sm font-semibold transition-all shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_25px_rgba(124,58,237,0.6)] cursor-pointer"
-          >
-            Get started free
-          </Link>
-        </div>
-      </header>
-
-      {/* ========================================================
-          HERO SECTION (hi.events "AI assistants, seat maps...")
-         ======================================================== */}
-      <section className="relative z-10 pt-16 sm:pt-24 pb-20 px-6 max-w-7xl mx-auto text-center w-full">
-        {/* Pill Tag */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#13111C] border border-[#262135] text-[11px] font-mono uppercase tracking-widest text-[#A78BFA] mb-8 shadow-inner">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-pulse" />
-          NEW IN CAMPUS.CONNECT
-        </div>
-
-        {/* Punchy Headline */}
-        <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[1.08] max-w-4xl mx-auto mb-6">
-          AI assistants, seat maps, a door check-in box office and more
-        </h1>
-
-        {/* Subhead */}
-        <p className="text-base sm:text-lg text-[#9E98AE] max-w-2xl mx-auto leading-relaxed mb-10">
-          Manage your events and lab bookings from Claude or ChatGPT, reserve exact seats and GPU stations,
-          track door admissions in real-time, and give every student and faculty member exactly the access they need.
-        </p>
-
-        {/* Interactive AI Assistant Command Console Mockup */}
-        <div className="mt-8 max-w-4xl mx-auto rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 sm:p-8 text-left shadow-[0_30px_90px_rgba(0,0,0,0.85)] relative overflow-hidden group">
-          {/* Subtle Top Glow */}
-          <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-60" />
-
-          {/* Top Console Bar */}
-          <div className="flex items-center justify-between pb-4 border-b border-[#262135] mb-6">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-              <span className="ml-2 text-xs font-mono text-[#716B82]">Your AI assistant</span>
-            </div>
-            <div className="flex items-center gap-2 text-[11px] font-mono text-[#34D399] bg-[#10B981]/10 px-2.5 py-1 rounded-full border border-[#10B981]/25">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping" />
-              CampusConnect connected
+        {/* --- Hero Content Area --- */}
+        <div className="max-w-5xl mx-auto text-center relative z-20">
+          {/* Cyan Pill Tag */}
+          <div className="inline-block mb-4">
+            <div className="bg-[#BAE6FD] text-black border-2 border-black font-mono font-black text-[11px] uppercase tracking-widest px-4 py-1.5 shadow-[3px_3px_0px_#000] rounded-sm">
+              COLLEGIATE EVENT 2026
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left AI Pitch */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-[#C4B5FD] text-[10px] font-bold tracking-wider uppercase">
-                NEW
-              </div>
-              <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
-                Run your campus by asking.
-              </h3>
-              <p className="text-xs sm:text-sm text-[#9E98AE] leading-relaxed">
-                Connect your AI assistant and ask it to find an available professor, reserve a high-performance GPU lab station, or re-send admission passes.
-              </p>
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 text-xs font-bold text-[#A78BFA] hover:text-white transition-colors"
-              >
-                See what it can do <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+          {/* Giant Title (Matches CONFERIO: INNOVATORS CONNECT EVENT LIVE) */}
+          <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-[100px] text-black tracking-tighter leading-[0.92] uppercase mb-8">
+            INNOVATORS<br />
+            CONNECT EVENT<br />
+            LIVE
+          </h1>
 
-            {/* Right Interactive Mockup Window */}
-            <div className="lg:col-span-7 rounded-xl bg-[#13111C] border border-[#262135] p-4 text-xs font-mono space-y-3 shadow-inner">
-              {/* User message */}
-              <div className="flex justify-end">
-                <div className="bg-[#262135] text-[#ECE8F5] px-3.5 py-2 rounded-xl rounded-tr-sm max-w-xs">
-                  Look up student Dave at HACK/26 and approve his reservation
-                </div>
-              </div>
-
-              {/* Tool Execution */}
-              <div className="space-y-1 text-[11px] text-[#716B82] pl-2 border-l-2 border-[#7C3AED]">
-                <div className="flex items-center gap-2 text-[#A78BFA]">
-                  <span>⚡ CC.list_students</span>
-                  <span className="text-[#9E98AE]">search "Dave"</span>
-                  <span className="ml-auto text-[10px] text-[#716B82]">2 found</span>
-                </div>
-              </div>
-
-              {/* Table result */}
-              <div className="rounded-lg border border-[#262135] overflow-hidden bg-[#0D0C15]">
-                <div className="grid grid-cols-3 bg-[#1B1828] px-3 py-1.5 text-[10px] text-[#9E98AE] font-semibold uppercase">
-                  <span>Student</span>
-                  <span>Resource</span>
-                  <span className="text-right">Status</span>
-                </div>
-                <div className="divide-y divide-[#262135] text-[11px]">
-                  <div className="grid grid-cols-3 px-3 py-2 text-[#ECE8F5] items-center">
-                    <span className="font-medium text-white truncate">Dave Murphy</span>
-                    <span className="text-[#9E98AE] truncate">Turing Lab #4</span>
-                    <span className="text-right text-[#FBBF24]">Pending</span>
-                  </div>
-                  <div className="grid grid-cols-3 px-3 py-2 text-[#ECE8F5] items-center">
-                    <span className="font-medium text-white truncate">Dave Okafor</span>
-                    <span className="text-[#9E98AE] truncate">Workshop Day</span>
-                    <span className="text-right text-[#34D399]">Checked in</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bot response */}
-              <div className="flex items-start gap-2 pt-1 text-slate-300">
-                <div className="w-5 h-5 rounded-full bg-[#7C3AED] flex items-center justify-center text-white shrink-0 text-[10px]">
-                  ✓
-                </div>
-                <p className="text-[11px] leading-relaxed text-[#C7C3D6]">
-                  Approved. Dave Murphy’s Alan Turing Lab #4 pass is confirmed and emailed to d.murphy@campus.edu.
-                </p>
-              </div>
-
-              {/* Prompt bar */}
-              <div className="pt-2 flex items-center gap-2 border-t border-[#262135]">
-                <input
-                  type="text"
-                  readOnly
-                  value="Ask about faculty office hours or lab reservations..."
-                  className="bg-transparent text-[11px] text-[#716B82] w-full focus:outline-none cursor-default"
-                />
-                <button className="w-6 h-6 rounded-lg bg-[#7C3AED] text-white flex items-center justify-center shrink-0">
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
-          § 01 · IN THE APP / DOOR CHECK-IN SIMULATOR
-          (Mirrors media_1794928849151_1778e9b1.jpg)
-         ======================================================== */}
-      <section id="door-checkin" className="relative z-10 py-20 px-6 max-w-7xl mx-auto w-full border-t border-[#262135]">
-        {/* Section Header */}
-        <div className="mb-14">
-          <div className="text-xs font-mono uppercase tracking-widest text-[#A78BFA] mb-3">
-            § 01 · IN THE APP
-          </div>
-          <h2 className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight mb-4">
-            See it work before you sign up
-          </h2>
-          <p className="text-sm sm:text-base text-[#9E98AE] max-w-xl">
-            Every frame is a live workflow: working the door, preventing room conflicts, building the faculty schedule.
-          </p>
-        </div>
-
-        {/* 2-Column: Left Text Description + Right Interactive Phone Mockup */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Text */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#716B82]">
-              AT THE CAMPUS GATE
-            </div>
-            <h3 className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight leading-tight">
-              What your door staff actually see
-            </h3>
-            <p className="text-sm sm:text-base text-[#9E98AE] leading-relaxed">
-              You send them a link and that is the whole setup — no install, no account, no seat to pay for.
-              Camera scan, student barcode reader, or search a name and tap.
-            </p>
-
-            <ul className="space-y-3.5 text-xs sm:text-sm text-[#C7C3D6] pt-2">
-              <li className="flex items-start gap-3">
-                <span className="text-[#34D399] font-bold">✓</span>
-                <span>Every device works from the same live list, so no ticket gets in twice</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#34D399] font-bold">✓</span>
-                <span>Undo a check-in in one tap if a student steps out</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#34D399] font-bold">✓</span>
-                <span>A separate list per entrance door or lab room, each with its own live counter</span>
-              </li>
-            </ul>
-
-            <div className="pt-4 flex items-center gap-3">
-              <span className="text-xs text-[#716B82] font-mono">Try it live:</span>
-              <span className="text-xs text-[#A78BFA] bg-[#7C3AED]/15 px-3 py-1 rounded-full border border-[#7C3AED]/30">
-                Click "Check in" or "Check out" on the phone →
-              </span>
-            </div>
-          </div>
-
-          {/* Right Column: High-Contrast White Phone Device Frame */}
-          <div className="lg:col-span-7 flex justify-center">
-            <div className="w-full max-w-md rounded-[38px] p-3.5 bg-[#1B1828] border-2 border-[#37304E] shadow-[0_30px_100px_rgba(0,0,0,0.9)]">
-              {/* Phone White Canvas */}
-              <div className="rounded-[28px] bg-white text-slate-900 p-5 overflow-hidden shadow-inner font-sans">
-                {/* Status Bar */}
-                <div className="flex items-center justify-between text-xs text-slate-500 pb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800 tracking-tight">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">CHECK-IN</span>
-                    <span>Front door</span>
-                  </div>
-                  <div className="flex items-center gap-1 font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-                    <span>{checkedInCount}/{attendees.length}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  </div>
-                </div>
-
-                {/* Search Bar */}
-                <div className="mt-3.5 relative">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={doorSearch}
-                    onChange={(e) => setDoorSearch(e.target.value)}
-                    placeholder="Search by name, roll #, ticket or email"
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500"
-                  />
-                </div>
-
-                {/* 2 Big Counters (Checked In & Remaining) */}
-                <div className="grid grid-cols-2 gap-3 mt-3.5">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-left">
-                    <div className="text-xl font-black text-slate-900 tracking-tight">
-                      {checkedInCount}<span className="text-xs font-normal text-slate-400">/{attendees.length}</span>
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
-                      CHECKED IN
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-left">
-                    <div className="text-xl font-black text-slate-900 tracking-tight">
-                      {remainingCount}
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
-                      REMAINING
-                    </div>
-                  </div>
-                </div>
-
-                {/* Filter Pills */}
-                <div className="flex items-center gap-1.5 mt-3.5 pb-2">
-                  <button
-                    onClick={() => setDoorFilter('all')}
-                    className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                      doorFilter === 'all'
-                        ? 'bg-[#7C3AED] text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    All {attendees.length}
-                  </button>
-                  <button
-                    onClick={() => setDoorFilter('remaining')}
-                    className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                      doorFilter === 'remaining'
-                        ? 'bg-[#7C3AED] text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    Remaining {remainingCount}
-                  </button>
-                  <button
-                    onClick={() => setDoorFilter('checked_in')}
-                    className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                      doorFilter === 'checked_in'
-                        ? 'bg-[#7C3AED] text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    Checked in {checkedInCount}
-                  </button>
-                </div>
-
-                {/* Attendee Live List with Interactive Buttons */}
-                <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                  {filteredAttendees.map((a) => (
-                    <div
-                      key={a.id}
-                      className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 hover:border-slate-200 transition-all bg-white shadow-xs"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div
-                          className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
-                            a.checkedIn
-                              ? 'bg-emerald-500 text-white'
-                              : 'bg-slate-100 text-slate-400'
-                          }`}
-                        >
-                          {a.checkedIn ? '✓' : a.name.charAt(0)}
-                        </div>
-                        <div className="truncate text-left">
-                          <p className="text-xs font-bold text-slate-900 truncate tracking-tight">
-                            {a.name}
-                          </p>
-                          <p className="text-[10px] text-slate-400 font-mono truncate">
-                            {a.code} • {a.type}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Interactive Toggle Button */}
-                      <button
-                        onClick={() => toggleCheckIn(a.id)}
-                        className={`ml-2 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 ${
-                          a.checkedIn
-                            ? 'bg-[#EF4444] hover:bg-rose-600 text-white shadow-sm'
-                            : 'bg-[#10B981] hover:bg-emerald-600 text-white shadow-sm'
-                        }`}
-                      >
-                        {a.checkedIn ? 'Check out' : 'Check in'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
-          § 02 · RESERVED SEATING & BOX OFFICE
-          (Mirrors media_1794928849156_ddacb0ee.jpg)
-         ======================================================== */}
-      <section id="seating" className="relative z-10 py-20 px-6 max-w-7xl mx-auto w-full border-t border-[#262135]">
-        <div className="mb-14">
-          <div className="text-xs font-mono uppercase tracking-widest text-[#A78BFA] mb-3">
-            § 02 · RESERVED SEATING & DESK
-          </div>
-          <h2 className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight mb-4">
-            Interactive seat maps & door desk
-          </h2>
-          <p className="text-sm sm:text-base text-[#9E98AE] max-w-xl">
-            Let students pick their exact workstations, seminar seats, or lab benches with real-time collision locks.
-          </p>
-        </div>
-
-        {/* 2 Big Bento Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Card 1: Reserved Seating */}
-          <div className="rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 sm:p-8 flex flex-col justify-between shadow-xl">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-[#C4B5FD] text-[10px] font-bold tracking-wider uppercase mb-4">
-                NEW Reserved seating
-              </div>
-              <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight mb-2">
-                Students pick their own seats.
-              </h3>
-              <p className="text-xs sm:text-sm text-[#9E98AE] leading-relaxed mb-6">
-                Draw your auditorium or lab once and categorize by workstation tier. The row and bench number go on every pass.
-              </p>
-            </div>
-
-            {/* Interactive Seat Selector Mockup */}
-            <div className="rounded-xl bg-[#13111C] border border-[#262135] p-4 text-center">
-              {/* Browser bar */}
-              <div className="text-[10px] font-mono text-[#716B82] bg-[#0D0C15] px-3 py-1.5 rounded-lg border border-[#262135] mb-4 text-left truncate">
-                app.campusconnect.edu/event/11899/amphitheater
-              </div>
-
-              {/* Stage */}
-              <div className="w-2/3 mx-auto py-1.5 rounded-md bg-[#7C3AED]/30 border border-[#7C3AED]/50 text-[10px] font-mono text-[#C4B5FD] uppercase tracking-widest mb-6">
-                STAGE / PODIUM
-              </div>
-
-              {/* Seat Matrix */}
-              <div className="grid grid-cols-6 gap-2.5 max-w-xs mx-auto mb-4">
-                {seats.map((seat) => {
-                  const isSelected = selectedSeat === seat.id;
-                  const isOccupied = seat.status === 'occupied';
-
-                  return (
-                    <button
-                      key={seat.id}
-                      disabled={isOccupied}
-                      onClick={() => setSelectedSeat(seat.id)}
-                      className={`h-7 rounded-md text-[10px] font-mono font-bold transition-all ${
-                        isOccupied
-                          ? 'bg-[#262135] text-[#716B82] cursor-not-allowed'
-                          : isSelected
-                          ? 'bg-[#7C3AED] text-white shadow-[0_0_12px_rgba(124,58,237,0.7)] ring-2 ring-white/20'
-                          : 'bg-[#1B1828] text-[#C7C3D6] hover:bg-[#262135] cursor-pointer'
-                      }`}
-                      title={isOccupied ? `${seat.id} (Occupied)` : `${seat.id} (Click to select)`}
-                    >
-                      {seat.id}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Legend & Selected */}
-              <div className="flex items-center justify-between text-[11px] pt-3 border-t border-[#262135] text-[#9E98AE]">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-sm bg-[#1B1828] border border-[#262135]" /> Available
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-sm bg-[#7C3AED]" /> Selected
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-sm bg-[#262135]" /> Occupied
-                  </span>
-                </div>
-                <span className="text-[#34D399] font-bold font-mono">Seat {selectedSeat}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Box Office & Verification */}
-          <div className="rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 sm:p-8 flex flex-col justify-between shadow-xl">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/40 text-[#C4B5FD] text-[10px] font-bold tracking-wider uppercase mb-4">
-                NEW Box office
-              </div>
-              <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight mb-2">
-                Sell at the door. Tap to verify.
-              </h3>
-              <p className="text-xs sm:text-sm text-[#9E98AE] leading-relaxed mb-6">
-                A link and a PIN for your student volunteer desk. Verify RFID campus cards or process student activity fee tokens in one instant tap.
-              </p>
-            </div>
-
-            {/* Door Desk Card Mockup */}
-            <div className="rounded-xl bg-[#13111C] border border-[#262135] p-4 space-y-4">
-              <div className="flex items-center justify-between text-xs pb-3 border-b border-[#262135]">
-                <span className="font-semibold text-white">Campus Box Office #01</span>
-                <span className="text-[10px] font-mono text-[#34D399] bg-[#10B981]/15 px-2 py-0.5 rounded">
-                  ONLINE
-                </span>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#0D0C15] border border-[#262135] flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] uppercase font-mono text-[#716B82]">TRANSACTION BALANCE</div>
-                  <div className="text-2xl font-black text-white font-mono mt-0.5">₹4,210.00</div>
-                  <div className="text-[10px] text-[#34D399] flex items-center gap-1 mt-1 font-mono">
-                    <span>● Verified via Campus Pay</span>
-                  </div>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center text-[#A78BFA] shadow-inner">
-                  <CreditCard className="w-6 h-6" />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <button className="flex-1 py-2 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold transition-all shadow-[0_0_15px_rgba(124,58,237,0.4)]">
-                  Print Gate Badge
-                </button>
-                <button className="px-4 py-2 rounded-xl bg-[#1B1828] text-[#9E98AE] hover:text-white text-xs font-semibold">
-                  Scan QR
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
-          § 03 · EVERY CAMPUS BOOKING FEATURE, INCLUDED
-          (Mirrors media_1794928849157_15ff2710.jpg)
-         ======================================================== */}
-      <section id="features" className="relative z-10 py-20 px-6 max-w-7xl mx-auto w-full border-t border-[#262135]">
-        <div className="mb-14">
-          <div className="text-xs font-mono uppercase tracking-widest text-[#A78BFA] mb-3">
-            § 03 · INCLUDED FEATURES
-          </div>
-          <h2 className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight mb-4">
-            Every campus booking feature, included
-          </h2>
-          <p className="text-sm sm:text-base text-[#9E98AE] max-w-xl">
-            Everything here comes with every institutional account, with no higher tier to upgrade to.
-            Reserved seating, a box office and single sign-on are ready on day one.
-          </p>
-        </div>
-
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Bento 1: Real-time Ledger */}
-          <div className="rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 flex flex-col justify-between">
-            <div>
-              <h4 className="font-display font-bold text-lg text-white mb-2">
-                Real-time audit records
-              </h4>
-              <p className="text-xs text-[#9E98AE] leading-relaxed mb-6">
-                Department activity records land in your administrative ledger as students book, not weeks after the semester ends.
-              </p>
-            </div>
-            {/* Payout Pills */}
-            <div className="space-y-3">
-              <div className="p-3 rounded-xl bg-white text-slate-900 text-xs font-medium flex items-center justify-between shadow-md">
-                <span className="text-slate-500 font-mono text-[11px]">May 22 session count</span>
-                <span className="font-bold font-mono">148 Bookings • Recorded</span>
-              </div>
-              <div className="p-4 rounded-xl bg-white text-slate-900 shadow-md">
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono uppercase">
-                  <span>FACULTY HOURS CLEARED</span>
-                  <span className="text-emerald-600 font-bold">● Live Sync</span>
-                </div>
-                <div className="text-2xl font-black text-slate-900 font-mono mt-1">420.5 hrs</div>
-                <div className="text-[11px] text-slate-500 mt-1">Exported to Dean Registry</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bento 2: Interactive Color Picker Pass Customizer */}
-          <div className="rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 flex flex-col justify-between">
-            <div>
-              <h4 className="font-display font-bold text-lg text-white mb-2">
-                Your brand on check-in passes
-              </h4>
-              <p className="text-xs text-[#9E98AE] leading-relaxed mb-4">
-                Pick a color. Your registration forms, buttons and the passes students receive all follow your department identity.
-              </p>
-
-              {/* Color Swatches */}
-              <div className="flex items-center gap-3 mb-6">
-                {colorOptions.map((c) => (
-                  <button
-                    key={c.hex}
-                    onClick={() => setBrandColor(c.hex)}
-                    style={{ backgroundColor: c.hex }}
-                    className={`w-7 h-7 rounded-full transition-all cursor-pointer ${
-                      brandColor === c.hex ? 'ring-2 ring-white scale-110 shadow-lg' : 'opacity-80 hover:opacity-100'
-                    }`}
-                    title={c.name}
-                  />
-                ))}
-                <span className="text-xs font-mono text-[#716B82] ml-1">{brandColor}</span>
-              </div>
-            </div>
-
-            {/* Live Pass Preview modified by Color Picker */}
-            <div className="rounded-xl overflow-hidden bg-white text-slate-900 shadow-md">
-              <div style={{ backgroundColor: brandColor }} className="p-3 text-white transition-colors duration-300">
-                <div className="text-xs font-bold tracking-tight">HackFest 2026 Campus Pass</div>
-                <div className="text-[10px] opacity-80">Computer Science & AI Society</div>
-              </div>
-              <div className="p-3 text-xs space-y-2">
-                <div className="flex justify-between text-slate-500 text-[11px]">
-                  <span>Admit Tier:</span>
-                  <span className="font-semibold text-slate-800">Full Delegate Pass</span>
-                </div>
-                <button
-                  style={{ backgroundColor: brandColor }}
-                  className="w-full py-1.5 rounded-lg text-white text-xs font-bold transition-colors duration-300 cursor-pointer shadow-xs"
-                >
-                  Download Pass • Free
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Bento 3: Faculty Doubt Clearing */}
-          <div className="rounded-2xl bg-[#0D0C15] border border-[#262135] p-6 flex flex-col justify-between">
-            <div>
-              <h4 className="font-display font-bold text-lg text-white mb-2">
-                Faculty office hours & doubt clearing
-              </h4>
-              <p className="text-xs text-[#9E98AE] leading-relaxed mb-6">
-                Professors configure recurring weekly availability windows, block exam preparation blackout days, and approve 1-on-1 mentorship with full student query context.
-              </p>
-            </div>
-            <div className="space-y-2 text-xs font-mono">
-              <div className="p-2.5 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-between text-[#C7C3D6]">
-                <span>Dr. Sarah Jenkins</span>
-                <span className="text-[#34D399]">Mon 2:00 PM</span>
-              </div>
-              <div className="p-2.5 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-between text-[#C7C3D6]">
-                <span>Prof. Robert Lang</span>
-                <span className="text-[#A78BFA]">Wed 10:30 AM</span>
-              </div>
-              <div className="p-2.5 rounded-xl bg-[#13111C] border border-[#262135] flex items-center justify-between text-[#C7C3D6]">
-                <span>Dr. Michael Chang</span>
-                <span className="text-[#FBBF24]">Fri 4:00 PM</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
-          § 04 · OPEN ARCHITECTURE / PLATFORM SPECS
-          (Mirrors media_1794928849155_253eb128.jpg)
-         ======================================================== */}
-      <section id="architecture" className="relative z-10 py-20 px-6 max-w-7xl mx-auto w-full border-t border-[#262135]">
-        <div className="rounded-3xl bg-[#0D0C15] border border-[#262135] p-8 sm:p-12 shadow-[0_30px_90px_rgba(0,0,0,0.85)] relative overflow-hidden">
-          {/* Subtle Top Glow */}
-          <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-60" />
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Description */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="text-xs font-mono uppercase tracking-widest text-[#A78BFA]">
-                § 04 · PLATFORM SPECS & OPEN ARCHITECTURE
-              </div>
-              <h2 className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight leading-tight">
-                Open architecture, so you're never locked in
-              </h2>
-              <p className="text-sm sm:text-base text-[#9E98AE] leading-relaxed">
-                Every line of code is clean MERN stack and every student reservation record is yours — exportable at any time, never sold.
-                If you ever need to take the whole thing in-house, you can: it runs standalone on Node.js and MongoDB, ready for university intranet deployment.
-              </p>
-
-              <div className="pt-2">
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-white text-slate-900 font-bold text-xs sm:text-sm hover:bg-slate-100 transition-all shadow-md cursor-pointer"
-                >
-                  <Star className="w-4 h-4 fill-slate-900 text-slate-900" />
-                  Star on GitHub
-                </a>
-              </div>
-            </div>
-
-            {/* Right 4-Box Metric Grid */}
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
-                  <div className="text-3xl font-black text-white font-mono tracking-tight">0%</div>
-                  <div className="text-xs font-semibold text-[#C7C3D6] mt-1">Schedule Collisions</div>
-                  <div className="text-[10px] text-[#716B82] mt-0.5">Automated overlap locks</div>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
-                  <div className="text-3xl font-black text-white font-mono tracking-tight">98.4%</div>
-                  <div className="text-xs font-semibold text-[#C7C3D6] mt-1">Approval Velocity</div>
-                  <div className="text-[10px] text-[#716B82] mt-0.5">Instant faculty turnaround</div>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
-                  <div className="text-3xl font-black text-white font-mono tracking-tight">1-Tap</div>
-                  <div className="text-xs font-semibold text-[#C7C3D6] mt-1">Gate Verification</div>
-                  <div className="text-[10px] text-[#716B82] mt-0.5">Mobile door staff desk</div>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-[#13111C] border border-[#262135]">
-                  <div className="text-3xl font-black text-white font-mono tracking-tight">RBAC 3.0</div>
-                  <div className="text-xs font-semibold text-[#C7C3D6] mt-1">Security Architecture</div>
-                  <div className="text-[10px] text-[#716B82] mt-0.5">Student, Faculty, Dean roles</div>
-                </div>
-              </div>
-
-              {/* Security Pill */}
-              <div className="mt-4 p-3.5 rounded-xl bg-[#13111C]/60 border border-[#262135] flex items-center gap-2.5 text-xs text-[#9E98AE]">
-                <Lock className="w-4 h-4 text-[#8B5CF6] shrink-0" />
-                <span>No vendor lock-in. Export MongoDB records as CSV any time, run behind campus firewalls.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
-          FAST-TRACK ROLE ACCELERATOR SECTION
-         ======================================================== */}
-      <section className="relative z-10 py-16 px-6 max-w-7xl mx-auto w-full text-center">
-        <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight mb-4">
-          Ready to experience your new campus portal?
-        </h3>
-        <p className="text-xs sm:text-sm text-[#9E98AE] mb-8 max-w-md mx-auto">
-          Choose your role to test drive the live portal instantly with pre-seeded data.
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/login?role=student"
-            className="px-5 py-2.5 rounded-xl bg-[#13111C] border border-[#262135] hover:border-[#7C3AED] text-white text-xs sm:text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2"
-          >
-            <GraduationCap className="w-4 h-4 text-[#8B5CF6]" />
-            Student Portal
-          </Link>
-          <Link
-            to="/login?role=faculty"
-            className="px-5 py-2.5 rounded-xl bg-[#13111C] border border-[#262135] hover:border-[#7C3AED] text-white text-xs sm:text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2"
-          >
-            <Users className="w-4 h-4 text-[#8B5CF6]" />
-            Faculty Portal
-          </Link>
-          <Link
-            to="/login?role=admin"
-            className="px-5 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs sm:text-sm font-semibold transition-all shadow-[0_0_20px_rgba(124,58,237,0.4)] flex items-center gap-2"
-          >
-            <BarChart3 className="w-4 h-4" />
-            Executive Admin & Analytics
-          </Link>
-        </div>
-      </section>
-
-      {/* ========================================================
-          FOOTER (hi.events style)
-         ======================================================== */}
-      <footer className="border-t border-[#262135] bg-[#08070D] py-12 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-[#716B82]">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-[#7C3AED] flex items-center justify-center text-white font-bold text-xs shadow-sm">
-              CC
-            </div>
-            <span className="font-display font-bold text-white tracking-tight">
-              CAMPUS<span className="text-[#8B5CF6]">.CONNECT</span>
-            </span>
-            <span className="text-[#37304E]">·</span>
-            <span>Enterprise Academic Booking & Analytics OS</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <a href="#door-checkin" className="hover:text-white transition-colors">Door App</a>
-            <a href="#seating" className="hover:text-white transition-colors">Seat Maps</a>
-            <a href="#architecture" className="hover:text-white transition-colors">Architecture</a>
-            <Link to="/login" className="hover:text-white transition-colors">Sign in</Link>
-            <Link to="/register" className="text-[#A78BFA] hover:text-white transition-colors font-semibold">
-              Create account
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+            <Link
+              to="/register"
+              className="px-8 py-3.5 bg-[#BAE6FD] text-black font-mono font-black text-sm uppercase tracking-wider border-2 border-black rounded-lg shadow-[4px_4px_0px_#000] hover:shadow-[1px_1px_0px_#000] hover:translate-x-[3px] hover:translate-y-[3px] transition-all flex items-center gap-2.5"
+            >
+              <span>BOOK YOUR SEAT</span>
+              <ArrowRight className="w-4 h-4 stroke-[3]" />
             </Link>
+            <a
+              href="#schedule"
+              className="px-6 py-3.5 bg-white text-black font-mono font-bold text-sm uppercase tracking-wider border-2 border-black rounded-lg shadow-[4px_4px_0px_#000] hover:bg-slate-100 transition-all"
+            >
+              EXPLORE SCHEDULE
+            </a>
+          </div>
+
+          {/* --- Live Countdown Timer (Matches: 140 DAYS  00 HRS  29 MINS  57 SECS) --- */}
+          <div className="max-w-xl mx-auto pt-2">
+            <div className="grid grid-cols-4 gap-2 sm:gap-6 text-center">
+              <div>
+                <div className="font-display font-black text-4xl sm:text-6xl text-black tracking-tight leading-none">
+                  {timeLeft.days}
+                </div>
+                <div className="font-mono text-[10px] sm:text-xs font-bold text-black/70 tracking-widest uppercase mt-2">
+                  DAYS
+                </div>
+              </div>
+              <div>
+                <div className="font-display font-black text-4xl sm:text-6xl text-black tracking-tight leading-none">
+                  {timeLeft.hours}
+                </div>
+                <div className="font-mono text-[10px] sm:text-xs font-bold text-black/70 tracking-widest uppercase mt-2">
+                  HRS
+                </div>
+              </div>
+              <div>
+                <div className="font-display font-black text-4xl sm:text-6xl text-black tracking-tight leading-none">
+                  {timeLeft.mins}
+                </div>
+                <div className="font-mono text-[10px] sm:text-xs font-bold text-black/70 tracking-widest uppercase mt-2">
+                  MINS
+                </div>
+              </div>
+              <div>
+                <div className="font-display font-black text-4xl sm:text-6xl text-black tracking-tight leading-none">
+                  {timeLeft.secs}
+                </div>
+                <div className="font-mono text-[10px] sm:text-xs font-bold text-black/70 tracking-widest uppercase mt-2">
+                  SECS
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* --- Overlapping Polaroid / Photo Strip (Hanging into the black section) --- */}
+        <div className="max-w-6xl mx-auto mt-16 sm:mt-20 relative z-30 -mb-56">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-2">
+            {/* Photo 1: Cheering Audience */}
+            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+              <div className="bg-white p-2.5 pb-4 border-2 border-black shadow-[6px_6px_0px_#000] rounded-sm">
+                <div className="aspect-[4/5] overflow-hidden bg-slate-200 border border-black">
+                  <img
+                    src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80"
+                    alt="Audience clapping"
+                    className="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-300"
+                  />
+                </div>
+                <div className="font-mono text-[10px] font-bold text-black mt-2 text-center uppercase tracking-wider">
+                  ★ Keynote Grand Hall
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 2: Student Speaker */}
+            <div className="transform rotate-3 hover:rotate-0 transition-transform duration-300 translate-y-4">
+              <div className="bg-white p-2.5 pb-4 border-2 border-black shadow-[6px_6px_0px_#000] rounded-sm">
+                <div className="aspect-[4/5] overflow-hidden bg-slate-200 border border-black">
+                  <img
+                    src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80"
+                    alt="Student presenting"
+                    className="w-full h-full object-cover contrast-125"
+                  />
+                </div>
+                <div className="font-mono text-[10px] font-bold text-black mt-2 text-center uppercase tracking-wider">
+                  ★ Stage Pitch 2026
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 3: Hackathon Team */}
+            <div className="transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+              <div className="bg-white p-2.5 pb-4 border-2 border-black shadow-[6px_6px_0px_#000] rounded-sm">
+                <div className="aspect-[4/5] overflow-hidden bg-slate-200 border border-black">
+                  <img
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
+                    alt="Hackathon team coding"
+                    className="w-full h-full object-cover contrast-125"
+                  />
+                </div>
+                <div className="font-mono text-[10px] font-bold text-black mt-2 text-center uppercase tracking-wider">
+                  ★ 48hr HackNova Squad
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 4: Keynote Presentation */}
+            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-300 translate-y-3">
+              <div className="bg-white p-2.5 pb-4 border-2 border-black shadow-[6px_6px_0px_#000] rounded-sm">
+                <div className="aspect-[4/5] overflow-hidden bg-slate-200 border border-black">
+                  <img
+                    src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=800&q=80"
+                    alt="Keynote presentation"
+                    className="w-full h-full object-cover contrast-125"
+                  />
+                </div>
+                <div className="font-mono text-[10px] font-bold text-black mt-2 text-center uppercase tracking-wider">
+                  ★ Tech Founder Talk
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          3. PITCH BLACK MIDDLE SECTION (from CONFERIO reference)
+         ======================================================== */}
+      <section id="about" className="bg-[#111111] text-white pt-64 pb-28 px-4 sm:px-8 border-b-4 border-black relative z-10">
+        <div className="max-w-6xl mx-auto">
+          {/* Slanted Tape Stickers */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-[#F5DF4D] text-black font-mono font-black text-xs px-3.5 py-1 -rotate-3 border border-black shadow-[2px_2px_0px_#FFF]">
+              ABOUT US
+            </div>
+            <div className="bg-[#E9D5FF] text-black font-mono font-black text-xs px-3.5 py-1 rotate-2 border border-black shadow-[2px_2px_0px_#FFF]">
+              LIVE EVENT
+            </div>
+          </div>
+
+          {/* Big Bold Headline */}
+          <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight uppercase leading-[1.08] max-w-4xl mb-14">
+            WE BELIEVE THAT EVERY CAMPUS EVENT SHOULD BE MORE THAN JUST AN OCCASION.
+          </h2>
+
+          {/* 4-Column Atmospheric Photo Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="aspect-[4/3] rounded-none border-2 border-[#333] overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=800&q=80"
+                alt="Audience cheering"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-none border-2 border-[#333] overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80"
+                alt="Students collaborating"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-none border-2 border-[#333] overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80"
+                alt="Speaker with microphone"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-none border-2 border-[#333] overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=800&q=80"
+                alt="Student networking"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          4. BIG IMPACT NUMBERS COUNTER GRID (from right scroll)
+         ======================================================== */}
+      <section className="bg-white text-black py-16 px-4 sm:px-8 border-b-4 border-black">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center divide-y-2 md:divide-y-0 md:divide-x-2 divide-black">
+            <div className="pt-4 md:pt-0">
+              <div className="font-display font-black text-4xl sm:text-5xl text-black">20+</div>
+              <div className="font-mono text-xs font-bold uppercase text-slate-600 mt-1">Categories</div>
+            </div>
+            <div className="pt-4 md:pt-0">
+              <div className="font-display font-black text-4xl sm:text-5xl text-black">100+</div>
+              <div className="font-mono text-xs font-bold uppercase text-slate-600 mt-1">Events Hosted</div>
+            </div>
+            <div className="pt-4 md:pt-0">
+              <div className="font-display font-black text-4xl sm:text-5xl text-black">5K+</div>
+              <div className="font-mono text-xs font-bold uppercase text-slate-600 mt-1">Active Students</div>
+            </div>
+            <div className="pt-4 md:pt-0">
+              <div className="font-display font-black text-4xl sm:text-5xl text-black">30+</div>
+              <div className="font-mono text-xs font-bold uppercase text-slate-600 mt-1">Collegiate Sponsors</div>
+            </div>
+            <div className="pt-4 md:pt-0">
+              <div className="font-display font-black text-4xl sm:text-5xl text-black">₹10L+</div>
+              <div className="font-mono text-xs font-bold uppercase text-slate-600 mt-1">Grants & Prizes</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          5. SCHEDULE & DATE TABS SECTION (from CONFERIO reference)
+         ======================================================== */}
+      <section id="schedule" className="bg-[#FAF8F5] text-black py-24 px-4 sm:px-8 border-b-4 border-black">
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <div className="mb-12">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-[#F5DF4D] text-black font-mono font-black text-[11px] px-3 py-1 border border-black shadow-[2px_2px_0px_#000]">
+                ANNUAL EVENT
+              </div>
+              <div className="bg-[#E9D5FF] text-black font-mono font-black text-[11px] px-3 py-1 border border-black shadow-[2px_2px_0px_#000]">
+                DAY-BY-DAY AGENDA
+              </div>
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-5xl text-black tracking-tight uppercase max-w-2xl">
+              JOIN US FOR EVENTS THAT INSPIRE, CONNECT AND CELEBRATE.
+            </h2>
+          </div>
+
+          {/* Date Filter Tabs (Matches: 22 JAN 2026, 23 JAN 2026, 24 JAN 2026) */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            {[
+              { id: '24_nov', label: '24 NOV 2026 · DAY 01' },
+              { id: '25_nov', label: '25 NOV 2026 · DAY 02' },
+              { id: '26_nov', label: '26 NOV 2026 · DAY 03' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveDateTab(tab.id)}
+                className={`px-5 py-2.5 font-mono text-xs font-black uppercase rounded-lg border-2 border-black transition-all cursor-pointer ${
+                  activeDateTab === tab.id
+                    ? 'bg-black text-white shadow-[4px_4px_0px_#F5DF4D]'
+                    : 'bg-white text-black hover:bg-slate-100 shadow-[3px_3px_0px_#000]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Schedule List Cards */}
+          <div className="space-y-4">
+            {scheduleData[activeDateTab].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-6 bg-white border-2 border-black shadow-[5px_5px_0px_#000] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 hover:translate-x-1 transition-transform"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+                  <div className="font-mono text-xs font-black text-[#387ED1] bg-[#387ED1]/10 px-3 py-1.5 rounded border border-[#387ED1]/30 self-start">
+                    {item.time}
+                  </div>
+                  <div>
+                    <div className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 border border-slate-300 text-slate-800 mb-1">
+                      {item.track}
+                    </div>
+                    <h3 className="font-display font-black text-lg sm:text-xl text-black">
+                      {item.title}
+                    </h3>
+                    <p className="font-mono text-xs text-slate-600 mt-0.5">
+                      {item.speaker} · <span className="font-bold text-black">{item.venue}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded border border-emerald-300">
+                    {item.seats}
+                  </span>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 bg-black text-white font-mono text-xs font-bold uppercase rounded border border-black hover:bg-[#387ED1] transition-colors flex items-center gap-1.5"
+                  >
+                    <span>Reserve</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          6. TICKET PRICING TIERS (from CONFERIO right scroll)
+         ======================================================== */}
+      <section id="tickets" className="bg-[#111111] text-white py-24 px-4 sm:px-8 border-b-4 border-black">
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-block bg-[#F5DF4D] text-black font-mono font-black text-xs px-4 py-1 border border-black shadow-[3px_3px_0px_#FFF] mb-3">
+              TICKETS & ADMISSION
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight uppercase">
+              CHOOSE YOUR ADMISSION PASS
+            </h2>
+            <p className="font-mono text-xs sm:text-sm text-slate-400 max-w-lg mx-auto mt-2">
+              Every pass includes atomic seat allocation, a unique digital QR pass, and access to all published competition tracks.
+            </p>
+          </div>
+
+          {/* 3 Neo-Brutalist Ticket Cards with Colorful Headers */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1: Student Free Pass */}
+            <div className="bg-white text-black border-4 border-black shadow-[8px_8px_0px_#F5DF4D] rounded-none flex flex-col justify-between overflow-hidden">
+              <div>
+                <div className="bg-[#E9D5FF] p-6 border-b-4 border-black">
+                  <div className="font-mono text-xs font-black uppercase tracking-wider text-black">
+                    STUDENT DELEGATE
+                  </div>
+                  <div className="font-display font-black text-4xl text-black mt-2">
+                    FREE <span className="text-xs font-mono font-normal text-slate-700">/ 0 INR</span>
+                  </div>
+                  <p className="font-mono text-xs text-black/80 mt-1">
+                    Standard admission for all enrolled campus students.
+                  </p>
+                </div>
+                <div className="p-6 space-y-3 font-mono text-xs text-slate-800">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Access to technical & cultural keynotes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Digital QR code mobile gate pass</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Live sports tournament spectator access</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Digital certificate of participation</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 pt-0">
+                <Link
+                  to="/register"
+                  className="w-full py-3 bg-black hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider text-center block border-2 border-black transition-colors"
+                >
+                  GET STUDENT PASS →
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 2: Hackathon Squad Pass (Most Popular) */}
+            <div className="bg-white text-black border-4 border-black shadow-[8px_8px_0px_#000] rounded-none flex flex-col justify-between overflow-hidden transform md:-translate-y-4">
+              <div>
+                <div className="bg-black text-white p-6 border-b-4 border-black relative">
+                  <div className="absolute top-3 right-3 bg-[#F5DF4D] text-black font-mono font-black text-[10px] px-2 py-0.5 border border-black uppercase">
+                    POPULAR
+                  </div>
+                  <div className="font-mono text-xs font-black uppercase tracking-wider text-[#F5DF4D]">
+                    HACKATHON SQUAD
+                  </div>
+                  <div className="font-display font-black text-4xl text-white mt-2">
+                    PASS <span className="text-xs font-mono font-normal text-slate-400">/ 4-Member Squad</span>
+                  </div>
+                  <p className="font-mono text-xs text-slate-300 mt-1">
+                    Full 48hr hackathon squad entry with lab access.
+                  </p>
+                </div>
+                <div className="p-6 space-y-3 font-mono text-xs text-slate-800">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Full 48-Hour Hackathon lab station</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Unique 6-char team code (e.g. TEAM-NK88)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>High-speed Gigabit lab network & cloud credits</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Eligible for ₹5,00,000 jury cash prizes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Mentor sessions & code reviews</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 pt-0">
+                <Link
+                  to="/register"
+                  className="w-full py-3 bg-[#F5DF4D] hover:bg-[#FFE600] text-black font-mono font-black text-xs uppercase tracking-wider text-center block border-2 border-black shadow-[3px_3px_0px_#000] transition-colors"
+                >
+                  REGISTER SQUAD →
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 3: VIP All-Access Pass */}
+            <div className="bg-white text-black border-4 border-black shadow-[8px_8px_0px_#67C7FA] rounded-none flex flex-col justify-between overflow-hidden">
+              <div>
+                <div className="bg-[#BAE6FD] p-6 border-b-4 border-black">
+                  <div className="font-mono text-xs font-black uppercase tracking-wider text-black">
+                    VIP ALL-ACCESS
+                  </div>
+                  <div className="font-display font-black text-4xl text-black mt-2">
+                    ALL-PASS <span className="text-xs font-mono font-normal text-slate-700">/ Priority</span>
+                  </div>
+                  <p className="font-mono text-xs text-black/80 mt-1">
+                    Front row reserved seating and priority door lane.
+                  </p>
+                </div>
+                <div className="p-6 space-y-3 font-mono text-xs text-slate-800">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Front-row reserved seating in keynotes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Express priority door check-in lane</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>Exclusive networking dinner with speakers</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                    <span>CampusConnect 2026 official delegate swag</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 pt-0">
+                <Link
+                  to="/register"
+                  className="w-full py-3 bg-black hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider text-center block border-2 border-black transition-colors"
+                >
+                  GET VIP PASS →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          7. UPCOMING FACILITIES · COMING SOON SECTION
+         ======================================================== */}
+      <section id="coming-soon" className="bg-[#FAF8F5] text-black py-24 px-4 sm:px-8 border-b-4 border-black">
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-block bg-[#E9D5FF] text-black font-mono font-black text-xs px-4 py-1.5 border-2 border-black shadow-[3px_3px_0px_#000] mb-3 uppercase">
+              ★ ROADMAP & UPCOMING INNOVATIONS
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-5xl text-black tracking-tight uppercase">
+              NEXT-GEN FACILITIES · COMING SOON
+            </h2>
+            <p className="font-mono text-xs sm:text-sm text-slate-600 max-w-xl mx-auto mt-2">
+              We are actively developing powerful new modules to make campus event logistics effortless.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Facility 1: Door Staff Mobile Scanner App (Coming Soon) */}
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#F5DF4D] p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#F5DF4D] border-2 border-black flex items-center justify-center text-black font-black">
+                    <QrCode className="w-6 h-6" />
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-black text-[#F5DF4D] font-mono text-[10px] font-black uppercase tracking-wider">
+                    COMING SOON · v2.0
+                  </span>
+                </div>
+
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-2">
+                  Door Staff Mobile Scanner
+                </h3>
+                <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
+                  A standalone handheld Android & iOS volunteer gate app. Send volunteers a quick link with zero login required to verify student tickets and camera-scan QR passes at the entrance.
+                </p>
+
+                <div className="space-y-2.5 font-mono text-xs text-slate-800 border-t-2 border-black/10 pt-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Instant camera barcode and QR recognition</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Live check-in counters synced across all doors</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>One-tap check-out / undo for temporary exits</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 p-3 bg-slate-100 border border-black/20 text-center font-mono text-xs text-slate-600 font-bold">
+                ⚡ All digital tickets with unique QR passes are live in Student Wallet
+              </div>
+            </div>
+
+            {/* Facility 2: AI-Powered Predictive Analytics (Coming Soon) */}
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#BAE6FD] p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#BAE6FD] border-2 border-black flex items-center justify-center text-black font-black">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-black text-[#BAE6FD] font-mono text-[10px] font-black uppercase tracking-wider">
+                    COMING SOON · v2.0
+                  </span>
+                </div>
+
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-2">
+                  Analyze With AI & Forecasting
+                </h3>
+                <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
+                  Machine learning models powered by Scikit-Learn to accurately predict registration velocity, category turnout patterns, and venue capacity demand before events start.
+                </p>
+
+                <div className="space-y-2.5 font-mono text-xs text-slate-800 border-t-2 border-black/10 pt-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Registration prediction using RandomForest regression</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Automated capacity bottleneck detection</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-black" />
+                    <span>Executive AI insights synthesized from real trends</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 p-3 bg-slate-100 border border-black/20 text-center font-mono text-xs text-slate-600 font-bold">
+                ⚡ Scikit-learn analytical pipeline currently undergoing calibration
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          8. FREQUENTLY ASKED QUESTIONS
+         ======================================================== */}
+      <section className="bg-white text-black py-20 px-4 sm:px-8 border-b-4 border-black">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="bg-[#F5DF4D] text-black font-mono font-black text-xs px-3.5 py-1 border border-black shadow-[2px_2px_0px_#000] inline-block mb-3">
+              KNOWLEDGE BASE
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-4xl text-black tracking-tight uppercase">
+              FREQUENTLY ASKED QUESTIONS
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="border-2 border-black bg-[#FAF8F5] shadow-[4px_4px_0px_#000] rounded-none overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full p-4 sm:p-5 text-left font-display font-black text-sm sm:text-base text-black flex items-center justify-between gap-4 cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  {openFaq === idx ? (
+                    <ChevronUp className="w-5 h-5 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 flex-shrink-0" />
+                  )}
+                </button>
+                {openFaq === idx && (
+                  <div className="p-4 sm:p-5 pt-0 font-mono text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-black/10">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          9. FAST PORTAL LAUNCH ACCELERATOR
+         ======================================================== */}
+      <section className="bg-[#F5DF4D] text-black py-16 px-4 sm:px-8 border-b-4 border-black text-center">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white text-black font-mono font-black text-xs px-3.5 py-1 border border-black shadow-[2px_2px_0px_#000] inline-block mb-4">
+            GET STARTED NOW
+          </div>
+          <h2 className="font-display font-black text-3xl sm:text-5xl text-black tracking-tight uppercase mb-4">
+            EXPERIENCE CAMPUSCONNECT TODAY
+          </h2>
+          <p className="font-mono text-xs sm:text-sm text-black/80 max-w-lg mx-auto mb-8">
+            Register your student account in seconds or sign in to browse upcoming hackathons, sports championships, and seminars.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/register"
+              className="px-8 py-3.5 bg-black text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_#FFF] hover:shadow-[1px_1px_0px_#FFF] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            >
+              CREATE NEW ACCOUNT →
+            </Link>
+            <Link
+              to="/login?role=student"
+              className="px-6 py-3.5 bg-white text-black font-mono font-bold text-xs sm:text-sm uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_#000] hover:bg-slate-100 transition-all"
+            >
+              STUDENT SIGN IN
+            </Link>
+            <Link
+              to="/login?role=admin"
+              className="px-6 py-3.5 bg-[#BAE6FD] text-black font-mono font-bold text-xs sm:text-sm uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_#000] hover:bg-sky-200 transition-all"
+            >
+              ADMIN PORTAL
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          10. FOOTER (Matches CONFERIO reference footer)
+         ======================================================== */}
+      <footer className="bg-black text-white py-12 px-4 sm:px-8">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <span className="font-display font-black text-xl text-white tracking-tighter uppercase">
+              CAMPUSCONNECT<span className="text-[#F5DF4D]">.CC</span>
+            </span>
+            <span className="text-slate-600 font-mono">|</span>
+            <span className="font-mono text-xs text-slate-400">
+              CampusConnect Modern Event & Ticketing Platform
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6 font-mono text-xs text-slate-400">
+            <a href="#events" className="hover:text-white transition-colors">Events</a>
+            <a href="#schedule" className="hover:text-white transition-colors">Schedule</a>
+            <a href="#tickets" className="hover:text-white transition-colors">Passes</a>
+            <a href="#coming-soon" className="hover:text-[#F5DF4D] transition-colors">Coming Soon</a>
+            <Link to="/login" className="hover:text-[#F5DF4D] transition-colors">Sign In</Link>
+            <Link to="/register" className="text-[#F5DF4D] hover:underline font-bold">Register Free</Link>
           </div>
         </div>
       </footer>

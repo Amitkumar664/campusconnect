@@ -1,378 +1,477 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import {
   Calendar,
   MapPin,
   Clock,
-  Users,
   Search,
-  Tag,
-  CheckCircle,
+  Filter,
   Ticket,
+  CheckCircle2,
   AlertCircle,
-  XCircle,
+  Video,
   Sparkles,
-  Flame,
-  Check
+  ArrowRight,
+  X,
+  Share2
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti';
 import { eventAPI } from '../../services/api';
-import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
-import Modal from '../../components/common/Modal';
+import { useAuth } from '../../context/AuthContext';
+
+const CATEGORIES = [
+  { id: 'all', label: 'All Categories' },
+  { id: 'technical', label: 'Technical' },
+  { id: 'cultural', label: 'Cultural' },
+  { id: 'workshop', label: 'Workshops' },
+  { id: 'seminar', label: 'Seminars' },
+  { id: 'guest_lecture', label: 'Guest Lectures' },
+  { id: 'competition', label: 'Competitions' },
+  { id: 'festival', label: 'Festivals' },
+  { id: 'hackathon', label: 'Hackathons' },
+  { id: 'sports', label: 'Sports' }
+];
 
 const EventBrowse = () => {
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
 
-  const [activeActionId, setActiveActionId] = useState(null);
-  const [actionMessage, setActionMessage] = useState({ type: '', text: '' });
-  const [ticketModal, setTicketModal] = useState({ open: false, event: null, code: '' });
+  // Modal State
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingResult, setBookingResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const loadEvents = async () => {
+  const fetchEvents = async () => {
     try {
-      const res = await eventAPI.getAll();
+      setLoading(true);
+      const params = {};
+      if (selectedCategory !== 'all') params.category = selectedCategory;
+      if (selectedStatus !== 'all') params.status = selectedStatus;
+      if (search) params.search = search;
+
+      const res = await eventAPI.getAll(params);
       if (res.data.success) {
-        setEvents(res.data.events);
-        setFilteredEvents(res.data.events);
+        setEvents(res.data.events || []);
       }
-    } catch (error) {
-      console.error('Failed to load events:', error);
+    } catch (err) {
+      console.error('Failed to load events:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadEvents();
-  }, []);
+    fetchEvents();
+  }, [selectedCategory, selectedStatus]);
 
-  useEffect(() => {
-    let result = events;
-    if (selectedCategory !== 'all') {
-      result = result.filter((e) => e.category === selectedCategory);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (e) =>
-          e.title.toLowerCase().includes(q) ||
-          e.description.toLowerCase().includes(q) ||
-          e.venue.toLowerCase().includes(q) ||
-          e.tags?.some((t) => t.toLowerCase().includes(q))
-      );
-    }
-    setFilteredEvents(result);
-  }, [search, selectedCategory, events]);
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchEvents();
+  };
 
-  const handleRegister = async (event) => {
-    setActiveActionId(event._id);
-    setActionMessage({ type: '', text: '' });
+  const handleBookTicket = async (event) => {
     try {
+      setBookingLoading(true);
+      setErrorMsg('');
       const res = await eventAPI.register(event._id);
+
       if (res.data.success) {
+        setBookingResult(res.data.booking);
         // Confetti celebration
         confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ['#7C3AED', '#8B5CF6', '#10B981']
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
         });
-
-        setTicketModal({
-          open: true,
-          event,
-          code: res.data.ticketCode
-        });
-        await loadEvents();
+        // Refresh events list
+        fetchEvents();
       }
-    } catch (error) {
-      setActionMessage({
-        type: 'error',
-        text: error.response?.data?.message || 'Event registration failed.'
-      });
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || 'Failed to book ticket. Please try again.');
     } finally {
-      setActiveActionId(null);
+      setBookingLoading(false);
     }
   };
 
-  const handleCancelRegistration = async (eventId) => {
-    if (!window.confirm('Are you sure you want to cancel your event registration ticket?')) {
-      return;
-    }
-
-    setActiveActionId(eventId);
-    setActionMessage({ type: '', text: '' });
-    try {
-      const res = await eventAPI.cancelRegistration(eventId);
-      if (res.data.success) {
-        setActionMessage({
-          type: 'success',
-          text: 'Event ticket cancelled successfully.'
-        });
-        await loadEvents();
-      }
-    } catch (error) {
-      setActionMessage({
-        type: 'error',
-        text: error.response?.data?.message || 'Failed to cancel registration.'
-      });
-    } finally {
-      setActiveActionId(null);
-    }
-  };
-
-  const categories = [
-    { label: 'All Event Categories', value: 'all' },
-    { label: 'Hackathons', value: 'hackathon' },
-    { label: 'Technical Workshops', value: 'workshop' },
-    { label: 'Academic Seminars', value: 'seminar' },
-    { label: 'Annual College Fest', value: 'fest' },
-    { label: 'Campus Placement Drives', value: 'placement' }
-  ];
+  const sortedEvents = [...events].sort((a, b) => {
+    if (sortBy === 'date') return new Date(a.eventDate) - new Date(b.eventDate);
+    if (sortBy === 'popular') return (b.registeredCount || 0) - (a.registeredCount || 0);
+    return 0;
+  });
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 font-sans">
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13111C] border border-[#262135] text-xs text-[#A78BFA] font-semibold mb-2 shadow-inner">
-          <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> Campus Life & Activities
+    <div className="space-y-6">
+      {/* Header & Search */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
+            <span>Explore College Events</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#387ED1]/20 text-[#60A5FA] border border-[#387ED1]/30">
+              {sortedEvents.length} Available
+            </span>
+          </h1>
+          <p className="text-xs text-[#94A3B8] mt-1">
+            Browse hackathons, technical symposia, sports tournaments and digital passes across the campus.
+          </p>
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          College Events & Hackathon Passes
-        </h1>
-        <p className="text-xs sm:text-sm text-[#9E98AE] mt-1">
-          Explore upcoming technology symposia, claim free university digital passes, and attend college workshops.
-        </p>
+
+        {/* Search bar */}
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 max-w-md w-full">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by event title, venue, or keywords..."
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-xs text-white placeholder-[#64748B] focus:outline-none focus:border-[#387ED1]"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2.5 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] text-white text-xs font-semibold shadow-sm transition-all"
+          >
+            Search
+          </button>
+        </form>
       </div>
 
-      {actionMessage.text && (
-        <div
-          className={`p-4 rounded-xl border text-xs sm:text-sm font-medium flex items-center gap-3 shadow-inner ${
-            actionMessage.type === 'success'
-              ? 'bg-[#10B981]/15 border-[#10B981]/30 text-[#34D399]'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-          }`}
-        >
-          {actionMessage.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 flex-shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          )}
-          <span>{actionMessage.text}</span>
+      {/* Category Pills & Filters */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full custom-scrollbar">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+                selectedCategory === cat.id
+                  ? 'bg-[#387ED1] text-white shadow-sm font-semibold'
+                  : 'bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] hover:text-white hover:bg-[#1E293B]'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
-      )}
 
-      {/* Filter and Search Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
-        <div className="sm:col-span-8">
-          <Input
-            placeholder="Search events by title, keyword, tech tags..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            icon={Search}
-          />
-        </div>
-        <div className="sm:col-span-4">
-          <Input
-            type="select"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            options={categories}
-          />
+        {/* Sort dropdown */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-[#64748B]">Sort:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-1.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-xs text-white focus:outline-none focus:border-[#387ED1]"
+          >
+            <option value="date">Upcoming Date</option>
+            <option value="popular">Most Popular</option>
+          </select>
         </div>
       </div>
 
       {/* Events Grid */}
       {loading ? (
-        <div className="py-16 text-center text-[#9E98AE] text-xs flex items-center justify-center gap-2">
-          <div className="w-5 h-5 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
+        <div className="py-20 text-center text-sm text-[#94A3B8]">
+          <div className="w-8 h-8 border-2 border-[#387ED1] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           Loading campus events...
         </div>
-      ) : filteredEvents.length === 0 ? (
-        <div className="p-14 text-center rounded-2xl border border-dashed border-[#262135] bg-[#0D0C15]/50">
-          <Calendar className="w-12 h-12 text-[#7C3AED]/40 mx-auto mb-3" />
-          <h3 className="font-display font-semibold text-white text-base">
-            No events found
-          </h3>
-          <p className="text-xs text-[#9E98AE] mt-1">
-            Try adjusting your search query or selecting another category filter.
+      ) : sortedEvents.length === 0 ? (
+        <div className="py-20 text-center rounded-2xl bg-[#0F172A] border border-[#1E293B]">
+          <Calendar className="w-10 h-10 text-[#64748B] mx-auto mb-3 opacity-50" />
+          <h3 className="text-base font-bold text-white">No events found</h3>
+          <p className="text-xs text-[#94A3B8] mt-1 max-w-sm mx-auto">
+            Try adjusting your search criteria or category filter to discover other scheduled campus events.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((evt) => {
-            const fillRatio = Math.min(100, Math.round((evt.registeredCount / evt.capacity) * 100));
-            const isFull = evt.registeredCount >= evt.capacity;
-            const isRegistered = evt.isRegistered;
+          {sortedEvents.map((event) => {
+            const fillRatio = event.capacity > 0 ? (event.registeredCount || 0) / event.capacity : 0;
+            const isFull = event.registeredCount >= event.capacity;
+            const isClosed = event.status === 'closed' || new Date() > new Date(event.registrationDeadline);
 
             return (
-              <motion.div
-                key={evt._id}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-[#0D0C15] rounded-2xl border border-[#262135] shadow-[0_15px_35px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col group hover:border-[#7C3AED]/50 transition-all"
+              <div
+                key={event._id}
+                className="rounded-2xl bg-[#0F172A] border border-[#1E293B] overflow-hidden hover:border-[#387ED1]/50 transition-all shadow-md hover:shadow-xl flex flex-col group"
               >
-                {/* Banner image or category top banner */}
-                <div className="relative h-48 bg-[#13111C] overflow-hidden">
-                  {evt.bannerUrl ? (
-                    <img
-                      src={evt.bannerUrl}
-                      alt={evt.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-[#13111C]">
-                      <Calendar className="w-12 h-12 text-[#7C3AED]/30" />
-                    </div>
-                  )}
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0C15] via-transparent to-transparent" />
-
-                  <div className="absolute top-3.5 left-3.5">
-                    <span className="px-3 py-1 rounded-full bg-[#0D0C15]/90 backdrop-blur-md border border-[#262135] text-[10px] font-semibold text-[#A78BFA] uppercase tracking-wider font-mono shadow-sm">
-                      {evt.category}
+                {/* Event Image Banner */}
+                <div className="h-44 relative bg-[#1E293B] overflow-hidden">
+                  <img
+                    src={event.bannerUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80'}
+                    alt={event.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {/* Category & Status badges */}
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10">
+                      {event.category}
                     </span>
+                    {event.status === 'filling_fast' && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#F59E0B]/90 text-white shadow-sm">
+                        Filling Fast
+                      </span>
+                    )}
+                    {isFull && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#EF4444]/90 text-white">
+                        Sold Out
+                      </span>
+                    )}
                   </div>
 
-                  {isRegistered && (
-                    <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C3AED] text-white text-[11px] font-bold shadow-[0_0_12px_rgba(124,58,237,0.5)]">
-                      <Ticket className="w-3.5 h-3.5" /> Pass Active
-                    </div>
-                  )}
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold bg-black/80 backdrop-blur-md text-white border border-white/10">
+                    {event.ticketPrice > 0 ? `₹${event.ticketPrice}` : 'Free Ticket'}
+                  </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+                {/* Event Content */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                   <div>
-                    <h3 className="font-display font-bold text-base sm:text-lg text-white group-hover:text-[#A78BFA] transition-colors line-clamp-1 tracking-tight">
-                      {evt.title}
+                    <h3 className="text-base font-bold text-white group-hover:text-[#387ED1] transition-colors line-clamp-1">
+                      {event.title}
                     </h3>
-                    <p className="text-xs text-[#9E98AE] mt-1.5 line-clamp-2 leading-relaxed">
-                      {evt.description}
+                    <p className="text-xs text-[#94A3B8] mt-1.5 line-clamp-2 leading-relaxed">
+                      {event.description}
                     </p>
 
-                    {/* Metadata */}
-                    <div className="mt-4 pt-3.5 border-t border-[#262135] space-y-2 text-xs text-[#9E98AE]">
+                    {/* Metadata details */}
+                    <div className="mt-4 space-y-2 text-xs text-[#64748B]">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-[#A78BFA] flex-shrink-0" />
-                        <span>{new Date(evt.eventDate).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-[#06B6D4] flex-shrink-0" />
-                        <span>{evt.startTime} - {evt.endTime}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-[#716B82] flex-shrink-0" />
-                        <span className="truncate">{evt.venue}</span>
-                      </div>
-                    </div>
-
-                    {/* Capacity progress */}
-                    <div className="mt-4 space-y-1.5">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-[#716B82]">Seating Capacity</span>
-                        <span className="font-mono font-semibold text-white">
-                          {evt.registeredCount} / {evt.capacity} ({fillRatio}%)
+                        <Calendar className="w-3.5 h-3.5 text-[#387ED1]" />
+                        <span className="text-[#94A3B8]">
+                          {new Date(event.eventDate).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric'
+                          })}{' '}
+                          • {event.startTime} - {event.endTime}
                         </span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-[#1B1828] overflow-hidden">
+                      <div className="flex items-center gap-2">
+                        {event.isVirtual ? (
+                          <Video className="w-3.5 h-3.5 text-[#10B981]" />
+                        ) : (
+                          <MapPin className="w-3.5 h-3.5 text-[#387ED1]" />
+                        )}
+                        <span className="text-[#94A3B8] truncate">{event.venue}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Capacity progress & Registration action */}
+                  <div className="pt-3 border-t border-[#1E293B] space-y-3">
+                    <div>
+                      <div className="flex justify-between text-[11px] mb-1">
+                        <span className="text-[#64748B]">Ticket Availability</span>
+                        <span className="font-semibold text-white">
+                          {event.capacity - (event.registeredCount || 0)} seats left
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-[#1E293B] overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
-                            fillRatio >= 90
-                              ? 'bg-rose-500'
-                              : fillRatio >= 60
-                              ? 'bg-[#F59E0B]'
-                              : 'bg-[#7C3AED]'
+                            fillRatio >= 0.9 ? 'bg-[#EF4444]' : fillRatio >= 0.7 ? 'bg-[#F59E0B]' : 'bg-[#10B981]'
                           }`}
-                          style={{ width: `${fillRatio}%` }}
+                          style={{ width: `${Math.min(100, Math.round(fillRatio * 100))}%` }}
                         />
                       </div>
                     </div>
-                  </div>
 
-                  {/* Registered Ticket Banner or Register CTA */}
-                  <div className="mt-5 pt-3.5 border-t border-[#262135]">
-                    {isRegistered ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#A78BFA] bg-[#7C3AED]/15 px-3 py-1.5 rounded-xl border border-[#7C3AED]/30">
-                          <Ticket className="w-3.5 h-3.5" />
-                          <span>{evt.ticketCode || 'PASS ACTIVE'}</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          loading={activeActionId === evt._id}
-                          onClick={() => handleCancelRegistration(evt._id)}
-                          className="text-rose-400 hover:bg-rose-500/10 text-xs"
-                        >
-                          Cancel Pass
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        variant={isFull ? 'secondary' : 'primary'}
-                        size="md"
-                        disabled={isFull}
-                        loading={activeActionId === evt._id}
-                        onClick={() => handleRegister(evt)}
-                        className="w-full font-semibold"
-                      >
-                        {isFull ? 'Registration Full' : 'Claim Free Pass'}
-                      </Button>
-                    )}
+                    <button
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setBookingResult(null);
+                        setErrorMsg('');
+                      }}
+                      className={`w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                        event.isRegistered
+                          ? 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 hover:bg-[#10B981]/25'
+                          : isFull
+                          ? 'bg-[#1E293B] text-[#64748B] hover:bg-[#334155]/50'
+                          : 'bg-[#387ED1] hover:bg-[#2563EB] text-white shadow-[0_4px_14px_rgba(56,126,209,0.35)]'
+                      }`}
+                    >
+                      {event.isRegistered ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Pass Confirmed • View Details</span>
+                        </>
+                      ) : isFull ? (
+                        <span>Sold Out • View Details</span>
+                      ) : (
+                        <>
+                          <Ticket className="w-4 h-4" />
+                          <span>View & Book Ticket</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
       )}
 
-      {/* Ticket Pass Confirmation Modal */}
-      <Modal
-        isOpen={ticketModal.open}
-        onClose={() => setTicketModal({ open: false, event: null, code: '' })}
-        title="Event Admission Pass Issued!"
-      >
-        <div className="text-center py-4 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center text-[#A78BFA] mx-auto shadow-[0_0_15px_rgba(124,58,237,0.3)]">
-            <Ticket className="w-8 h-8" />
-          </div>
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#716B82]">
-              Official Campus Admission Pass
-            </span>
-            <h3 className="font-display font-bold text-lg text-white mt-1">
-              {ticketModal.event?.title}
-            </h3>
-            <p className="text-xs text-[#9E98AE] mt-1">
-              📍 {ticketModal.event?.venue} • {ticketModal.event?.startTime} - {ticketModal.event?.endTime}
-            </p>
-          </div>
+      {/* Event Details & Booking Modal */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEvent(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            />
 
-          <div className="p-4 rounded-2xl bg-[#13111C] border-2 border-dashed border-[#7C3AED]/40 font-mono text-center shadow-inner">
-            <p className="text-[10px] text-[#716B82] uppercase tracking-wider">Digital Pass Code</p>
-            <p className="text-2xl font-black text-white tracking-widest mt-0.5">
-              {ticketModal.code}
-            </p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-[#0F172A] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            >
+              {/* Modal Banner */}
+              <div className="h-48 relative bg-[#1E293B] flex-shrink-0">
+                <img
+                  src={selectedEvent.bannerUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80'}
+                  alt={selectedEvent.title}
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="absolute top-4 right-4 p-2 rounded-xl bg-black/60 text-white hover:bg-black/90 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <div className="absolute bottom-4 left-4 flex gap-2">
+                  <span className="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-[#387ED1] text-white">
+                    {selectedEvent.category}
+                  </span>
+                  <span className="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-black/70 text-white">
+                    {selectedEvent.ticketPrice > 0 ? `₹${selectedEvent.ticketPrice}` : 'Free Entry'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 overflow-y-auto space-y-5 flex-1">
+                <div>
+                  <h2 className="text-xl font-bold text-white">{selectedEvent.title}</h2>
+                  <p className="text-xs text-[#94A3B8] mt-2 leading-relaxed">
+                    {selectedEvent.description}
+                  </p>
+                </div>
+
+                {/* Event Highlights */}
+                <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-[#1E293B]/50 border border-[#334155]/50 text-xs">
+                  <div>
+                    <span className="text-[#64748B]">Date & Time</span>
+                    <p className="font-semibold text-white mt-0.5">
+                      {new Date(selectedEvent.eventDate).toLocaleDateString()} ({selectedEvent.startTime} - {selectedEvent.endTime})
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B]">Venue</span>
+                    <p className="font-semibold text-white mt-0.5 truncate">{selectedEvent.venue}</p>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B]">Organizer</span>
+                    <p className="font-semibold text-white mt-0.5">{selectedEvent.organizerName || 'University Board'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B]">Registration Deadline</span>
+                    <p className="font-semibold text-white mt-0.5">
+                      {new Date(selectedEvent.registrationDeadline).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* If hackathon, show problem statement and prizes */}
+                {selectedEvent.eventType === 'hackathon' && selectedEvent.problemStatement && (
+                  <div className="p-4 rounded-xl bg-[#387ED1]/10 border border-[#387ED1]/30 space-y-2">
+                    <h4 className="text-xs font-bold uppercase text-[#60A5FA]">Hackathon Tracks & Problem Statement</h4>
+                    <p className="text-xs text-[#CBD5E1] whitespace-pre-line leading-relaxed">
+                      {selectedEvent.problemStatement}
+                    </p>
+                  </div>
+                )}
+
+                {/* Successful booking instant QR display */}
+                {bookingResult && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="p-5 rounded-xl bg-[#10B981]/10 border border-[#10B981]/30 text-center space-y-3"
+                  >
+                    <CheckCircle2 className="w-8 h-8 text-[#10B981] mx-auto" />
+                    <h4 className="text-base font-bold text-white">Ticket Confirmed!</h4>
+                    <p className="text-xs text-[#94A3B8]">
+                      Your digital pass code is <span className="font-mono font-bold text-[#60A5FA]">{bookingResult.ticketCode}</span>
+                    </p>
+                    {bookingResult.qrCode && (
+                      <div className="p-3 bg-white rounded-xl inline-block shadow-md">
+                        <img src={bookingResult.qrCode} alt="Ticket QR" className="w-36 h-36 mx-auto" />
+                      </div>
+                    )}
+                    <p className="text-[11px] text-[#64748B]">
+                      A confirmation email was dispatched. View this anytime in "My Digital Tickets".
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* Error message if booking fails */}
+                {errorMsg && (
+                  <div className="p-3.5 rounded-xl bg-[#EF4444]/15 border border-[#EF4444]/30 text-xs text-[#EF4444] flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 border-t border-[#1E293B] bg-[#0B0F19] flex items-center justify-between">
+                <div className="text-xs text-[#64748B]">
+                  Capacity: <span className="font-semibold text-white">{selectedEvent.registeredCount}</span> / {selectedEvent.capacity} booked
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedEvent(null)}
+                    className="px-4 py-2 rounded-xl bg-[#1E293B] hover:bg-[#334155] text-white text-xs font-semibold"
+                  >
+                    Close
+                  </button>
+                  {!selectedEvent.isRegistered && !bookingResult && (
+                    <button
+                      onClick={() => handleBookTicket(selectedEvent)}
+                      disabled={bookingLoading || selectedEvent.registeredCount >= selectedEvent.capacity}
+                      className="px-5 py-2 rounded-xl bg-[#387ED1] hover:bg-[#2563EB] disabled:opacity-50 text-white text-xs font-semibold shadow-md flex items-center gap-2"
+                    >
+                      {bookingLoading ? (
+                        <>
+                          <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Securing Seat...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Ticket className="w-4 h-4" />
+                          <span>Confirm & Book Ticket</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           </div>
-
-          <p className="text-xs text-[#9E98AE] max-w-sm mx-auto">
-            Please present this ticket pass code on event day for rapid check-in at the entrance.
-          </p>
-
-          <Button
-            variant="primary"
-            onClick={() => setTicketModal({ open: false, event: null, code: '' })}
-            className="w-full"
-          >
-            Done
-          </Button>
-        </div>
-      </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
